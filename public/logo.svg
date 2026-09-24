@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 90">
+<defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="#f4c95d"/><stop offset=".5" stop-color="#fff0a8"/><stop offset="1" stop-color="#c99120"/></linearGradient></defs>
+<rect width="240" height="90" rx="18" fill="#071a2f"/>
+<circle cx="43" cy="38" r="28" fill="none" stroke="url(#g)" stroke-width="3"/>
+<text x="22" y="51" font-family="Georgia,serif" font-weight="700" font-size="35" fill="url(#g)">AS</text>
+<text x="80" y="39" font-family="Georgia,serif" font-weight="700" font-size="20" letter-spacing="2" fill="#f5d477">AL SABIHA</text>
+<text x="80" y="58" font-family="Arial,sans-serif" font-size="10" letter-spacing="2" fill="#fff">GROUP OF COMPANIES</text>
+</svg>
