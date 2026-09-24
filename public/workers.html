@@ -1,3 +1,266 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Workers</title><link rel="stylesheet" href="/style.css"></head><body><script src="/app.js"></script><script>
-shell("workers","Workers",`<div class="panel"><div class="toolbar"><h2>Add / Edit Worker</h2></div><form id="f"><input type="hidden" id="id"><div class="form-grid"><div class="field"><label>Worker Code</label><input id="code" required></div><div class="field"><label>Worker Name</label><input id="name" required></div><div class="field"><label>Designation</label><input id="designation"></div><div class="field"><label>Employee Type</label><select id="type"><option>Company</option><option>Supplier</option></select></div><div class="field"><label>Vendor / Supplier</label><input id="vendor"></div><div class="field"><label>Mobile</label><input id="mobile"></div><div class="field"><label>Salary</label><input id="salary" type="number"></div><div class="field"><label>Joining Date</label><input id="joining" type="date"></div><div class="field"><label>Status</label><select id="status"><option>Active</option><option>Inactive</option></select></div></div><br><button class="btn gold">Save Worker</button> <button type="button" class="btn ghost" onclick="f.reset()">Clear</button></form></div><div class="panel"><div class="toolbar"><h2>Worker Database</h2><input id="search" class="search" placeholder="Search workers..."></div><div class="table-wrap"><table><thead><tr><th>Code</th><th>Name</th><th>Type</th><th>Vendor</th><th>Designation</th><th>Mobile</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div></div>`);
-let data=[];async function load(){data=await api("/api/workers?search="+encodeURIComponent($("#search").value));$("#rows").innerHTML=data.map(w=>`<tr><td>${esc(w.worker_code)}</td><td><b>${esc(w.name)}</b></td><td>${esc(w.employee_type)}</td><td>${esc(w.vendor||"—")}</td><td>${esc(w.designation||"—")}</td><td>${esc(w.mobile||"—")}</td><td><span class="badge">${esc(w.status)}</span></td><td><button class="btn ghost" onclick="edit(${w.id})">Edit</button> <button class="btn ghost" onclick="qr(${w.id})">QR</button> <button class="btn ghost" onclick="del(${w.id})">Disable</button></td></tr>`).join("")||`<tr><td colspan="8">No workers found.</td></tr>`)}window.edit=id=>{const w=data.find(x=>x.id===id);$("#id").value=w.id;$("#code").value=w.worker_code;$("#name").value=w.name;$("#designation").value=w.designation||"";$("#type").value=w.employee_type||"Company";$("#vendor").value=w.vendor||"";$("#mobile").value=w.mobile||"";$("#salary").value=w.salary||0;$("#joining").value=w.joining_date||"";$("#status").value=w.status||"Active";scrollTo(0,0)};window.del=async id=>{if(confirm("Disable this worker?")){await api("/api/workers/"+id,{method:"DELETE"});load()}};window.qr=async id=>{const d=await api("/api/workers/"+id+"/qrcode");const w=d.worker;const x=window.open("","QR","width=520,height=650");x.document.write(`<html><body style="font-family:Arial;text-align:center"><h2>AL SABIHA</h2><h3>${esc(w.name)}</h3><p>${esc(w.worker_code)}</p><img src="${d.qr}" style="width:350px"><p>Manpower Attendance</p></body></html>`)};$("#f").onsubmit=async e=>{e.preventDefault();const b={worker_code:$("#code").value,name:$("#name").value,designation:$("#designation").value,employee_type:$("#type").value,vendor:$("#vendor").value,mobile:$("#mobile").value,salary:$("#salary").value,joining_date:$("#joining").value,status:$("#status").value};const id=$("#id").value;await api(id?"/api/workers/"+id:"/api/workers",{method:id?"PUT":"POST",body:JSON.stringify(b)});e.target.reset();$("#id").value="";load()};$("#search").oninput=load;load();loadMe();</script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Workers</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<script src="/app.js"></script>
+
+<script>
+shell("workers","Workers",`
+<div class="panel">
+  <div class="toolbar">
+    <h2>Add / Edit Worker</h2>
+  </div>
+
+  <form id="f">
+    <input type="hidden" id="id">
+
+    <div class="form-grid">
+
+      <div class="field">
+        <label>Worker Code</label>
+        <input id="code" required>
+      </div>
+
+      <div class="field">
+        <label>Worker Name</label>
+        <input id="name" required>
+      </div>
+
+      <div class="field">
+        <label>Designation</label>
+        <input id="designation">
+      </div>
+
+      <div class="field">
+        <label>Employee Type</label>
+        <select id="type">
+          <option>Company</option>
+          <option>Supplier</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Vendor / Supplier</label>
+        <input id="vendor">
+      </div>
+
+      <div class="field">
+        <label>Mobile</label>
+        <input id="mobile">
+      </div>
+
+      <div class="field">
+        <label>Salary</label>
+        <input id="salary" type="number">
+      </div>
+
+      <div class="field">
+        <label>Joining Date</label>
+        <input id="joining" type="date">
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="status">
+          <option>Active</option>
+          <option>Inactive</option>
+        </select>
+      </div>
+
+    </div>
+
+    <br>
+
+    <button class="btn gold">Save Worker</button>
+    <button type="button" class="btn ghost" onclick="f.reset()">Clear</button>
+
+  </form>
+</div>
+
+<div class="panel">
+  <div class="toolbar">
+    <h2>Worker Database</h2>
+    <input id="search" class="search" placeholder="Search workers...">
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Vendor</th>
+          <th>Designation</th>
+          <th>Mobile</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody id="rows"></tbody>
+
+    </table>
+  </div>
+</div>
+`);
+
+let data = [];
+
+async function load() {
+
+  data = await api(
+    "/api/workers?search=" +
+    encodeURIComponent($("#search").value)
+  );
+
+  $("#rows").innerHTML =
+    data.map(w => `
+      <tr>
+        <td>${esc(w.worker_code)}</td>
+        <td><b>${esc(w.name)}</b></td>
+        <td>${esc(w.employee_type)}</td>
+        <td>${esc(w.vendor || "—")}</td>
+        <td>${esc(w.designation || "—")}</td>
+        <td>${esc(w.mobile || "—")}</td>
+        <td>
+          <span class="badge">${esc(w.status)}</span>
+        </td>
+        <td>
+          <button class="btn ghost" onclick="edit(${w.id})">
+            Edit
+          </button>
+
+          <button class="btn ghost" onclick="qr(${w.id})">
+            QR
+          </button>
+
+          <button class="btn ghost" onclick="del(${w.id})">
+            Disable
+          </button>
+        </td>
+      </tr>
+    `).join("") ||
+
+    `<tr>
+      <td colspan="8">No workers found.</td>
+    </tr>`;
+}
+
+window.edit = id => {
+
+  const w = data.find(x => x.id === id);
+
+  $("#id").value = w.id;
+  $("#code").value = w.worker_code;
+  $("#name").value = w.name;
+  $("#designation").value = w.designation || "";
+  $("#type").value = w.employee_type || "Company";
+  $("#vendor").value = w.vendor || "";
+  $("#mobile").value = w.mobile || "";
+  $("#salary").value = w.salary || 0;
+  $("#joining").value = w.joining_date || "";
+  $("#status").value = w.status || "Active";
+
+  scrollTo(0, 0);
+};
+
+window.del = async id => {
+
+  if (confirm("Disable this worker?")) {
+
+    await api(
+      "/api/workers/" + id,
+      {
+        method: "DELETE"
+      }
+    );
+
+    load();
+  }
+};
+
+window.qr = async id => {
+
+  const d = await api(
+    "/api/workers/" + id + "/qrcode"
+  );
+
+  const w = d.worker;
+
+  const x = window.open(
+    "",
+    "QR",
+    "width=520,height=650"
+  );
+
+  x.document.write(`
+    <html>
+      <body style="font-family:Arial;text-align:center">
+        <h2>AL SABIHA</h2>
+        <h3>${esc(w.name)}</h3>
+        <p>${esc(w.worker_code)}</p>
+
+        <img
+          src="${d.qr}"
+          style="width:350px"
+        >
+
+        <p>Manpower Attendance</p>
+      </body>
+    </html>
+  `);
+};
+
+$("#f").onsubmit = async e => {
+
+  e.preventDefault();
+
+  const b = {
+    worker_code: $("#code").value,
+    name: $("#name").value,
+    designation: $("#designation").value,
+    employee_type: $("#type").value,
+    vendor: $("#vendor").value,
+    mobile: $("#mobile").value,
+    salary: $("#salary").value,
+    joining_date: $("#joining").value,
+    status: $("#status").value
+  };
+
+  const id = $("#id").value;
+
+  await api(
+    id
+      ? "/api/workers/" + id
+      : "/api/workers",
+    {
+      method: id ? "PUT" : "POST",
+      body: JSON.stringify(b)
+    }
+  );
+
+  e.target.reset();
+
+  $("#id").value = "";
+
+  load();
+};
+
+$("#search").oninput = load;
+
+load();
+
+loadMe();
+
+</script>
+
+</body>
+</html>
