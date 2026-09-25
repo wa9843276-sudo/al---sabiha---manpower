@@ -1,3 +1,1322 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QR Attendance | AL SABIHA</title><link rel="stylesheet" href="/style.css"></head><body><script src="/app.js"></script><script>
-shell("scan","Scan QR Attendance",`<div class="panel" style="max-width:720px;margin:auto"><h2>Worker QR Check-in / Check-out</h2><p style="color:#718096">Enter the worker code printed in the QR. The page can also use your device camera after the QR reader is enabled in the browser.</p><div class="field"><label>Worker Code</label><input id="code" placeholder="e.g. W001"></div><br><button class="btn gold" onclick="lookup()">Find Worker</button><div id="result" style="margin-top:20px"></div></div>`);
-async function lookup(){try{const d=await api("/api/attendance/lookup",{method:"POST",body:JSON.stringify({worker_code:$("#code").value})});window.worker=d.worker;let opts=d.sites.map(s=>`<option value="${s.id}">${esc(s.name)} — ${esc(s.company_name||"")}</option>`).join("");$("#result").innerHTML=`<div class="card"><h2>${esc(d.worker.name)} <small>(${esc(d.worker.worker_code)})</small></h2><div class="field"><label>Site</label><select id="site">${opts}</select></div><br><button class="btn gold" onclick="checkIn()">Check In</button> <button class="btn dark" onclick="checkOut()">Check Out</button><p id="msg"></p></div>`}catch(e){alert(e.message)}}async function geo(){return new Promise(r=>navigator.geolocation?navigator.geolocation.getCurrentPosition(p=>r({latitude:p.coords.latitude,longitude:p.coords.longitude}),()=>r({}),{enableHighAccuracy:true,timeout:5000}):r({}))}async function checkIn(){const g=await geo();try{const d=await api("/api/attendance/checkin",{method:"POST",body:JSON.stringify({worker_code:worker.worker_code,site_id:$("#site").value,...g})});$("#msg").textContent="✓ Check-in successful at "+d.time}catch(e){alert(e.message)}}async function checkOut(){try{const d=await api("/api/attendance/checkout",{method:"POST",body:JSON.stringify({worker_code:worker.worker_code})});$("#msg").textContent="✓ Check-out successful at "+d.time}catch(e){alert(e.message)}}loadMe();</script></body></html>
+<!doctype html>
+<html>
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>QR Attendance | AL SABIHA</title>
+
+<link rel="stylesheet" href="/style.css">
+
+<style>
+
+/* =====================================
+   QR ATTENDANCE PAGE
+===================================== */
+
+.qr-page{
+  max-width:900px;
+  margin:auto;
+}
+
+.qr-header{
+  background:
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(245,212,119,.18),
+      transparent 30%
+    ),
+    linear-gradient(135deg,#061a30,#0b3557);
+
+  color:white;
+  border-radius:20px;
+  padding:28px;
+  margin-bottom:20px;
+
+  border:1px solid rgba(245,212,119,.20);
+
+  box-shadow:
+    0 12px 35px rgba(6,26,48,.14);
+}
+
+.qr-header h1{
+  margin:0 0 7px;
+  font-family:Georgia,serif;
+  font-size:27px;
+}
+
+.qr-header p{
+  margin:0;
+  color:#d7e1ec;
+  font-size:13px;
+}
+
+
+/* =====================================
+   SCANNER CARD
+===================================== */
+
+.scanner-card{
+  background:white;
+  border:1px solid #e5eaf0;
+  border-radius:20px;
+  padding:22px;
+
+  box-shadow:
+    0 8px 28px rgba(6,26,48,.07);
+}
+
+.scanner-title{
+  margin:0 0 5px;
+  color:#071a2e;
+  font-family:Georgia,serif;
+}
+
+.scanner-subtitle{
+  margin:0 0 20px;
+  color:#788697;
+  font-size:12px;
+}
+
+
+/* =====================================
+   CAMERA
+===================================== */
+
+#reader{
+  width:100%;
+  max-width:520px;
+  margin:0 auto;
+
+  overflow:hidden;
+
+  border-radius:18px;
+
+  border:2px solid rgba(197,151,50,.35);
+
+  background:#061a30;
+}
+
+#reader video{
+  border-radius:16px;
+}
+
+.camera-status{
+  text-align:center;
+  margin:12px 0 18px;
+
+  color:#718096;
+  font-size:12px;
+}
+
+
+/* =====================================
+   BUTTONS
+===================================== */
+
+.qr-buttons{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+.qr-btn{
+  border:0;
+  border-radius:10px;
+  padding:12px 18px;
+
+  cursor:pointer;
+
+  font-weight:700;
+  font-size:13px;
+}
+
+.qr-btn-gold{
+  background:linear-gradient(135deg,#f5d477,#c79532);
+  color:#061a30;
+}
+
+.qr-btn-dark{
+  background:#061a30;
+  color:white;
+}
+
+.qr-btn-light{
+  background:#eef2f6;
+  color:#24384d;
+}
+
+
+/* =====================================
+   MANUAL CODE
+===================================== */
+
+.manual-box{
+  margin-top:22px;
+  padding-top:20px;
+
+  border-top:1px solid #e8edf2;
+}
+
+.field-label{
+  display:block;
+  margin-bottom:7px;
+
+  color:#34495e;
+
+  font-size:12px;
+  font-weight:700;
+}
+
+.qr-input,
+.qr-select{
+  width:100%;
+  box-sizing:border-box;
+
+  padding:12px 13px;
+
+  border:1px solid #dce3ea;
+  border-radius:10px;
+
+  background:white;
+
+  color:#172b3f;
+  font-size:13px;
+
+  outline:none;
+}
+
+.qr-input:focus,
+.qr-select:focus{
+  border-color:#c79532;
+  box-shadow:0 0 0 3px rgba(197,151,50,.10);
+}
+
+
+/* =====================================
+   WORKER RESULT
+===================================== */
+
+.worker-result{
+  margin-top:20px;
+}
+
+.worker-card{
+  border:1px solid #e5eaf0;
+  border-radius:17px;
+  padding:20px;
+
+  background:
+    linear-gradient(145deg,#ffffff,#f8fafc);
+}
+
+.worker-top{
+  display:flex;
+  align-items:center;
+  gap:13px;
+  margin-bottom:18px;
+}
+
+.worker-avatar{
+  width:48px;
+  height:48px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:13px;
+
+  background:
+    linear-gradient(135deg,#f5d477,#c79532);
+
+  color:#061a30;
+
+  font-size:20px;
+  font-weight:800;
+}
+
+.worker-name{
+  margin:0;
+  color:#071a2e;
+  font-size:18px;
+}
+
+.worker-code{
+  margin-top:3px;
+  color:#788697;
+  font-size:11px;
+}
+
+.selection-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px;
+}
+
+.selection-box{
+  padding:15px;
+  background:#f8fafc;
+  border:1px solid #e5eaf0;
+  border-radius:13px;
+}
+
+.selection-box label{
+  display:block;
+  margin-bottom:7px;
+
+  color:#526477;
+  font-size:11px;
+  font-weight:700;
+}
+
+
+/* =====================================
+   ACTION BUTTONS
+===================================== */
+
+.attendance-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+
+  margin-top:17px;
+}
+
+.attendance-btn{
+  border:0;
+  border-radius:11px;
+
+  padding:13px;
+
+  cursor:pointer;
+
+  font-size:13px;
+  font-weight:800;
+}
+
+.checkin-btn{
+  background:linear-gradient(135deg,#1c9b61,#147447);
+  color:white;
+}
+
+.checkout-btn{
+  background:linear-gradient(135deg,#d9534f,#b52f2b);
+  color:white;
+}
+
+.attendance-btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+
+/* =====================================
+   MESSAGE
+===================================== */
+
+#msg{
+  margin:14px 0 0;
+  padding:11px 13px;
+
+  border-radius:10px;
+
+  background:#f3f6f8;
+
+  color:#526477;
+
+  font-size:12px;
+  text-align:center;
+}
+
+.success-msg{
+  background:#eaf8f0 !important;
+  color:#167a48 !important;
+}
+
+.error-msg{
+  background:#fff0f0 !important;
+  color:#b52f2b !important;
+}
+
+
+/* =====================================
+   GPS
+===================================== */
+
+.gps-status{
+  margin-top:12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+
+  color:#718096;
+  font-size:11px;
+}
+
+.gps-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#c79532;
+}
+
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media(max-width:650px){
+
+  .qr-header{
+    padding:22px 18px;
+  }
+
+  .qr-header h1{
+    font-size:23px;
+  }
+
+  .scanner-card{
+    padding:15px;
+  }
+
+  .selection-grid{
+    grid-template-columns:1fr;
+  }
+
+  .attendance-actions{
+    grid-template-columns:1fr;
+  }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<script src="/app.js"></script>
+
+<!-- QR LIBRARY -->
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+<script>
+
+shell("scan","Scan QR Attendance",`
+
+<div class="qr-page">
+
+  <!-- HEADER -->
+
+  <div class="qr-header">
+
+    <h1>QR Attendance</h1>
+
+    <p>
+      Scan worker QR code to check-in or check-out
+    </p>
+
+  </div>
+
+
+  <!-- SCANNER -->
+
+  <div class="scanner-card">
+
+    <h2 class="scanner-title">
+      Worker QR Scanner
+    </h2>
+
+    <p class="scanner-subtitle">
+      Point the camera at the worker's QR code.
+      The worker information will appear automatically.
+    </p>
+
+
+    <!-- CAMERA -->
+
+    <div id="reader"></div>
+
+    <div class="camera-status" id="cameraStatus">
+      Camera scanner is starting...
+    </div>
+
+
+    <div class="qr-buttons">
+
+      <button
+        class="qr-btn qr-btn-gold"
+        onclick="startScanner()">
+
+        📷 Start Camera
+
+      </button>
+
+
+      <button
+        class="qr-btn qr-btn-dark"
+        onclick="stopScanner()">
+
+        ■ Stop Camera
+
+      </button>
+
+    </div>
+
+
+    <!-- MANUAL CODE -->
+
+    <div class="manual-box">
+
+      <label class="field-label">
+        Worker Code
+      </label>
+
+      <input
+        id="code"
+        class="qr-input"
+        placeholder="Example: W001"
+        autocomplete="off"
+      >
+
+      <div class="qr-buttons"
+           style="justify-content:flex-start">
+
+        <button
+          class="qr-btn qr-btn-light"
+          onclick="lookupManual()">
+
+          Find Worker Manually
+
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- WORKER RESULT -->
+
+    <div
+      id="result"
+      class="worker-result">
+    </div>
+
+  </div>
+
+</div>
+
+`);
+
+
+/* =========================================
+   GLOBAL VARIABLES
+========================================= */
+
+let worker = null;
+
+let scanner = null;
+
+let scannerRunning = false;
+
+let lookupBusy = false;
+
+
+/* =========================================
+   START QR CAMERA
+========================================= */
+
+async function startScanner(){
+
+  const status =
+    document.getElementById("cameraStatus");
+
+  try{
+
+    if(scannerRunning){
+
+      status.textContent =
+        "Camera scanner is already running.";
+
+      return;
+
+    }
+
+
+    if(typeof Html5Qrcode === "undefined"){
+
+      status.textContent =
+        "QR scanner library could not load.";
+
+      return;
+
+    }
+
+
+    scanner =
+      new Html5Qrcode("reader");
+
+
+    await scanner.start(
+
+      {
+        facingMode:"environment"
+      },
+
+      {
+        fps:10,
+
+        qrbox:{
+          width:250,
+          height:250
+        },
+
+        aspectRatio:1.0
+
+      },
+
+      onScanSuccess,
+
+      onScanFailure
+
+    );
+
+
+    scannerRunning = true;
+
+    status.textContent =
+      "Camera is ready — scan worker QR code.";
+
+  }catch(e){
+
+    console.error(e);
+
+    status.textContent =
+      "Camera could not start. Please allow camera permission and use HTTPS.";
+
+    alert(
+      "Camera start error: " +
+      e.message
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   STOP QR CAMERA
+========================================= */
+
+async function stopScanner(){
+
+  try{
+
+    if(scanner && scannerRunning){
+
+      await scanner.stop();
+
+      await scanner.clear();
+
+    }
+
+  }catch(e){
+
+    console.error(e);
+
+  }
+
+  scannerRunning = false;
+
+  document.getElementById("cameraStatus").textContent =
+    "Camera stopped.";
+
+}
+
+
+/* =========================================
+   QR SCAN SUCCESS
+========================================= */
+
+async function onScanSuccess(decodedText){
+
+  if(lookupBusy) return;
+
+  lookupBusy = true;
+
+
+  const code =
+    String(decodedText || "").trim();
+
+
+  if(!code){
+
+    lookupBusy = false;
+
+    return;
+
+  }
+
+
+  document.getElementById("code").value =
+    code;
+
+
+  document.getElementById("cameraStatus").textContent =
+    "QR detected — finding worker...";
+
+
+  try{
+
+    await lookupWorker(code);
+
+    /*
+      Stop scanner after successful scan.
+      This prevents duplicate check-ins.
+    */
+
+    await stopScanner();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }finally{
+
+    lookupBusy = false;
+
+  }
+
+}
+
+
+/* =========================================
+   QR SCAN FAILURE
+========================================= */
+
+function onScanFailure(){
+
+  /*
+    Normal during camera scanning.
+    No alert here because this function
+    runs many times per second.
+  */
+
+}
+
+
+/* =========================================
+   MANUAL LOOKUP
+========================================= */
+
+async function lookupManual(){
+
+  const code =
+    document.getElementById("code").value.trim();
+
+
+  if(!code){
+
+    alert("Please enter Worker Code.");
+
+    return;
+
+  }
+
+
+  await lookupWorker(code);
+
+}
+
+
+/* =========================================
+   LOOKUP WORKER
+========================================= */
+
+async function lookupWorker(code){
+
+  try{
+
+    const d =
+      await api(
+        "/api/attendance/lookup",
+        {
+          method:"POST",
+
+          body:JSON.stringify({
+            worker_code:code
+          })
+        }
+      );
+
+
+    worker = d.worker;
+
+
+    renderWorker(
+      d.worker,
+      d.sites || []
+    );
+
+
+  }catch(e){
+
+    document.getElementById("result").innerHTML = `
+
+      <div class="worker-card">
+
+        <div class="error-msg"
+             style="
+               padding:13px;
+               border-radius:10px;
+               text-align:center;
+             ">
+
+          ${esc(e.message)}
+
+        </div>
+
+      </div>
+
+    `;
+
+    throw e;
+
+  }
+
+}
+
+
+/* =========================================
+   RENDER WORKER
+========================================= */
+
+function renderWorker(workerData,sites){
+
+  const result =
+    document.getElementById("result");
+
+
+  /*
+    Create unique company list from sites.
+  */
+
+  const companyMap = new Map();
+
+
+  sites.forEach(site=>{
+
+    const companyName =
+      site.company_name || "Unknown Company";
+
+
+    if(!companyMap.has(companyName)){
+
+      companyMap.set(
+        companyName,
+        []
+      );
+
+    }
+
+
+    companyMap
+      .get(companyName)
+      .push(site);
+
+  });
+
+
+  const companies =
+    Array.from(companyMap.entries());
+
+
+  const companyOptions = companies
+    .map(([name])=>`
+
+      <option value="${esc(name)}">
+
+        ${esc(name)}
+
+      </option>
+
+    `)
+    .join("");
+
+
+  result.innerHTML = `
+
+    <div class="worker-card">
+
+      <div class="worker-top">
+
+        <div class="worker-avatar">
+          AS
+        </div>
+
+        <div>
+
+          <h2 class="worker-name">
+
+            ${esc(
+              workerData.name ||
+              "Worker"
+            )}
+
+          </h2>
+
+          <div class="worker-code">
+
+            Worker Code:
+            ${esc(
+              workerData.worker_code ||
+              "—"
+            )}
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="selection-grid">
+
+
+        <!-- COMPANY -->
+
+        <div class="selection-box">
+
+          <label>
+            Company
+          </label>
+
+          <select
+            id="company"
+            class="qr-select"
+            onchange="filterSites()">
+
+            <option value="">
+              Select Company
+            </option>
+
+            ${companyOptions}
+
+          </select>
+
+        </div>
+
+
+        <!-- SITE -->
+
+        <div class="selection-box">
+
+          <label>
+            Site / Location
+          </label>
+
+          <select
+            id="site"
+            class="qr-select">
+
+            <option value="">
+              Select Site
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <div class="gps-status">
+
+        <span class="gps-dot"></span>
+
+        GPS location will be captured during check-in
+
+      </div>
+
+
+      <div class="attendance-actions">
+
+        <button
+          id="checkInBtn"
+          class="attendance-btn checkin-btn"
+          onclick="checkIn()">
+
+          ✓ Check In
+
+        </button>
+
+
+        <button
+          id="checkOutBtn"
+          class="attendance-btn checkout-btn"
+          onclick="checkOut()">
+
+          ↪ Check Out
+
+        </button>
+
+      </div>
+
+
+      <p id="msg">
+        Select Company and Site before Check In.
+      </p>
+
+
+      <!-- Hidden site data -->
+
+      <script>
+
+        window.currentSites =
+          ${JSON.stringify(sites)
+            .replace(/</g,"\\u003c")
+            .replace(/>/g,"\\u003e")
+            .replace(/&/g,"\\u0026")
+            .replace(/'/g,"\\u0027")
+            .replace(/"/g,"\\u0022")};
+
+      <\/script>
+
+    </div>
+
+  `;
+
+
+  /*
+    Store sites safely outside HTML.
+  */
+
+  window.currentSites = sites;
+
+}
+
+
+/* =========================================
+   FILTER SITE BY COMPANY
+========================================= */
+
+function filterSites(){
+
+  const company =
+    document.getElementById("company").value;
+
+  const siteSelect =
+    document.getElementById("site");
+
+
+  siteSelect.innerHTML = `
+
+    <option value="">
+      Select Site
+    </option>
+
+  `;
+
+
+  if(!company) return;
+
+
+  const sites =
+    window.currentSites || [];
+
+
+  sites
+    .filter(site=>
+      String(site.company_name || "") ===
+      String(company)
+    )
+    .forEach(site=>{
+
+      const option =
+        document.createElement("option");
+
+
+      option.value =
+        site.id;
+
+
+      option.textContent =
+        `${site.name || "Site"} — ${site.company_name || ""}`;
+
+
+      siteSelect.appendChild(option);
+
+    });
+
+}
+
+
+/* =========================================
+   GPS
+========================================= */
+
+async function geo(){
+
+  return new Promise(resolve=>{
+
+    if(!navigator.geolocation){
+
+      resolve({});
+
+      return;
+
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+      position=>{
+
+        resolve({
+
+          latitude:
+            position.coords.latitude,
+
+          longitude:
+            position.coords.longitude
+
+        });
+
+      },
+
+      ()=>{
+
+        /*
+          Attendance can continue if
+          GPS permission is unavailable.
+        */
+
+        resolve({});
+
+      },
+
+      {
+        enableHighAccuracy:true,
+        timeout:8000,
+        maximumAge:0
+      }
+
+    );
+
+  });
+
+}
+
+
+/* =========================================
+   CHECK IN
+========================================= */
+
+async function checkIn(){
+
+  if(!worker){
+
+    alert("Please scan a worker QR first.");
+
+    return;
+
+  }
+
+
+  const company =
+    document.getElementById("company");
+
+
+  const site =
+    document.getElementById("site");
+
+
+  if(!company || !company.value){
+
+    alert("Please select Company.");
+
+    return;
+
+  }
+
+
+  if(!site || !site.value){
+
+    alert("Please select Site / Location.");
+
+    return;
+
+  }
+
+
+  const btn =
+    document.getElementById("checkInBtn");
+
+
+  const msg =
+    document.getElementById("msg");
+
+
+  btn.disabled = true;
+
+  msg.className = "";
+
+  msg.textContent =
+    "Getting GPS location...";
+
+
+  try{
+
+    const g =
+      await geo();
+
+
+    msg.textContent =
+      "Saving check-in...";
+
+
+    const d =
+      await api(
+        "/api/attendance/checkin",
+        {
+          method:"POST",
+
+          body:JSON.stringify({
+
+            worker_code:
+              worker.worker_code,
+
+            site_id:
+              site.value,
+
+            ...g
+
+          })
+        }
+      );
+
+
+    msg.className =
+      "success-msg";
+
+
+    msg.textContent =
+      "✓ Check-in successful at " +
+      (d.time || "current time");
+
+
+  }catch(e){
+
+    msg.className =
+      "error-msg";
+
+    msg.textContent =
+      e.message;
+
+  }finally{
+
+    btn.disabled = false;
+
+  }
+
+}
+
+
+/* =========================================
+   CHECK OUT
+========================================= */
+
+async function checkOut(){
+
+  if(!worker){
+
+    alert("Please scan a worker QR first.");
+
+    return;
+
+  }
+
+
+  const btn =
+    document.getElementById("checkOutBtn");
+
+
+  const msg =
+    document.getElementById("msg");
+
+
+  btn.disabled = true;
+
+  msg.className = "";
+
+  msg.textContent =
+    "Saving check-out...";
+
+
+  try{
+
+    const d =
+      await api(
+        "/api/attendance/checkout",
+        {
+          method:"POST",
+
+          body:JSON.stringify({
+
+            worker_code:
+              worker.worker_code
+
+          })
+        }
+      );
+
+
+    msg.className =
+      "success-msg";
+
+
+    msg.textContent =
+      "✓ Check-out successful at " +
+      (d.time || "current time");
+
+
+  }catch(e){
+
+    msg.className =
+      "error-msg";
+
+    msg.textContent =
+      e.message;
+
+  }finally{
+
+    btn.disabled = false;
+
+  }
+
+}
+
+
+/* =========================================
+   START CAMERA AUTOMATICALLY
+========================================= */
+
+setTimeout(()=>{
+
+  startScanner();
+
+},700);
+
+
+loadMe();
+
+</script>
+
+</body>
+</html>

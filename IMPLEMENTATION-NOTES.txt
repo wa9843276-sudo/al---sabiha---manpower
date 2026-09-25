@@ -1,0 +1,15 @@
+AL SABIHA - implementation notes
+
+Included in this source update:
+- Worker company assignment field and API support.
+- POST /api/workers/:id/transfer to change a worker's current company without changing historical attendance rows.
+- Automatic checkout: open attendance is closed 12 hours after check-in; a timer checks once per minute and dashboard request also triggers it.
+- Manual checkout continues to close an open attendance record before the 12-hour limit.
+- Dashboard API now includes company_summary and absent_today.
+- Old local database was excluded from this ZIP; the app will create a fresh database on first start.
+
+Important limitations:
+- This is not a compiled Android APK. Native APK requires an Android app project and Android build tooling; this ZIP does not include a tested APK.
+- Existing HTML pages have not all been redesigned to display every new API field. Verify in a staging deployment before replacing the live Railway app.
+- Company summary counts are based on workers assigned to each company. Unassigned workers are not included in company cards.
+- Attendance time uses the server's timezone behavior as configured by the host; set Railway timezone/UTC handling deliberately before production use.

@@ -1,7 +1,926 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard | AL SABIHA</title><link rel="stylesheet" href="/style.css"></head><body><script src="/app.js"></script><script>
-shell("dashboard","Dashboard",`<div class="hero"><h1>Welcome Back, Admin</h1><p>AL SABIHA Manpower Attendance System</p><div class="date" id="date">Today</div></div>
-<div class="stats"><div class="stat"><div class="ico">♙</div><b id="workers">0</b><span>Total Workers</span></div><div class="stat"><div class="ico">▦</div><b id="companies">0</b><span>Total Companies</span></div><div class="stat"><div class="ico">⌖</div><b id="sites">0</b><span>Active Sites</span></div><div class="stat"><div class="ico">▣</div><b id="present">0</b><span>Today Attendance</span></div></div>
-<div class="grid2"><div class="card"><h2>Recent Attendance</h2><div class="table-wrap"><table><thead><tr><th>Worker Name</th><th>Company</th><th>Site</th><th>Check In</th><th>Status</th></tr></thead><tbody id="rows"></tbody></table></div></div>
-<div class="card"><h2>Quick Actions</h2><div class="actions"><a class="action" href="/workers.html"><div class="big">♙+</div><b>Add Worker</b></a><a class="action" href="/companies.html"><div class="big">▦</div><b>Add Company</b></a><a class="action" href="/sites.html"><div class="big">⌖+</div><b>Add Site</b></a><a class="action" href="/scan.html"><div class="big">▣</div><b>Scan QR</b></a><a class="action" href="/manual-attendance.html"><div class="big">✓</div><b>Manual Attendance</b></a><a class="action" href="/reports.html"><div class="big">▤</div><b>Reports</b></a></div></div>
-<div class="card" style="background:linear-gradient(150deg,#061a30,#0b3557);color:white;display:flex;align-items:center;justify-content:center;text-align:center"><div><img src="/logo.svg" style="width:210px"><h2 style="color:#f5d477">Right People<br>Right Place<br>Right Time</h2></div></div></div>`);
-(async()=>{try{const d=await api("/api/dashboard");$("#workers").textContent=d.total_workers;$("#companies").textContent=d.total_companies;$("#sites").textContent=d.total_sites;$("#present").textContent=d.present_today;$("#date").textContent="Today • "+d.date;$("#rows").innerHTML=(d.todays_attendance||[]).slice(0,8).map(r=>`<tr><td>${esc(r.worker_name)}</td><td>${esc(r.company_name||"—")}</td><td>${esc(r.site_name||"—")}</td><td>${esc(r.check_in||"—").slice(11,16)}</td><td><span class="badge">${esc(r.check_out?"Checked Out":"In")}</span></td></tr>`).join("")||`<tr><td colspan="5">No attendance today.</td></tr>`}catch(e){alert(e.message)}})();loadMe();</script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard | AL SABIHA</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<script src="/app.js"></script>
+
+<script>
+
+shell("dashboard","Dashboard",`
+
+<style>
+
+.dashboard-page{
+  max-width:1500px;
+  margin:auto;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.dashboard-hero{
+  position:relative;
+  overflow:hidden;
+  margin-bottom:24px;
+  padding:30px 32px;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 85% 20%,rgba(245,212,119,.18),transparent 30%),
+    linear-gradient(135deg,#061a30,#0b3557);
+  color:white;
+  box-shadow:0 12px 35px rgba(6,26,48,.16);
+  border:1px solid rgba(245,212,119,.18);
+}
+
+.dashboard-hero:after{
+  content:"";
+  position:absolute;
+  right:-80px;
+  bottom:-100px;
+  width:260px;
+  height:260px;
+  border:1px solid rgba(245,212,119,.16);
+  border-radius:50%;
+}
+
+.dashboard-hero h1{
+  margin:0 0 7px;
+  font-family:Georgia,serif;
+  font-size:30px;
+  letter-spacing:.2px;
+}
+
+.dashboard-hero p{
+  margin:0;
+  color:#d9e3ef;
+  font-size:14px;
+}
+
+.dashboard-date{
+  margin-top:17px;
+  display:inline-flex;
+  padding:7px 13px;
+  border-radius:30px;
+  background:rgba(245,212,119,.12);
+  border:1px solid rgba(245,212,119,.25);
+  color:#f5d477;
+  font-size:12px;
+  font-weight:700;
+}
+
+/* =========================
+   STAT CARDS
+========================= */
+
+.dashboard-stats{
+  display:grid;
+  grid-template-columns:repeat(6,minmax(0,1fr));
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.dashboard-stat{
+  position:relative;
+  overflow:hidden;
+  min-height:145px;
+  padding:20px;
+  background:white;
+  border:1px solid #e5eaf0;
+  border-radius:18px;
+  box-shadow:0 7px 24px rgba(6,26,48,.07);
+  transition:.2s ease;
+}
+
+.dashboard-stat:hover{
+  transform:translateY(-3px);
+  box-shadow:0 12px 30px rgba(6,26,48,.11);
+  border-color:rgba(197,151,50,.35);
+}
+
+.dashboard-stat:after{
+  content:"";
+  position:absolute;
+  right:-35px;
+  bottom:-55px;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:rgba(245,212,119,.08);
+}
+
+.stat-icon{
+  width:43px;
+  height:43px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:#f8f1dc;
+  color:#b8892c;
+  font-size:21px;
+  font-weight:700;
+  margin-bottom:15px;
+}
+
+.dashboard-stat-number{
+  display:block;
+  color:#061a30;
+  font-size:28px;
+  line-height:1;
+  font-weight:800;
+}
+
+.dashboard-stat-label{
+  display:block;
+  margin-top:8px;
+  color:#687789;
+  font-size:12px;
+  font-weight:600;
+}
+
+/* =========================
+   SECTION CARDS
+========================= */
+
+.dashboard-card{
+  background:white;
+  border:1px solid #e5eaf0;
+  border-radius:18px;
+  padding:22px;
+  box-shadow:0 7px 24px rgba(6,26,48,.06);
+  margin-bottom:20px;
+}
+
+.dashboard-card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.dashboard-card-header h2{
+  margin:0;
+  color:#071a2e;
+  font-family:Georgia,serif;
+  font-size:19px;
+}
+
+.dashboard-card-header p{
+  margin:5px 0 0;
+  color:#788697;
+  font-size:12px;
+}
+
+/* =========================
+   COMPANY CARDS
+========================= */
+
+.company-summary{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:15px;
+}
+
+.company-box{
+  padding:18px;
+  border-radius:16px;
+  background:linear-gradient(145deg,#fff,#f8fafc);
+  border:1px solid #e4e9ef;
+  transition:.2s ease;
+}
+
+.company-box:hover{
+  transform:translateY(-2px);
+  border-color:rgba(197,151,50,.4);
+  box-shadow:0 8px 22px rgba(6,26,48,.08);
+}
+
+.company-name{
+  margin:0 0 16px;
+  color:#9a7123;
+  font-size:15px;
+  font-weight:800;
+}
+
+.company-numbers{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.company-number{
+  text-align:center;
+  padding:10px 5px;
+  border-radius:10px;
+  background:#f7f9fb;
+}
+
+.company-number strong{
+  display:block;
+  color:#061a30;
+  font-size:20px;
+}
+
+.company-number small{
+  display:block;
+  margin-top:4px;
+  color:#788697;
+  font-size:10px;
+  font-weight:600;
+}
+
+.present-number strong{
+  color:#16834b;
+}
+
+.absent-number strong{
+  color:#cf3d3d;
+}
+
+/* =========================
+   LOWER GRID
+========================= */
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:minmax(0,2fr) minmax(300px,1fr);
+  gap:20px;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.dashboard-table-wrap{
+  overflow-x:auto;
+}
+
+.dashboard-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:650px;
+}
+
+.dashboard-table th{
+  padding:12px 10px;
+  text-align:left;
+  color:#738195;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.6px;
+  border-bottom:1px solid #e8edf2;
+}
+
+.dashboard-table td{
+  padding:13px 10px;
+  color:#26384b;
+  font-size:12px;
+  border-bottom:1px solid #edf1f4;
+}
+
+.dashboard-table tbody tr:hover{
+  background:#fafbfc;
+}
+
+.status-badge{
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:20px;
+  background:#edf8f2;
+  color:#16834b;
+  font-size:10px;
+  font-weight:700;
+}
+
+.status-out{
+  background:#f1f3f5;
+  color:#66717d;
+}
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.quick-actions{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:11px;
+}
+
+.quick-action{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-height:62px;
+  padding:12px;
+  border:1px solid #e4e9ef;
+  border-radius:13px;
+  background:#fafbfc;
+  text-decoration:none;
+  color:#172b3f;
+  transition:.2s ease;
+}
+
+.quick-action:hover{
+  background:#fffaf0;
+  border-color:rgba(197,151,50,.45);
+  transform:translateY(-2px);
+}
+
+.quick-icon{
+  width:36px;
+  height:36px;
+  flex:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:10px;
+  background:#f8f1dc;
+  color:#a97921;
+  font-size:17px;
+  font-weight:700;
+}
+
+.quick-action b{
+  font-size:11px;
+}
+
+/* =========================
+   BRAND
+========================= */
+
+.dashboard-brand{
+  padding:32px 20px;
+  text-align:center;
+  border-radius:20px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(245,212,119,.13),transparent 40%),
+    linear-gradient(145deg,#061a30,#0b3557);
+  color:white;
+  border:1px solid rgba(245,212,119,.18);
+  box-shadow:0 10px 30px rgba(6,26,48,.12);
+}
+
+.dashboard-brand img{
+  width:210px;
+  max-width:75%;
+  margin-bottom:12px;
+}
+
+.dashboard-brand h2{
+  margin:5px 0 0;
+  color:#f5d477;
+  font-family:Georgia,serif;
+  font-size:20px;
+  line-height:1.5;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+
+.dashboard-empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:30px 15px;
+  color:#7c8997;
+  font-size:12px;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1200px){
+
+  .dashboard-stats{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+}
+
+@media(max-width:850px){
+
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+}
+
+@media(max-width:600px){
+
+  .dashboard-stats{
+    grid-template-columns:repeat(2,1fr);
+    gap:11px;
+  }
+
+  .dashboard-stat{
+    min-height:125px;
+    padding:15px;
+  }
+
+  .dashboard-stat-number{
+    font-size:24px;
+  }
+
+  .dashboard-hero{
+    padding:23px 20px;
+  }
+
+  .dashboard-hero h1{
+    font-size:24px;
+  }
+
+  .dashboard-card{
+    padding:16px;
+  }
+
+}
+
+</style>
+
+
+<div class="dashboard-page">
+
+  <!-- HERO -->
+
+  <div class="dashboard-hero">
+
+    <h1>Welcome Back, Admin</h1>
+
+    <p>
+      AL SABIHA Manpower Attendance System
+    </p>
+
+    <div class="dashboard-date" id="date">
+      Today
+    </div>
+
+  </div>
+
+
+  <!-- SIX MAIN STATS -->
+
+  <div class="dashboard-stats">
+
+    <div class="dashboard-stat">
+      <div class="stat-icon">♙</div>
+      <span class="dashboard-stat-number" id="workers">0</span>
+      <span class="dashboard-stat-label">Total Workers</span>
+    </div>
+
+    <div class="dashboard-stat">
+      <div class="stat-icon">▦</div>
+      <span class="dashboard-stat-number" id="companies">0</span>
+      <span class="dashboard-stat-label">Total Companies</span>
+    </div>
+
+    <div class="dashboard-stat">
+      <div class="stat-icon">⌖</div>
+      <span class="dashboard-stat-number" id="sites">0</span>
+      <span class="dashboard-stat-label">Active Sites</span>
+    </div>
+
+    <div class="dashboard-stat">
+      <div class="stat-icon">✓</div>
+      <span class="dashboard-stat-number" id="present">0</span>
+      <span class="dashboard-stat-label">Today Present</span>
+    </div>
+
+    <div class="dashboard-stat">
+      <div class="stat-icon">!</div>
+      <span class="dashboard-stat-number" id="absent">0</span>
+      <span class="dashboard-stat-label">Today Absent</span>
+    </div>
+
+    <div class="dashboard-stat">
+      <div class="stat-icon">◉</div>
+      <span class="dashboard-stat-number" id="checkedin">0</span>
+      <span class="dashboard-stat-label">Currently Checked In</span>
+    </div>
+
+  </div>
+
+
+  <!-- COMPANY SUMMARY -->
+
+  <div class="dashboard-card">
+
+    <div class="dashboard-card-header">
+
+      <div>
+        <h2>Company-wise Attendance</h2>
+
+        <p>
+          Today's attendance by company
+        </p>
+      </div>
+
+    </div>
+
+    <div
+      id="companySummary"
+      class="company-summary">
+    </div>
+
+  </div>
+
+
+  <!-- RECENT + QUICK ACTIONS -->
+
+  <div class="dashboard-grid">
+
+
+    <!-- RECENT ATTENDANCE -->
+
+    <div class="dashboard-card">
+
+      <div class="dashboard-card-header">
+
+        <div>
+          <h2>Recent Attendance</h2>
+
+          <p>
+            Latest attendance activity
+          </p>
+        </div>
+
+      </div>
+
+      <div class="dashboard-table-wrap">
+
+        <table class="dashboard-table">
+
+          <thead>
+
+            <tr>
+              <th>Worker</th>
+              <th>Company</th>
+              <th>Site</th>
+              <th>Check In</th>
+              <th>Check Out</th>
+              <th>Status</th>
+            </tr>
+
+          </thead>
+
+          <tbody id="rows"></tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+
+    <!-- QUICK ACTIONS -->
+
+    <div class="dashboard-card">
+
+      <div class="dashboard-card-header">
+
+        <div>
+          <h2>Quick Actions</h2>
+
+          <p>
+            Frequently used actions
+          </p>
+        </div>
+
+      </div>
+
+
+      <div class="quick-actions">
+
+        <a class="quick-action" href="/workers.html">
+          <div class="quick-icon">♙</div>
+          <b>Add Worker</b>
+        </a>
+
+        <a class="quick-action" href="/companies.html">
+          <div class="quick-icon">▦</div>
+          <b>Add Company</b>
+        </a>
+
+        <a class="quick-action" href="/sites.html">
+          <div class="quick-icon">⌖</div>
+          <b>Add Site</b>
+        </a>
+
+        <a class="quick-action" href="/scan.html">
+          <div class="quick-icon">▣</div>
+          <b>Scan QR</b>
+        </a>
+
+        <a class="quick-action" href="/manual-attendance.html">
+          <div class="quick-icon">✓</div>
+          <b>Manual Attendance</b>
+        </a>
+
+        <a class="quick-action" href="/reports.html">
+          <div class="quick-icon">▤</div>
+          <b>Reports</b>
+        </a>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- BRAND -->
+
+  <div class="dashboard-brand">
+
+    <img
+      src="/logo.svg"
+      alt="AL SABIHA">
+
+    <h2>
+      Right People<br>
+      Right Place<br>
+      Right Time
+    </h2>
+
+  </div>
+
+</div>
+
+`);
+
+
+// ========================================
+// DASHBOARD DATA
+// ========================================
+
+(async()=>{
+
+  try{
+
+    const d = await api("/api/dashboard");
+
+
+    // ==============================
+    // MAIN STATS
+    // ==============================
+
+    $("#workers").textContent =
+      d.total_workers || 0;
+
+    $("#companies").textContent =
+      d.total_companies || 0;
+
+    $("#sites").textContent =
+      d.total_sites || 0;
+
+    $("#present").textContent =
+      d.present_today || 0;
+
+    $("#absent").textContent =
+      d.absent_today || 0;
+
+    $("#checkedin").textContent =
+      d.checked_in || 0;
+
+    $("#date").textContent =
+      "Today • " + (d.date || "");
+
+
+    // ==============================
+    // COMPANY SUMMARY
+    // ==============================
+
+    const companyBox =
+      $("#companySummary");
+
+    const companies =
+      d.company_summary || [];
+
+
+    if(!companies.length){
+
+      companyBox.innerHTML = `
+
+        <div class="dashboard-empty">
+
+          No companies available yet.
+
+          <br>
+
+          Add companies and assign workers
+          to see company-wise attendance.
+
+        </div>
+
+      `;
+
+    }else{
+
+      companyBox.innerHTML =
+        companies.map(c=>{
+
+          const total =
+            Number(c.total_workers || 0);
+
+          const present =
+            Number(c.present || 0);
+
+          const absent =
+            Math.max(0,total-present);
+
+
+          return `
+
+          <div class="company-box">
+
+            <h3 class="company-name">
+
+              ${esc(
+                c.company_name ||
+                "Unknown Company"
+              )}
+
+            </h3>
+
+
+            <div class="company-numbers">
+
+              <div class="company-number">
+
+                <strong>
+                  ${total}
+                </strong>
+
+                <small>
+                  Workers
+                </small>
+
+              </div>
+
+
+              <div class="company-number present-number">
+
+                <strong>
+                  ${present}
+                </strong>
+
+                <small>
+                  Present
+                </small>
+
+              </div>
+
+
+              <div class="company-number absent-number">
+
+                <strong>
+                  ${absent}
+                </strong>
+
+                <small>
+                  Absent
+                </small>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          `;
+
+        }).join("");
+
+    }
+
+
+    // ==============================
+    // RECENT ATTENDANCE
+    // ==============================
+
+    const rows =
+      d.todays_attendance || [];
+
+
+    $("#rows").innerHTML =
+
+      rows.slice(0,8).map(r=>{
+
+        const checkedOut =
+          !!r.check_out;
+
+
+        return `
+
+        <tr>
+
+          <td>
+            ${esc(
+              r.worker_name || "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              r.company_name || "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              r.site_name || "—"
+            )}
+          </td>
+
+          <td>
+            ${
+              r.check_in
+              ? esc(r.check_in).slice(11,16)
+              : "—"
+            }
+          </td>
+
+          <td>
+            ${
+              checkedOut
+              ? esc(r.check_out).slice(11,16)
+              : "—"
+            }
+          </td>
+
+          <td>
+
+            <span class="
+              status-badge
+              ${checkedOut ? "status-out" : ""}
+            ">
+
+              ${
+                checkedOut
+                ? "Checked Out"
+                : "Checked In"
+              }
+
+            </span>
+
+          </td>
+
+        </tr>
+
+        `;
+
+      }).join("")
+
+      ||
+
+      `
+
+      <tr>
+
+        <td
+          colspan="6"
+          style="
+            text-align:center;
+            padding:30px;
+            color:#7c8997;
+          ">
+
+          No attendance today.
+
+        </td>
+
+      </tr>
+
+      `;
+
+
+  }catch(e){
+
+    console.error(e);
+
+    alert(
+      "Dashboard data load error: " +
+      e.message
+    );
+
+  }
+
+})();
+
+
+loadMe();
+
+</script>
+
+</body>
+</html>
