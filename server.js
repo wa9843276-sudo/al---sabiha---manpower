@@ -1337,32 +1337,60 @@ app.delete("/api/workers/:id", admin, (req, res) => {
 
 });
 
-    try {
+    /* =========================================================
+   ARCHIVE COMPANY
+   ========================================================= */
 
-      db.prepare(`
-        UPDATE companies
-        SET status='Inactive'
-        WHERE id=?
-      `).run(
-        Number(req.params.id)
-      );
+app.delete("/api/companies/:id", admin, (req, res) => {
 
-      res.json({
-        success: true
+  try {
+
+    const companyId = Number(req.params.id);
+
+    if (!companyId) {
+      return res.status(400).json({
+        error: "Invalid company ID."
       });
-
-    } catch (e) {
-
-      res.status(400).json({
-        error: e.message
-      });
-
     }
 
+    const company = db.prepare(`
+      SELECT id, name
+      FROM companies
+      WHERE id=?
+    `).get(companyId);
+
+    if (!company) {
+      return res.status(404).json({
+        error: "Company not found."
+      });
+    }
+
+    db.prepare(`
+      UPDATE companies
+      SET status='Inactive'
+      WHERE id=?
+    `).run(companyId);
+
+    res.json({
+      success: true,
+      message: "Company archived successfully.",
+      company: {
+        id: company.id,
+        name: company.name
+      }
+    });
+
+  } catch (error) {
+
+    console.error("Archive company error:", error);
+
+    res.status(500).json({
+      error: "Unable to archive company."
+    });
+
   }
-);
 
-
+});
 /* =========================================================
    SITES / LOCATION API
    ========================================================= */
