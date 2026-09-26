@@ -1,3 +1,548 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Manual Attendance | AL SABIHA</title><link rel="stylesheet" href="/style.css"></head><body><script src="/app.js"></script><script>
-shell("manual","Manual Attendance",`<div class="panel"><form id="f"><div class="form-grid"><div class="field"><label>Worker</label><select id="worker"></select></div><div class="field"><label>Company</label><select id="company"></select></div><div class="field"><label>Site</label><select id="site"></select></div><div class="field"><label>Date</label><input id="date" type="date"></div><div class="field"><label>Check In</label><input id="in" type="datetime-local"></div><div class="field"><label>Check Out</label><input id="out" type="datetime-local"></div><div class="field"><label>Remarks</label><input id="remarks"></div></div><br><button class="btn gold">Save Attendance</button></form></div>`);
-async function load(){const [w,c,s]=await Promise.all([api("/api/workers"),api("/api/companies"),api("/api/sites")]);$("#worker").innerHTML=w.filter(x=>x.status==="Active").map(x=>`<option value="${x.id}">${esc(x.worker_code)} — ${esc(x.name)}</option>`).join("");$("#company").innerHTML='<option value="">—</option>'+c.filter(x=>x.status==="Active").map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");$("#site").innerHTML=s.filter(x=>x.status==="Active").map(x=>`<option value="${x.id}">${esc(x.name)}</option>`).join("");$("#date").value=new Date().toISOString().slice(0,10)}$("#f").onsubmit=async e=>{e.preventDefault();const b={worker_id:$("#worker").value,company_id:$("#company").value,site_id:$("#site").value,attendance_date:$("#date").value,check_in:$("#in").value.replace("T"," "),check_out:$("#out").value.replace("T"," "),remarks:$("#remarks").value};await api("/api/attendance/manual",{method:"POST",body:JSON.stringify(b)});alert("Attendance saved");e.target.reset();load()};load();loadMe();</script></body></html>
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manual Attendance | AL SABIHA</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+
+<script src="/app.js"></script>
+
+<script>
+
+shell(
+  "manual",
+  "Manual Attendance",
+  `
+  <div class="panel">
+
+    <form id="f">
+
+      <div class="form-grid">
+
+        <div class="field">
+          <label>Worker</label>
+          <select id="worker" required>
+            <option value="">Select Worker</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Company</label>
+          <select id="company" required>
+            <option value="">Select Company</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Site</label>
+          <select id="site" required>
+            <option value="">Select Site</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label>Date</label>
+          <input id="date" type="date" required>
+        </div>
+
+        <div class="field">
+          <label>Check In</label>
+          <input id="in" type="datetime-local" required>
+        </div>
+
+        <div class="field">
+          <label>Check Out</label>
+          <input id="out" type="datetime-local">
+        </div>
+
+        <div class="field">
+          <label>Remarks</label>
+          <input id="remarks" placeholder="Optional">
+        </div>
+
+      </div>
+
+      <br>
+
+      <div id="statusBox" style="
+        display:none;
+        margin-bottom:15px;
+        padding:12px;
+        border-radius:8px;
+        font-weight:600;
+      "></div>
+
+      <button
+        id="saveBtn"
+        type="submit"
+        class="btn gold"
+      >
+        Save Attendance
+      </button>
+
+    </form>
+
+  </div>
+  `
+);
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function showStatus(message, type="error"){
+
+  const box = $("#statusBox");
+
+  box.style.display = "block";
+  box.textContent = message;
+
+  if(type === "success"){
+    box.style.background = "#e7f7ed";
+    box.style.color = "#176b36";
+  }else{
+    box.style.background = "#fdeaea";
+    box.style.color = "#a21d1d";
+  }
+
+}
+
+
+/* =========================
+   LOAD DATA
+========================= */
+
+async function load(){
+
+  try{
+
+    const [
+      workers,
+      companies,
+      sites
+    ] = await Promise.all([
+      api("/api/workers"),
+      api("/api/companies"),
+      api("/api/sites")
+    ]);
+
+
+    /* WORKERS */
+
+    $("#worker").innerHTML =
+      '<option value="">Select Worker</option>' +
+      workers
+        .filter(x => x.status === "Active")
+        .map(x =>
+          `<option value="${x.id}">
+            ${esc(x.worker_code)} — ${esc(x.name)}
+          </option>`
+        )
+        .join("");
+
+
+    /* COMPANIES */
+
+    $("#company").innerHTML =
+      '<option value="">Select Company</option>' +
+      companies
+        .filter(x => x.status === "Active")
+        .map(x =>
+          `<option value="${x.id}">
+            ${esc(x.name)}
+          </option>`
+        )
+        .join("");
+
+
+    /* SITES */
+
+    $("#site").innerHTML =
+      '<option value="">Select Site</option>' +
+      sites
+        .filter(x => x.status === "Active")
+        .map(x =>
+          `<option value="${x.id}">
+            ${esc(x.name)}
+          </option>`
+        )
+        .join("");
+
+
+    /* CURRENT DATE */
+
+    const now = new Date();
+
+    const localDate =
+      new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+      )
+      .toISOString()
+      .slice(0,10);
+
+    $("#date").value = localDate;
+
+
+    /* CURRENT TIME */
+
+    const localDateTime =
+      new Date(
+        now.getTime() - now.getTimezoneOffset() * 60000
+      )
+      .toISOString()
+      .slice(0,16);
+
+    $("#in").value = localDateTime;
+
+
+    /* RESET CHECKOUT */
+
+    $("#out").value = "";
+
+  }catch(error){
+
+    console.error("Manual Attendance Load Error:",error);
+
+    showStatus(
+      "Unable to load workers, companies or sites."
+    );
+
+  }
+
+}
+
+
+/* =========================
+   CHECK WORKER STATUS
+========================= */
+
+async function checkWorkerStatus(){
+
+  const workerId = $("#worker").value;
+
+  if(!workerId){
+
+    $("#saveBtn").disabled = false;
+    $("#statusBox").style.display = "none";
+
+    return;
+
+  }
+
+  try{
+
+    const workers = await api("/api/workers");
+
+    const worker =
+      workers.find(
+        x => Number(x.id) === Number(workerId)
+      );
+
+    if(!worker){
+      return;
+    }
+
+    /*
+      Use worker code to check current
+      open attendance from backend.
+    */
+
+    const result = await api(
+      "/api/attendance/lookup?worker_code=" +
+      encodeURIComponent(worker.worker_code)
+    );
+
+
+    if(result.currently_checked_in){
+
+      const open = result.open_attendance;
+
+      let message =
+        "⚠️ " +
+        worker.name +
+        " is already checked in. Check out first.";
+
+      if(open){
+
+        if(open.company_name){
+          message +=
+            " Company: " +
+            open.company_name + ".";
+        }
+
+        if(open.site_name){
+          message +=
+            " Site: " +
+            open.site_name + ".";
+        }
+
+      }
+
+      showStatus(message, "error");
+
+      $("#saveBtn").disabled = true;
+
+    }else{
+
+      $("#saveBtn").disabled = false;
+
+      $("#statusBox").style.display = "none";
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Worker attendance status error:",
+      error
+    );
+
+    /*
+      Do not block the form only because
+      status lookup failed.
+
+      Backend protection remains active.
+    */
+
+    $("#saveBtn").disabled = false;
+
+  }
+
+}
+
+
+/* =========================
+   WORKER CHANGE
+========================= */
+
+$("#worker").addEventListener(
+  "change",
+  checkWorkerStatus
+);
+
+
+/* =========================
+   FORM SUBMIT
+========================= */
+
+$("#f").onsubmit = async function(e){
+
+  e.preventDefault();
+
+
+  const workerId =
+    $("#worker").value;
+
+  const companyId =
+    $("#company").value;
+
+  const siteId =
+    $("#site").value;
+
+  const date =
+    $("#date").value;
+
+  const checkIn =
+    $("#in").value
+      ? $("#in").value.replace("T"," ")
+      : "";
+
+  const checkOut =
+    $("#out").value
+      ? $("#out").value.replace("T"," ")
+      : "";
+
+  const remarks =
+    $("#remarks").value.trim();
+
+
+  /* BASIC VALIDATION */
+
+  if(!workerId){
+
+    alert("Please select a worker.");
+    return;
+
+  }
+
+  if(!companyId){
+
+    alert("Please select a company.");
+    return;
+
+  }
+
+  if(!siteId){
+
+    alert("Please select a site.");
+    return;
+
+  }
+
+  if(!date){
+
+    alert("Please select date.");
+    return;
+
+  }
+
+  if(!checkIn){
+
+    alert("Please select Check In time.");
+    return;
+
+  }
+
+
+  /*
+    IMPORTANT:
+
+    If Check Out is EMPTY,
+    this is an OPEN CHECK-IN.
+
+    Backend will reject it if worker
+    already has an open attendance.
+  */
+
+  const b = {
+
+    worker_id: workerId,
+
+    company_id: companyId,
+
+    site_id: siteId,
+
+    attendance_date: date,
+
+    check_in: checkIn,
+
+    check_out: checkOut,
+
+    remarks: remarks
+
+  };
+
+
+  const saveBtn =
+    $("#saveBtn");
+
+  saveBtn.disabled = true;
+
+  saveBtn.textContent =
+    "Saving...";
+
+
+  try{
+
+    const result =
+      await api(
+        "/api/attendance/manual",
+        {
+          method:"POST",
+          body:JSON.stringify(b)
+        }
+      );
+
+
+    if(result && result.success){
+
+      showStatus(
+        "Attendance saved successfully.",
+        "success"
+      );
+
+      alert(
+        "Attendance saved successfully."
+      );
+
+      /*
+        Reset form after successful save
+      */
+
+      $("#f").reset();
+
+      await load();
+
+    }else{
+
+      throw new Error(
+        result?.error ||
+        "Attendance could not be saved."
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Manual Attendance Save Error:",
+      error
+    );
+
+
+    /*
+      Most important duplicate protection.
+    */
+
+    const message =
+      error?.message ||
+      "Attendance could not be saved.";
+
+
+    if(
+      message.toLowerCase().includes(
+        "already checked in"
+      )
+    ){
+
+      showStatus(
+        "❌ Worker is already checked in. Check out first.",
+        "error"
+      );
+
+      alert(
+        "Worker is already checked in. Check out first."
+      );
+
+    }else{
+
+      showStatus(
+        "❌ " + message,
+        "error"
+      );
+
+      alert(
+        message
+      );
+
+    }
+
+  }finally{
+
+    saveBtn.disabled = false;
+
+    saveBtn.textContent =
+      "Save Attendance";
+
+  }
+
+};
+
+
+/* =========================
+   START
+========================= */
+
+load();
+
+loadMe();
+
+</script>
+
+</body>
+</html>

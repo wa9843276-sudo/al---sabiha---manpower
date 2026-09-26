@@ -1,10 +1,21 @@
 <!doctype html>
 <html>
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
 <title>Dashboard | AL SABIHA</title>
-<link rel="stylesheet" href="/style.css">
+
+<link
+  rel="stylesheet"
+  href="/style.css"
+>
+
 </head>
 
 <body>
@@ -17,431 +28,996 @@ shell("dashboard","Dashboard",`
 
 <style>
 
+/* =========================================================
+   AL SABIHA LUXURY DUBAI DASHBOARD
+   CLEAR REAL IMAGE + GLASSMORPHISM
+   ========================================================= */
+
+
+/* =========================================================
+   DASHBOARD BACKGROUND
+   ========================================================= */
+
 .dashboard-page{
-  max-width:1500px;
-  margin:auto;
+
+  position:relative !important;
+
+  width:100% !important;
+
+  max-width:none !important;
+
+  min-height:
+    calc(100vh - 70px) !important;
+
+  margin:0 !important;
+
+  padding:26px !important;
+
+  overflow:hidden !important;
+
+  background:
+    transparent !important;
+
 }
 
-/* =========================
+
+/* =========================================================
+   REAL DUBAI IMAGE
+   VERY LIGHT OVERLAY
+   ========================================================= */
+
+.dashboard-page::before{
+
+  content:"";
+
+  position:absolute !important;
+
+  inset:0 !important;
+
+  z-index:0 !important;
+
+  background-image:
+    linear-gradient(
+      rgba(3,16,29,.04),
+      rgba(3,16,29,.10)
+    ),
+    url("/dashboard-dubai.jpg?v=1001") !important;
+
+  background-size:cover !important;
+
+  background-position:center center !important;
+
+  background-repeat:no-repeat !important;
+
+}
+
+
+/* =========================================================
+   SLIGHT GLASS/DARK EFFECT AT BOTTOM
+   ========================================================= */
+
+.dashboard-page::after{
+
+  content:"";
+
+  position:absolute !important;
+
+  left:0 !important;
+
+  right:0 !important;
+
+  bottom:0 !important;
+
+  height:180px !important;
+
+  z-index:0 !important;
+
+  pointer-events:none !important;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(3,16,29,.22),
+      transparent
+    ) !important;
+
+}
+
+
+/* =========================================================
+   ALL DASHBOARD CONTENT ABOVE IMAGE
+   ========================================================= */
+
+.dashboard-page > *{
+
+  position:relative !important;
+
+  z-index:2 !important;
+
+}
+
+
+/* =========================================================
    HERO
-========================= */
+   ========================================================= */
 
 .dashboard-hero{
+
   position:relative;
+
   overflow:hidden;
+
   margin-bottom:24px;
+
   padding:30px 32px;
+
   border-radius:20px;
+
   background:
-    radial-gradient(circle at 85% 20%,rgba(245,212,119,.18),transparent 30%),
-    linear-gradient(135deg,#061a30,#0b3557);
+    linear-gradient(
+      135deg,
+      rgba(3,18,32,.62),
+      rgba(8,48,77,.38)
+    );
+
   color:white;
-  box-shadow:0 12px 35px rgba(6,26,48,.16);
-  border:1px solid rgba(245,212,119,.18);
+
+  box-shadow:
+    0 15px 40px
+    rgba(0,0,0,.18);
+
+  border:
+    1px solid
+    rgba(245,212,119,.42);
+
+  backdrop-filter:
+    blur(7px);
+
+  -webkit-backdrop-filter:
+    blur(7px);
+
 }
+
 
 .dashboard-hero:after{
+
   content:"";
+
   position:absolute;
+
   right:-80px;
+
   bottom:-100px;
+
   width:260px;
+
   height:260px;
-  border:1px solid rgba(245,212,119,.16);
+
+  border:
+    1px solid
+    rgba(245,212,119,.24);
+
   border-radius:50%;
+
 }
+
 
 .dashboard-hero h1{
-  margin:0 0 7px;
-  font-family:Georgia,serif;
+
+  margin:
+    0 0 7px;
+
+  font-family:
+    Georgia,serif;
+
   font-size:30px;
+
   letter-spacing:.2px;
+
 }
+
 
 .dashboard-hero p{
+
   margin:0;
-  color:#d9e3ef;
+
+  color:#eef5fc;
+
   font-size:14px;
+
 }
+
 
 .dashboard-date{
+
   margin-top:17px;
+
   display:inline-flex;
+
   padding:7px 13px;
+
   border-radius:30px;
-  background:rgba(245,212,119,.12);
-  border:1px solid rgba(245,212,119,.25);
+
+  background:
+    rgba(245,212,119,.18);
+
+  border:
+    1px solid
+    rgba(245,212,119,.38);
+
   color:#f5d477;
+
   font-size:12px;
+
   font-weight:700;
+
 }
 
-/* =========================
+
+/* =========================================================
    STAT CARDS
-========================= */
+   ========================================================= */
 
 .dashboard-stats{
+
   display:grid;
-  grid-template-columns:repeat(6,minmax(0,1fr));
+
+  grid-template-columns:
+    repeat(6,minmax(0,1fr));
+
   gap:16px;
+
   margin-bottom:24px;
+
 }
+
 
 .dashboard-stat{
+
   position:relative;
+
   overflow:hidden;
+
   min-height:145px;
+
   padding:20px;
-  background:white;
-  border:1px solid #e5eaf0;
+
+  background:
+    rgba(255,255,255,.48);
+
+  border:
+    1px solid
+    rgba(255,255,255,.70);
+
   border-radius:18px;
-  box-shadow:0 7px 24px rgba(6,26,48,.07);
-  transition:.2s ease;
+
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.16);
+
+  backdrop-filter:
+    blur(7px);
+
+  -webkit-backdrop-filter:
+    blur(7px);
+
+  transition:
+    .2s ease;
+
 }
+
 
 .dashboard-stat:hover{
-  transform:translateY(-3px);
-  box-shadow:0 12px 30px rgba(6,26,48,.11);
-  border-color:rgba(197,151,50,.35);
+
+  transform:
+    translateY(-3px);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0,0,0,.23);
+
+  border-color:
+    rgba(197,151,50,.55);
+
 }
+
 
 .dashboard-stat:after{
+
   content:"";
+
   position:absolute;
+
   right:-35px;
+
   bottom:-55px;
+
   width:120px;
+
   height:120px;
+
   border-radius:50%;
-  background:rgba(245,212,119,.08);
+
+  background:
+    rgba(245,212,119,.18);
+
 }
+
 
 .stat-icon{
+
   width:43px;
+
   height:43px;
+
   display:flex;
+
   align-items:center;
+
   justify-content:center;
+
   border-radius:12px;
-  background:#f8f1dc;
-  color:#b8892c;
+
+  background:
+    rgba(248,241,220,.82);
+
+  color:#9d7425;
+
   font-size:21px;
+
   font-weight:700;
+
   margin-bottom:15px;
+
 }
+
 
 .dashboard-stat-number{
+
   display:block;
+
   color:#061a30;
+
   font-size:28px;
+
   line-height:1;
+
   font-weight:800;
+
 }
+
 
 .dashboard-stat-label{
+
   display:block;
+
   margin-top:8px;
-  color:#687789;
+
+  color:#40566b;
+
   font-size:12px;
-  font-weight:600;
+
+  font-weight:700;
+
 }
 
-/* =========================
+
+/* =========================================================
    SECTION CARDS
-========================= */
+   ========================================================= */
 
 .dashboard-card{
-  background:white;
-  border:1px solid #e5eaf0;
+
+  background:
+    rgba(255,255,255,.50);
+
+  border:
+    1px solid
+    rgba(255,255,255,.72);
+
   border-radius:18px;
+
   padding:22px;
-  box-shadow:0 7px 24px rgba(6,26,48,.06);
+
+  box-shadow:
+    0 10px 30px
+    rgba(0,0,0,.16);
+
   margin-bottom:20px;
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
+
 }
+
 
 .dashboard-card-header{
+
   display:flex;
+
   align-items:center;
+
   justify-content:space-between;
+
   gap:15px;
+
   margin-bottom:18px;
+
 }
+
 
 .dashboard-card-header h2{
+
   margin:0;
-  color:#071a2e;
-  font-family:Georgia,serif;
+
+  color:#061a30;
+
+  font-family:
+    Georgia,serif;
+
   font-size:19px;
+
 }
+
 
 .dashboard-card-header p{
+
   margin:5px 0 0;
-  color:#788697;
+
+  color:#40566b;
+
   font-size:12px;
+
+  font-weight:600;
+
 }
 
-/* =========================
-   COMPANY CARDS
-========================= */
+
+/* =========================================================
+   COMPANY SUMMARY
+   ========================================================= */
 
 .company-summary{
+
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+
+  grid-template-columns:
+    repeat(auto-fit,minmax(240px,1fr));
+
   gap:15px;
+
 }
+
 
 .company-box{
+
   padding:18px;
+
   border-radius:16px;
-  background:linear-gradient(145deg,#fff,#f8fafc);
-  border:1px solid #e4e9ef;
-  transition:.2s ease;
+
+  background:
+    rgba(255,255,255,.40);
+
+  border:
+    1px solid
+    rgba(255,255,255,.70);
+
+  transition:
+    .2s ease;
+
+  backdrop-filter:
+    blur(6px);
+
+  -webkit-backdrop-filter:
+    blur(6px);
+
 }
+
 
 .company-box:hover{
-  transform:translateY(-2px);
-  border-color:rgba(197,151,50,.4);
-  box-shadow:0 8px 22px rgba(6,26,48,.08);
+
+  transform:
+    translateY(-2px);
+
+  border-color:
+    rgba(197,151,50,.55);
+
+  box-shadow:
+    0 8px 22px
+    rgba(6,26,48,.12);
+
 }
+
 
 .company-name{
-  margin:0 0 16px;
-  color:#9a7123;
+
+  margin:
+    0 0 16px;
+
+  color:#815d18;
+
   font-size:15px;
+
   font-weight:800;
+
 }
+
 
 .company-numbers{
+
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+
+  grid-template-columns:
+    repeat(3,1fr);
+
   gap:8px;
+
 }
+
 
 .company-number{
+
   text-align:center;
+
   padding:10px 5px;
+
   border-radius:10px;
-  background:#f7f9fb;
+
+  background:
+    rgba(255,255,255,.52);
+
 }
+
 
 .company-number strong{
+
   display:block;
+
   color:#061a30;
+
   font-size:20px;
+
 }
+
 
 .company-number small{
+
   display:block;
+
   margin-top:4px;
-  color:#788697;
+
+  color:#40566b;
+
   font-size:10px;
-  font-weight:600;
+
+  font-weight:700;
+
 }
+
 
 .present-number strong{
+
   color:#16834b;
+
 }
+
 
 .absent-number strong{
+
   color:#cf3d3d;
+
 }
 
-/* =========================
+
+/* =========================================================
    LOWER GRID
-========================= */
+   ========================================================= */
 
 .dashboard-grid{
+
   display:grid;
-  grid-template-columns:minmax(0,2fr) minmax(300px,1fr);
+
+  grid-template-columns:
+    minmax(0,2fr)
+    minmax(300px,1fr);
+
   gap:20px;
+
 }
 
-/* =========================
+
+/* =========================================================
    TABLE
-========================= */
+   ========================================================= */
 
 .dashboard-table-wrap{
+
   overflow-x:auto;
+
 }
+
 
 .dashboard-table{
+
   width:100%;
+
   border-collapse:collapse;
+
   min-width:650px;
+
 }
+
 
 .dashboard-table th{
-  padding:12px 10px;
+
+  padding:
+    12px 10px;
+
   text-align:left;
-  color:#738195;
+
+  color:#42576a;
+
   font-size:10px;
+
   text-transform:uppercase;
+
   letter-spacing:.6px;
-  border-bottom:1px solid #e8edf2;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.55);
+
 }
+
 
 .dashboard-table td{
-  padding:13px 10px;
-  color:#26384b;
+
+  padding:
+    13px 10px;
+
+  color:#152d43;
+
   font-size:12px;
-  border-bottom:1px solid #edf1f4;
+
+  font-weight:600;
+
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.45);
+
 }
+
 
 .dashboard-table tbody tr:hover{
-  background:#fafbfc;
+
+  background:
+    rgba(255,255,255,.35);
+
 }
+
 
 .status-badge{
+
   display:inline-flex;
-  padding:5px 9px;
+
+  padding:
+    5px 9px;
+
   border-radius:20px;
-  background:#edf8f2;
+
+  background:
+    rgba(237,248,242,.85);
+
   color:#16834b;
+
   font-size:10px;
+
   font-weight:700;
+
 }
+
 
 .status-out{
-  background:#f1f3f5;
+
+  background:
+    rgba(241,243,245,.85);
+
   color:#66717d;
+
 }
 
-/* =========================
+
+/* =========================================================
    QUICK ACTIONS
-========================= */
+   ========================================================= */
 
 .quick-actions{
+
   display:grid;
-  grid-template-columns:repeat(2,1fr);
+
+  grid-template-columns:
+    repeat(2,1fr);
+
   gap:11px;
+
 }
+
 
 .quick-action{
+
   display:flex;
+
   align-items:center;
+
   gap:10px;
+
   min-height:62px;
+
   padding:12px;
-  border:1px solid #e4e9ef;
+
+  border:
+    1px solid
+    rgba(255,255,255,.70);
+
   border-radius:13px;
-  background:#fafbfc;
+
+  background:
+    rgba(255,255,255,.42);
+
   text-decoration:none;
+
   color:#172b3f;
-  transition:.2s ease;
+
+  transition:
+    .2s ease;
+
+  backdrop-filter:
+    blur(6px);
+
+  -webkit-backdrop-filter:
+    blur(6px);
+
 }
+
 
 .quick-action:hover{
-  background:#fffaf0;
-  border-color:rgba(197,151,50,.45);
-  transform:translateY(-2px);
+
+  background:
+    rgba(255,255,255,.68);
+
+  border-color:
+    rgba(197,151,50,.55);
+
+  transform:
+    translateY(-2px);
+
 }
+
 
 .quick-icon{
+
   width:36px;
+
   height:36px;
+
   flex:none;
+
   display:flex;
+
   align-items:center;
+
   justify-content:center;
+
   border-radius:10px;
-  background:#f8f1dc;
+
+  background:
+    rgba(248,241,220,.90);
+
   color:#a97921;
+
   font-size:17px;
+
   font-weight:700;
+
 }
+
 
 .quick-action b{
+
   font-size:11px;
+
 }
 
-/* =========================
+
+/* =========================================================
    BRAND
-========================= */
+   ========================================================= */
 
 .dashboard-brand{
-  padding:32px 20px;
+
+  padding:
+    32px 20px;
+
   text-align:center;
+
   border-radius:20px;
+
   background:
-    radial-gradient(circle at 50% 0%,rgba(245,212,119,.13),transparent 40%),
-    linear-gradient(145deg,#061a30,#0b3557);
+    linear-gradient(
+      145deg,
+      rgba(6,26,48,.68),
+      rgba(11,53,87,.48)
+    );
+
   color:white;
-  border:1px solid rgba(245,212,119,.18);
-  box-shadow:0 10px 30px rgba(6,26,48,.12);
+
+  border:
+    1px solid
+    rgba(245,212,119,.36);
+
+  box-shadow:
+    0 12px 35px
+    rgba(0,0,0,.20);
+
+  backdrop-filter:
+    blur(7px);
+
+  -webkit-backdrop-filter:
+    blur(7px);
+
 }
+
 
 .dashboard-brand img{
+
   width:210px;
+
   max-width:75%;
+
   margin-bottom:12px;
+
 }
+
 
 .dashboard-brand h2{
-  margin:5px 0 0;
+
+  margin:
+    5px 0 0;
+
   color:#f5d477;
-  font-family:Georgia,serif;
+
+  font-family:
+    Georgia,serif;
+
   font-size:20px;
+
   line-height:1.5;
+
 }
 
-/* =========================
+
+/* =========================================================
    EMPTY STATE
-========================= */
+   ========================================================= */
 
 .dashboard-empty{
+
   grid-column:1/-1;
+
   text-align:center;
-  padding:30px 15px;
-  color:#7c8997;
+
+  padding:
+    30px 15px;
+
+  color:#40566b;
+
   font-size:12px;
+
 }
 
-/* =========================
+
+/* =========================================================
    RESPONSIVE
-========================= */
+   ========================================================= */
 
 @media(max-width:1200px){
 
   .dashboard-stats{
-    grid-template-columns:repeat(3,1fr);
+
+    grid-template-columns:
+      repeat(3,1fr);
+
   }
 
 }
+
 
 @media(max-width:850px){
 
   .dashboard-grid{
+
     grid-template-columns:1fr;
+
   }
 
 }
 
+
 @media(max-width:600px){
 
+  .dashboard-page{
+
+    padding:16px !important;
+
+  }
+
+  .dashboard-page::before{
+
+    background-position:
+      center top !important;
+
+  }
+
   .dashboard-stats{
-    grid-template-columns:repeat(2,1fr);
+
+    grid-template-columns:
+      repeat(2,1fr);
+
     gap:11px;
+
   }
 
   .dashboard-stat{
+
     min-height:125px;
+
     padding:15px;
+
   }
 
   .dashboard-stat-number{
+
     font-size:24px;
+
   }
 
   .dashboard-hero{
-    padding:23px 20px;
+
+    padding:
+      23px 20px;
+
   }
 
   .dashboard-hero h1{
+
     font-size:24px;
+
   }
 
   .dashboard-card{
+
     padding:16px;
+
+  }
+
+}
+
+
+@media(max-width:430px){
+
+  .dashboard-stats{
+
+    grid-template-columns:1fr;
+
+  }
+
+  .quick-actions{
+
+    grid-template-columns:1fr;
+
   }
 
 }
@@ -451,91 +1027,221 @@ shell("dashboard","Dashboard",`
 
 <div class="dashboard-page">
 
-  <!-- HERO -->
+
+  <!-- =====================================================
+       HERO
+  ====================================================== -->
 
   <div class="dashboard-hero">
 
-    <h1>Welcome Back, Admin</h1>
+    <h1>
+      Welcome Back, Admin
+    </h1>
 
     <p>
       AL SABIHA Manpower Attendance System
     </p>
 
-    <div class="dashboard-date" id="date">
+    <div
+      class="dashboard-date"
+      id="date">
+
       Today
+
     </div>
 
   </div>
 
 
-  <!-- SIX MAIN STATS -->
+  <!-- =====================================================
+       SIX MAIN STATS
+  ====================================================== -->
 
   <div class="dashboard-stats">
 
-    <div class="dashboard-stat">
-      <div class="stat-icon">♙</div>
-      <span class="dashboard-stat-number" id="workers">0</span>
-      <span class="dashboard-stat-label">Total Workers</span>
-    </div>
 
     <div class="dashboard-stat">
-      <div class="stat-icon">▦</div>
-      <span class="dashboard-stat-number" id="companies">0</span>
-      <span class="dashboard-stat-label">Total Companies</span>
+
+      <div class="stat-icon">
+        ♙
+      </div>
+
+      <span
+        class="dashboard-stat-number"
+        id="workers">
+
+        0
+
+      </span>
+
+      <span
+        class="dashboard-stat-label">
+
+        Total Workers
+
+      </span>
+
     </div>
 
-    <div class="dashboard-stat">
-      <div class="stat-icon">⌖</div>
-      <span class="dashboard-stat-number" id="sites">0</span>
-      <span class="dashboard-stat-label">Active Sites</span>
-    </div>
 
     <div class="dashboard-stat">
-      <div class="stat-icon">✓</div>
-      <span class="dashboard-stat-number" id="present">0</span>
-      <span class="dashboard-stat-label">Today Present</span>
+
+      <div class="stat-icon">
+        ▦
+      </div>
+
+      <span
+        class="dashboard-stat-number"
+        id="companies">
+
+        0
+
+      </span>
+
+      <span
+        class="dashboard-stat-label">
+
+        Total Companies
+
+      </span>
+
     </div>
 
-    <div class="dashboard-stat">
-      <div class="stat-icon">!</div>
-      <span class="dashboard-stat-number" id="absent">0</span>
-      <span class="dashboard-stat-label">Today Absent</span>
-    </div>
 
     <div class="dashboard-stat">
-      <div class="stat-icon">◉</div>
-      <span class="dashboard-stat-number" id="checkedin">0</span>
-      <span class="dashboard-stat-label">Currently Checked In</span>
+
+      <div class="stat-icon">
+        ⌖
+      </div>
+
+      <span
+        class="dashboard-stat-number"
+        id="sites">
+
+        0
+
+      </span>
+
+      <span
+        class="dashboard-stat-label">
+
+        Active Sites
+
+      </span>
+
     </div>
+
+
+    <div class="dashboard-stat">
+
+      <div class="stat-icon">
+        ✓
+      </div>
+
+      <span
+        class="dashboard-stat-number"
+        id="present">
+
+        0
+
+      </span>
+
+      <span
+        class="dashboard-stat-label">
+
+        Today Present
+
+      </span>
+
+    </div>
+
+
+    <div class="dashboard-stat">
+
+      <div class="stat-icon">
+        !
+      </div>
+
+      <span
+        class="dashboard-stat-number"
+        id="absent">
+
+        0
+
+      </span>
+
+      <span
+        class="dashboard-stat-label">
+
+        Today Absent
+
+      </span>
+
+    </div>
+
+
+    <div class="dashboard-stat">
+
+      <div class="stat-icon">
+        ◉
+      </div>
+
+      <span
+        class="dashboard-stat-number"
+        id="checkedin">
+
+        0
+
+      </span>
+
+      <span
+        class="dashboard-stat-label">
+
+        Currently Checked In
+
+      </span>
+
+    </div>
+
 
   </div>
 
 
-  <!-- COMPANY SUMMARY -->
+  <!-- =====================================================
+       COMPANY SUMMARY
+  ====================================================== -->
 
   <div class="dashboard-card">
 
     <div class="dashboard-card-header">
 
       <div>
-        <h2>Company-wise Attendance</h2>
+
+        <h2>
+          Company-wise Attendance
+        </h2>
 
         <p>
           Today's attendance by company
         </p>
+
       </div>
 
     </div>
 
+
     <div
       id="companySummary"
       class="company-summary">
+
     </div>
 
   </div>
 
 
-  <!-- RECENT + QUICK ACTIONS -->
+  <!-- =====================================================
+       RECENT + QUICK ACTIONS
+  ====================================================== -->
 
   <div class="dashboard-grid">
 
@@ -547,14 +1253,19 @@ shell("dashboard","Dashboard",`
       <div class="dashboard-card-header">
 
         <div>
-          <h2>Recent Attendance</h2>
+
+          <h2>
+            Recent Attendance
+          </h2>
 
           <p>
             Latest attendance activity
           </p>
+
         </div>
 
       </div>
+
 
       <div class="dashboard-table-wrap">
 
@@ -563,15 +1274,35 @@ shell("dashboard","Dashboard",`
           <thead>
 
             <tr>
-              <th>Worker</th>
-              <th>Company</th>
-              <th>Site</th>
-              <th>Check In</th>
-              <th>Check Out</th>
-              <th>Status</th>
+
+              <th>
+                Worker
+              </th>
+
+              <th>
+                Company
+              </th>
+
+              <th>
+                Site
+              </th>
+
+              <th>
+                Check In
+              </th>
+
+              <th>
+                Check Out
+              </th>
+
+              <th>
+                Status
+              </th>
+
             </tr>
 
           </thead>
+
 
           <tbody id="rows"></tbody>
 
@@ -589,11 +1320,15 @@ shell("dashboard","Dashboard",`
       <div class="dashboard-card-header">
 
         <div>
-          <h2>Quick Actions</h2>
+
+          <h2>
+            Quick Actions
+          </h2>
 
           <p>
             Frequently used actions
           </p>
+
         </div>
 
       </div>
@@ -601,44 +1336,108 @@ shell("dashboard","Dashboard",`
 
       <div class="quick-actions">
 
-        <a class="quick-action" href="/workers.html">
-          <div class="quick-icon">♙</div>
-          <b>Add Worker</b>
+
+        <a
+          class="quick-action"
+          href="/workers.html">
+
+          <div class="quick-icon">
+            ♙
+          </div>
+
+          <b>
+            Add Worker
+          </b>
+
         </a>
 
-        <a class="quick-action" href="/companies.html">
-          <div class="quick-icon">▦</div>
-          <b>Add Company</b>
+
+        <a
+          class="quick-action"
+          href="/companies.html">
+
+          <div class="quick-icon">
+            ▦
+          </div>
+
+          <b>
+            Add Company
+          </b>
+
         </a>
 
-        <a class="quick-action" href="/sites.html">
-          <div class="quick-icon">⌖</div>
-          <b>Add Site</b>
+
+        <a
+          class="quick-action"
+          href="/sites.html">
+
+          <div class="quick-icon">
+            ⌖
+          </div>
+
+          <b>
+            Add Site
+          </b>
+
         </a>
 
-        <a class="quick-action" href="/scan.html">
-          <div class="quick-icon">▣</div>
-          <b>Scan QR</b>
+
+        <a
+          class="quick-action"
+          href="/scan.html">
+
+          <div class="quick-icon">
+            ▣
+          </div>
+
+          <b>
+            Scan QR
+          </b>
+
         </a>
 
-        <a class="quick-action" href="/manual-attendance.html">
-          <div class="quick-icon">✓</div>
-          <b>Manual Attendance</b>
+
+        <a
+          class="quick-action"
+          href="/manual-attendance.html">
+
+          <div class="quick-icon">
+            ✓
+          </div>
+
+          <b>
+            Manual Attendance
+          </b>
+
         </a>
 
-        <a class="quick-action" href="/reports.html">
-          <div class="quick-icon">▤</div>
-          <b>Reports</b>
+
+        <a
+          class="quick-action"
+          href="/reports.html">
+
+          <div class="quick-icon">
+            ▤
+          </div>
+
+          <b>
+            Reports
+          </b>
+
         </a>
+
 
       </div>
 
     </div>
 
+
   </div>
 
 
-  <!-- BRAND -->
+  <!-- =====================================================
+       BRAND
+  ====================================================== -->
 
   <div class="dashboard-brand">
 
@@ -647,32 +1446,36 @@ shell("dashboard","Dashboard",`
       alt="AL SABIHA">
 
     <h2>
+
       Right People<br>
       Right Place<br>
       Right Time
+
     </h2>
 
   </div>
+
 
 </div>
 
 `);
 
 
-// ========================================
+// =========================================================
 // DASHBOARD DATA
-// ========================================
+// =========================================================
 
 (async()=>{
 
   try{
 
-    const d = await api("/api/dashboard");
+    const d =
+      await api("/api/dashboard");
 
 
-    // ==============================
-    // MAIN STATS
-    // ==============================
+    /* =========================================
+       MAIN STATS
+    ========================================= */
 
     $("#workers").textContent =
       d.total_workers || 0;
@@ -692,13 +1495,15 @@ shell("dashboard","Dashboard",`
     $("#checkedin").textContent =
       d.checked_in || 0;
 
+
     $("#date").textContent =
-      "Today • " + (d.date || "");
+      "Today • " +
+      (d.date || "");
 
 
-    // ==============================
-    // COMPANY SUMMARY
-    // ==============================
+    /* =========================================
+       COMPANY SUMMARY
+    ========================================= */
 
     const companyBox =
       $("#companySummary");
@@ -730,72 +1535,89 @@ shell("dashboard","Dashboard",`
         companies.map(c=>{
 
           const total =
-            Number(c.total_workers || 0);
+            Number(
+              c.total_workers || 0
+            );
 
           const present =
-            Number(c.present || 0);
+            Number(
+              c.present || 0
+            );
 
           const absent =
-            Math.max(0,total-present);
+            Math.max(
+              0,
+              total-present
+            );
 
 
           return `
 
-          <div class="company-box">
+            <div class="company-box">
 
-            <h3 class="company-name">
+              <h3 class="company-name">
 
-              ${esc(
-                c.company_name ||
-                "Unknown Company"
-              )}
+                ${esc(
+                  c.company_name ||
+                  "Unknown Company"
+                )}
 
-            </h3>
-
-
-            <div class="company-numbers">
-
-              <div class="company-number">
-
-                <strong>
-                  ${total}
-                </strong>
-
-                <small>
-                  Workers
-                </small>
-
-              </div>
+              </h3>
 
 
-              <div class="company-number present-number">
-
-                <strong>
-                  ${present}
-                </strong>
-
-                <small>
-                  Present
-                </small>
-
-              </div>
+              <div class="company-numbers">
 
 
-              <div class="company-number absent-number">
+                <div class="company-number">
 
-                <strong>
-                  ${absent}
-                </strong>
+                  <strong>
+                    ${total}
+                  </strong>
 
-                <small>
-                  Absent
-                </small>
+                  <small>
+                    Workers
+                  </small>
+
+                </div>
+
+
+                <div
+                  class="
+                    company-number
+                    present-number
+                  ">
+
+                  <strong>
+                    ${present}
+                  </strong>
+
+                  <small>
+                    Present
+                  </small>
+
+                </div>
+
+
+                <div
+                  class="
+                    company-number
+                    absent-number
+                  ">
+
+                  <strong>
+                    ${absent}
+                  </strong>
+
+                  <small>
+                    Absent
+                  </small>
+
+                </div>
+
 
               </div>
 
             </div>
-
-          </div>
 
           `;
 
@@ -804,9 +1626,9 @@ shell("dashboard","Dashboard",`
     }
 
 
-    // ==============================
-    // RECENT ATTENDANCE
-    // ==============================
+    /* =========================================
+       RECENT ATTENDANCE
+    ========================================= */
 
     const rows =
       d.todays_attendance || [];
@@ -814,94 +1636,120 @@ shell("dashboard","Dashboard",`
 
     $("#rows").innerHTML =
 
-      rows.slice(0,8).map(r=>{
+      rows
+        .slice(0,8)
+        .map(r=>{
 
-        const checkedOut =
-          !!r.check_out;
+          const checkedOut =
+            !!r.check_out;
 
 
-        return `
+          return `
 
-        <tr>
+            <tr>
 
-          <td>
-            ${esc(
-              r.worker_name || "—"
-            )}
-          </td>
 
-          <td>
-            ${esc(
-              r.company_name || "—"
-            )}
-          </td>
+              <td>
 
-          <td>
-            ${esc(
-              r.site_name || "—"
-            )}
-          </td>
+                ${esc(
+                  r.worker_name || "—"
+                )}
 
-          <td>
-            ${
-              r.check_in
-              ? esc(r.check_in).slice(11,16)
-              : "—"
-            }
-          </td>
+              </td>
 
-          <td>
-            ${
-              checkedOut
-              ? esc(r.check_out).slice(11,16)
-              : "—"
-            }
-          </td>
 
-          <td>
+              <td>
 
-            <span class="
-              status-badge
-              ${checkedOut ? "status-out" : ""}
-            ">
+                ${esc(
+                  r.company_name || "—"
+                )}
 
-              ${
-                checkedOut
-                ? "Checked Out"
-                : "Checked In"
-              }
+              </td>
 
-            </span>
 
-          </td>
+              <td>
 
-        </tr>
+                ${esc(
+                  r.site_name || "—"
+                )}
+
+              </td>
+
+
+              <td>
+
+                ${
+                  r.check_in
+                  ? esc(
+                      r.check_in
+                    ).slice(11,16)
+                  : "—"
+                }
+
+              </td>
+
+
+              <td>
+
+                ${
+                  checkedOut
+                  ? esc(
+                      r.check_out
+                    ).slice(11,16)
+                  : "—"
+                }
+
+              </td>
+
+
+              <td>
+
+                <span
+                  class="
+                    status-badge
+                    ${checkedOut
+                      ? "status-out"
+                      : ""}
+                  ">
+
+                  ${
+                    checkedOut
+                    ? "Checked Out"
+                    : "Checked In"
+                  }
+
+                </span>
+
+              </td>
+
+
+            </tr>
+
+          `;
+
+        }).join("")
+
+        ||
+
+        `
+
+          <tr>
+
+            <td
+              colspan="6"
+              style="
+                text-align:center;
+                padding:30px;
+                color:#40566b;
+              ">
+
+              No attendance today.
+
+            </td>
+
+          </tr>
 
         `;
-
-      }).join("")
-
-      ||
-
-      `
-
-      <tr>
-
-        <td
-          colspan="6"
-          style="
-            text-align:center;
-            padding:30px;
-            color:#7c8997;
-          ">
-
-          No attendance today.
-
-        </td>
-
-      </tr>
-
-      `;
 
 
   }catch(e){

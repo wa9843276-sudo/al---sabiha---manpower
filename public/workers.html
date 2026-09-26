@@ -12,13 +12,17 @@
 <script src="/app.js"></script>
 
 <script>
+
 shell("workers","Workers",`
+
 <div class="panel">
+
   <div class="toolbar">
     <h2>Add / Edit Worker</h2>
   </div>
 
   <form id="f">
+
     <input type="hidden" id="id">
 
     <div class="form-grid">
@@ -40,10 +44,21 @@ shell("workers","Workers",`
 
       <div class="field">
         <label>Employee Type</label>
+
         <select id="type">
-          <option>Company</option>
-          <option>Supplier</option>
+          <option value="Company">Company</option>
+          <option value="Supplier">Supplier</option>
         </select>
+
+      </div>
+
+      <div class="field">
+        <label>Assigned Company</label>
+
+        <select id="company_id">
+          <option value="">Select Company</option>
+        </select>
+
       </div>
 
       <div class="field">
@@ -68,113 +83,397 @@ shell("workers","Workers",`
 
       <div class="field">
         <label>Status</label>
+
         <select id="status">
-          <option>Active</option>
-          <option>Inactive</option>
+          <option value="Active">Active</option>
+          <option value="Inactive">Inactive</option>
         </select>
+
       </div>
 
     </div>
 
     <br>
 
-    <button class="btn gold">Save Worker</button>
-    <button type="button" class="btn ghost" onclick="f.reset()">Clear</button>
+    <button
+      type="submit"
+      class="btn gold">
+      Save Worker
+    </button>
+
+    <button
+      type="button"
+      class="btn ghost"
+      onclick="clearForm()">
+      Clear
+    </button>
 
   </form>
+
 </div>
 
+
 <div class="panel">
+
   <div class="toolbar">
+
     <h2>Worker Database</h2>
-    <input id="search" class="search" placeholder="Search workers...">
+
+    <input
+      id="search"
+      class="search"
+      placeholder="Search workers..."
+    >
+
   </div>
 
+
   <div class="table-wrap">
+
     <table>
+
       <thead>
+
         <tr>
+
           <th>Code</th>
           <th>Name</th>
           <th>Type</th>
+          <th>Assigned Company</th>
           <th>Vendor</th>
           <th>Designation</th>
           <th>Mobile</th>
           <th>Status</th>
           <th>Actions</th>
+
         </tr>
+
       </thead>
 
       <tbody id="rows"></tbody>
 
     </table>
+
   </div>
+
 </div>
+
 `);
+
 
 let data = [];
 
-async function load() {
 
-  data = await api(
-    "/api/workers?search=" +
-    encodeURIComponent($("#search").value)
-  );
+/* =========================================================
+   LOAD COMPANIES
+   ========================================================= */
 
-  $("#rows").innerHTML =
-    data.map(w => `
-      <tr>
-        <td>${esc(w.worker_code)}</td>
-        <td><b>${esc(w.name)}</b></td>
-        <td>${esc(w.employee_type)}</td>
-        <td>${esc(w.vendor || "—")}</td>
-        <td>${esc(w.designation || "—")}</td>
-        <td>${esc(w.mobile || "—")}</td>
-        <td>
-          <span class="badge">${esc(w.status)}</span>
-        </td>
-        <td>
-          <button class="btn ghost" onclick="edit(${w.id})">
-            Edit
-          </button>
+async function loadCompanies(){
 
-          <button class="btn ghost" onclick="qr(${w.id})">
-            QR
-          </button>
+  try{
 
-          <button class="btn ghost" onclick="del(${w.id})">
-            Disable
-          </button>
-        </td>
-      </tr>
-    `).join("") ||
+    const companiesData =
+      await api("/api/companies");
 
-    `<tr>
-      <td colspan="8">No workers found.</td>
-    </tr>`;
+    const companies =
+      Array.isArray(companiesData)
+        ? companiesData
+        : [];
+
+    const select =
+      $("#company_id");
+
+    select.innerHTML =
+      `<option value="">Select Company</option>`;
+
+    companies
+      .filter(c => c.status === "Active")
+      .forEach(c => {
+
+        const option =
+          document.createElement("option");
+
+        option.value = c.id;
+
+        option.textContent =
+          c.name;
+
+        select.appendChild(option);
+
+      });
+
+  }catch(error){
+
+    console.error(
+      "Company loading error:",
+      error
+    );
+
+  }
+
 }
+
+
+/* =========================================================
+   LOAD WORKERS
+   ========================================================= */
+
+async function load(){
+
+  try{
+
+    data =
+      await api(
+        "/api/workers?search=" +
+        encodeURIComponent(
+          $("#search").value
+        )
+      );
+
+    const rows =
+      $("#rows");
+
+
+    rows.innerHTML =
+
+      data.map(w => `
+
+        <tr>
+
+          <td>
+            ${esc(w.worker_code)}
+          </td>
+
+          <td>
+            <b>
+              ${esc(w.name)}
+            </b>
+          </td>
+
+          <td>
+            ${esc(
+              w.employee_type || "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              w.company_name || "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              w.vendor || "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              w.designation || "—"
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              w.mobile || "—"
+            )}
+          </td>
+
+          <td>
+
+            <span class="badge">
+              ${esc(
+                w.status || "—"
+              )}
+            </span>
+
+          </td>
+
+          <td>
+
+            <button
+              class="btn ghost"
+              onclick="edit(${w.id})">
+              Edit
+            </button>
+
+            <button
+              class="btn ghost"
+              onclick="qr(${w.id})">
+              QR
+            </button>
+
+            <button
+              class="btn ghost"
+              onclick="archiveWorker(${w.id})">
+              📦 Archive
+            </button>
+
+          </td>
+
+        </tr>
+
+      `).join("")
+
+      ||
+
+      `<tr>
+        <td colspan="9">
+          No workers found.
+        </td>
+      </tr>`;
+
+  }catch(error){
+
+    console.error(
+      "Worker loading error:",
+      error
+    );
+
+    $("#rows").innerHTML =
+      `<tr>
+        <td colspan="9">
+          Unable to load workers.
+        </td>
+      </tr>`;
+
+  }
+
+}
+
+
+/* =========================================================
+   EDIT WORKER
+   ========================================================= */
 
 window.edit = id => {
 
-  const w = data.find(x => x.id === id);
+  const w =
+    data.find(
+      x => Number(x.id) === Number(id)
+    );
 
-  $("#id").value = w.id;
-  $("#code").value = w.worker_code;
-  $("#name").value = w.name;
-  $("#designation").value = w.designation || "";
-  $("#type").value = w.employee_type || "Company";
-  $("#vendor").value = w.vendor || "";
-  $("#mobile").value = w.mobile || "";
-  $("#salary").value = w.salary || 0;
-  $("#joining").value = w.joining_date || "";
-  $("#status").value = w.status || "Active";
+  if(!w){
 
-  scrollTo(0, 0);
+    showError(
+      "Worker not found."
+    );
+
+    return;
+
+  }
+
+
+  $("#id").value =
+    w.id;
+
+  $("#code").value =
+    w.worker_code || "";
+
+  $("#name").value =
+    w.name || "";
+
+  $("#designation").value =
+    w.designation || "";
+
+  $("#type").value =
+    w.employee_type || "Company";
+
+  $("#company_id").value =
+    w.company_id || "";
+
+  $("#vendor").value =
+    w.vendor || "";
+
+  $("#mobile").value =
+    w.mobile || "";
+
+  $("#salary").value =
+    w.salary || "";
+
+  $("#joining").value =
+    w.joining_date || "";
+
+  $("#status").value =
+    w.status || "Active";
+
+
+  window.scrollTo(
+    0,
+    0
+  );
+
 };
 
-window.del = async id => {
 
-  if (confirm("Disable this worker?")) {
+/* =========================================================
+   CLEAR FORM
+   ========================================================= */
+
+window.clearForm = function(){
+
+  $("#f").reset();
+
+  $("#id").value = "";
+
+  $("#company_id").value = "";
+
+};
+
+
+/* =========================================================
+   ARCHIVE WORKER
+   Record + Attendance محفوظ رہے گی
+   ========================================================= */
+
+window.archiveWorker = async id => {
+
+  const worker =
+    data.find(
+      x => Number(x.id) === Number(id)
+    );
+
+  const workerName =
+    worker
+      ? worker.name
+      : "this worker";
+
+
+  const confirmed =
+    confirm(
+
+      "ARCHIVE WORKER\n\n" +
+
+      "Worker: " +
+      workerName +
+
+      "\n\n" +
+
+      "This worker will be moved to Inactive status.\n\n" +
+
+      "The following will NOT be deleted:\n" +
+
+      "• Worker profile\n" +
+      "• Attendance history\n" +
+      "• Check-in / Check-out records\n" +
+      "• Reports history\n\n" +
+
+      "You can keep this worker's historical record safely.\n\n" +
+
+      "Do you want to archive this worker?"
+
+    );
+
+
+  if(!confirmed){
+
+    return;
+
+  }
+
+
+  try{
 
     await api(
       "/api/workers/" + id,
@@ -183,82 +482,251 @@ window.del = async id => {
       }
     );
 
-    load();
+
+    await load();
+
+
+    alert(
+      "Worker archived successfully.\n\n" +
+      "Worker record and attendance history are محفوظ."
+    );
+
+
+  }catch(error){
+
+    showError(
+
+      error.message ||
+
+      "Unable to archive worker."
+
+    );
+
   }
+
 };
+
+
+/* =========================================================
+   WORKER QR
+   ========================================================= */
 
 window.qr = async id => {
 
-  const d = await api(
-    "/api/workers/" + id + "/qrcode"
-  );
+  try{
 
-  const w = d.worker;
+    const d =
+      await api(
+        "/api/workers/" +
+        id +
+        "/qrcode"
+      );
 
-  const x = window.open(
-    "",
-    "QR",
-    "width=520,height=650"
-  );
+    const w =
+      d.worker;
 
-  x.document.write(`
-    <html>
-      <body style="font-family:Arial;text-align:center">
-        <h2>AL SABIHA</h2>
-        <h3>${esc(w.name)}</h3>
-        <p>${esc(w.worker_code)}</p>
+
+    const x =
+      window.open(
+        "",
+        "QR",
+        "width=520,height=650"
+      );
+
+
+    x.document.write(`
+
+      <html>
+
+      <head>
+
+        <title>
+          AL SABIHA Worker QR
+        </title>
+
+      </head>
+
+      <body
+        style="
+          font-family:Arial;
+          text-align:center;
+          padding:30px;
+        "
+      >
+
+        <h2>
+          AL SABIHA
+        </h2>
+
+        <h3>
+          ${esc(w.name)}
+        </h3>
+
+        <p>
+          ${esc(w.worker_code)}
+        </p>
 
         <img
           src="${d.qr}"
-          style="width:350px"
+          style="
+            width:350px;
+            max-width:90%;
+          "
         >
 
-        <p>Manpower Attendance</p>
+        <p>
+          Manpower Attendance
+        </p>
+
       </body>
-    </html>
-  `);
+
+      </html>
+
+    `);
+
+    x.document.close();
+
+  }catch(error){
+
+    showError(
+      error.message ||
+      "Unable to generate QR."
+    );
+
+  }
+
 };
 
-$("#f").onsubmit = async e => {
 
-  e.preventDefault();
+/* =========================================================
+   SAVE WORKER
+   ========================================================= */
 
-  const b = {
-    worker_code: $("#code").value,
-    name: $("#name").value,
-    designation: $("#designation").value,
-    employee_type: $("#type").value,
-    vendor: $("#vendor").value,
-    mobile: $("#mobile").value,
-    salary: $("#salary").value,
-    joining_date: $("#joining").value,
-    status: $("#status").value
+$("#f").onsubmit =
+  async function(e){
+
+    e.preventDefault();
+
+
+    const id =
+      $("#id").value;
+
+
+    const b = {
+
+      worker_code:
+        $("#code").value.trim(),
+
+      name:
+        $("#name").value.trim(),
+
+      designation:
+        $("#designation").value.trim(),
+
+      employee_type:
+        $("#type").value,
+
+      company_id:
+        $("#company_id").value
+          ? Number(
+              $("#company_id").value
+            )
+          : null,
+
+      vendor:
+        $("#vendor").value.trim(),
+
+      mobile:
+        $("#mobile").value.trim(),
+
+      salary:
+        $("#salary").value,
+
+      joining_date:
+        $("#joining").value,
+
+      status:
+        $("#status").value
+
+    };
+
+
+    try{
+
+      await api(
+
+        id
+          ? "/api/workers/" + id
+          : "/api/workers",
+
+        {
+
+          method:
+            id
+              ? "PUT"
+              : "POST",
+
+          body:
+            JSON.stringify(b)
+
+        }
+
+      );
+
+
+      clearForm();
+
+      await load();
+
+
+      showSuccess(
+
+        id
+          ? "Worker updated successfully."
+          : "Worker added successfully."
+
+      );
+
+
+    }catch(error){
+
+      showError(
+
+        error.message ||
+
+        "Unable to save worker."
+
+      );
+
+    }
+
   };
 
-  const id = $("#id").value;
 
-  await api(
-    id
-      ? "/api/workers/" + id
-      : "/api/workers",
-    {
-      method: id ? "PUT" : "POST",
-      body: JSON.stringify(b)
-    }
-  );
+/* =========================================================
+   SEARCH
+   ========================================================= */
 
-  e.target.reset();
+$("#search").oninput =
+  load;
 
-  $("#id").value = "";
 
-  load();
-};
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
 
-$("#search").oninput = load;
+async function initialize(){
 
-load();
+  await loadCompanies();
 
-loadMe();
+  await load();
+
+  loadMe();
+
+}
+
+
+initialize();
 
 </script>
 
