@@ -1819,3 +1819,322 @@ tr:hover td{
   opacity:1 !important;
   color:inherit !important;
 }
+/* =========================================================
+   AL SABIHA
+   LOGIN FULL-SCREEN HORIZONTAL SWIPE
+   PREMIUM SMOOTH TRANSITION
+   ========================================================= */
+
+body.login-transition{
+  overflow:hidden !important;
+}
+
+/* Home page swipe */
+.login-page.swipe-out{
+  animation:
+    loginHorizontalExit
+    .85s cubic-bezier(.77,0,.18,1)
+    forwards;
+}
+
+@keyframes loginHorizontalExit{
+  0%{
+    transform:translateX(0);
+    opacity:1;
+  }
+
+  35%{
+    transform:translateX(-3%);
+  }
+
+  100%{
+    transform:translateX(-100%);
+    opacity:1;
+  }
+}
+
+
+/* Login page entrance */
+.login-screen-enter{
+  animation:
+    loginHorizontalEnter
+    .95s cubic-bezier(.77,0,.18,1)
+    both;
+}
+
+@keyframes loginHorizontalEnter{
+
+  0%{
+    transform:translateX(100%);
+    opacity:1;
+  }
+
+  55%{
+    transform:translateX(0);
+    opacity:1;
+  }
+
+  75%{
+    transform:translateX(-1.5%);
+  }
+
+  100%{
+    transform:translateX(0);
+  }
+}
+
+
+/* Login content smooth entrance */
+.login-screen-enter .login-wrap{
+  animation:
+    loginContentReveal
+    1.05s cubic-bezier(.2,.8,.2,1)
+    .15s both;
+}
+
+@keyframes loginContentReveal{
+
+  0%{
+    opacity:0;
+    transform:translateX(45px) scale(.985);
+    filter:blur(5px);
+  }
+
+  60%{
+    opacity:1;
+    transform:translateX(-3px) scale(1);
+    filter:blur(0);
+  }
+
+  100%{
+    opacity:1;
+    transform:translateX(0) scale(1);
+    filter:blur(0);
+  }
+}
+
+
+/* Logo glow */
+.login-screen-enter .brand img{
+  animation:
+    loginLogoGlow
+    1.2s ease .25s both;
+}
+
+@keyframes loginLogoGlow{
+
+  0%{
+    opacity:0;
+    transform:translateX(35px) scale(.94);
+    filter:
+      brightness(.7)
+      drop-shadow(0 0 0 transparent);
+  }
+
+  60%{
+    opacity:1;
+    transform:translateX(-2px) scale(1.01);
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 18px rgba(255,211,105,.28));
+  }
+
+  100%{
+    opacity:1;
+    transform:translateX(0) scale(1);
+    filter:
+      brightness(1)
+      drop-shadow(0 0 10px rgba(255,211,105,.12));
+  }
+}
+
+
+/* Login card premium reveal */
+.login-screen-enter .login-container{
+  animation:
+    loginCardReveal
+    1s cubic-bezier(.2,.8,.2,1)
+    .28s both;
+}
+
+@keyframes loginCardReveal{
+
+  0%{
+    opacity:0;
+    transform:
+      translateX(55px)
+      scale(.96);
+  }
+
+  55%{
+    opacity:1;
+    transform:
+      translateX(-3px)
+      scale(1.005);
+  }
+
+  100%{
+    opacity:1;
+    transform:
+      translateX(0)
+      scale(1);
+  }
+}
+
+
+/* Glowing border effect */
+.login-screen-enter .login-container::before{
+  content:"";
+
+  position:absolute;
+
+  inset:-1px;
+
+  border-radius:23px;
+
+  pointer-events:none;
+
+  background:
+    linear-gradient(
+      110deg,
+      transparent 15%,
+      rgba(255,211,105,.55) 45%,
+      rgba(0,170,255,.35) 60%,
+      transparent 85%
+    );
+
+  opacity:0;
+
+  animation:
+    loginBorderGlow
+    1.3s ease
+    .35s both;
+}
+
+@keyframes loginBorderGlow{
+
+  0%{
+    opacity:0;
+  }
+
+  45%{
+    opacity:.8;
+  }
+
+  100%{
+    opacity:0;
+  }
+}
+
+
+/* Lamp smooth entrance */
+.login-screen-enter .lamp{
+  animation:
+    loginLampEnter
+    1.1s cubic-bezier(.2,.8,.2,1)
+    .4s both,
+    glow 2s infinite 1.5s;
+}
+
+@keyframes loginLampEnter{
+
+  0%{
+    opacity:0;
+    transform:
+      scale(.55)
+      rotate(-12deg);
+  }
+
+  60%{
+    opacity:1;
+    transform:
+      scale(1.08)
+      rotate(2deg);
+  }
+
+  100%{
+    opacity:1;
+    transform:
+      scale(1)
+      rotate(0);
+  }
+}
+
+
+/* Button premium glow */
+.login-btn{
+  position:relative;
+  overflow:hidden;
+}
+
+.login-btn::before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:-120%;
+
+  width:70%;
+  height:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.35),
+      transparent
+    );
+
+  transform:skewX(-20deg);
+}
+
+.login-btn:hover::before{
+  animation:
+    loginButtonShine
+    .7s ease;
+}
+
+@keyframes loginButtonShine{
+
+  from{
+    left:-120%;
+  }
+
+  to{
+    left:140%;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media(max-width:520px){
+
+  .login-screen-enter .login-wrap{
+    animation-duration:.85s;
+  }
+
+  .login-screen-enter .login-container{
+    animation-duration:.85s;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+  .login-page.swipe-out,
+  .login-screen-enter,
+  .login-screen-enter .login-wrap,
+  .login-screen-enter .brand img,
+  .login-screen-enter .login-container,
+  .login-screen-enter .lamp{
+    animation:none !important;
+  }
+}

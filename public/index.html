@@ -1,6 +1,864 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AL SABIHA | Manpower Management</title><link rel="stylesheet" href="/style.css"></head><body>
-<div class="login-page">
-<section class="login-hero"><img class="login-logo" src="/logo.svg"><div class="eyebrow">YOUR TRUST • OUR PRIORITY</div><h1>AL SABIHA</h1><h2>GROUP OF COMPANIES</h2><h3 style="font-size:25px;letter-spacing:1px">MANPOWER ATTENDANCE SYSTEM</h3><p>Smart Attendance &nbsp; | &nbsp; Better Management &nbsp; | &nbsp; Stronger Workforce</p><a class="front-btn" href="/login.html">Login to Continue &nbsp; →</a><div class="feature-row"><div class="feature"><b>♙ Workers</b><small>Manage Workers</small></div><div class="feature"><b>▦ Companies</b><small>Manage Companies</small></div><div class="feature"><b>⌖ Sites</b><small>Manage Sites</small></div><div class="feature"><b>▣ Attendance</b><small>QR Check-in/out</small></div><div class="feature"><b>▤ Reports</b><small>Monthly Reports</small></div><div class="feature"><b>⌖ GPS</b><small>Live Location</small></div></div></section>
-</div>
-<script src="/app.js"></script>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  >
+
+  <title>AL SABIHA | Manpower Management</title>
+
+  <link
+    rel="icon"
+    href="/logo.svg"
+  >
+
+  <link
+    rel="stylesheet"
+    href="/style.css"
+  >
+
+  <style>
+    /* =====================================================
+       AL SABIHA — FULL SCREEN LANDING PAGE
+       ===================================================== */
+
+    html,
+    body{
+      width:100%;
+      height:100%;
+      margin:0;
+      padding:0;
+
+      overflow:hidden;
+
+      background:#020b12;
+    }
+
+    body{
+      min-width:100%;
+      min-height:100%;
+    }
+
+    /* =====================================================
+       FULL SCREEN PAGE
+       ===================================================== */
+
+    .login-page{
+      position:fixed;
+
+      inset:0;
+
+      width:100vw;
+      height:100vh;
+
+      min-width:100%;
+      min-height:100%;
+
+      margin:0;
+      padding:0;
+
+      overflow:hidden;
+
+      display:flex;
+
+      align-items:center;
+      justify-content:center;
+
+      box-sizing:border-box;
+
+      background:
+        radial-gradient(
+          circle at 50% 45%,
+          rgba(0,255,200,.10),
+          transparent 34%
+        ),
+        radial-gradient(
+          circle at 15% 25%,
+          rgba(0,170,255,.08),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #020b12 0%,
+          #061b25 48%,
+          #020b12 100%
+        );
+
+      transition:
+        transform .65s cubic-bezier(.76,0,.24,1),
+        opacity .65s ease;
+
+      will-change:
+        transform,
+        opacity;
+
+      z-index:1;
+    }
+
+    /* =====================================================
+       AMBIENT LIGHT
+       ===================================================== */
+
+    .login-page::before{
+      content:"";
+
+      position:absolute;
+
+      inset:-25%;
+
+      pointer-events:none;
+
+      background:
+        radial-gradient(
+          circle at 20% 50%,
+          rgba(0,255,200,.10),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 80% 45%,
+          rgba(0,170,255,.10),
+          transparent 30%
+        );
+
+      filter:blur(30px);
+
+      animation:
+        landingGlow 8s ease-in-out infinite alternate;
+    }
+
+    /* =====================================================
+       HORIZONTAL LIGHT
+       ===================================================== */
+
+    .login-page::after{
+      content:"";
+
+      position:absolute;
+
+      left:-20%;
+      top:50%;
+
+      width:140%;
+      height:1px;
+
+      pointer-events:none;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(0,255,200,.05),
+          rgba(0,255,200,.45),
+          rgba(0,170,255,.45),
+          transparent
+        );
+
+      box-shadow:
+        0 0 18px
+        rgba(0,255,200,.18);
+
+      transform:
+        rotate(-8deg);
+    }
+
+    /* =====================================================
+       HERO
+       ===================================================== */
+
+    .login-hero{
+      position:relative;
+
+      z-index:5;
+
+      width:
+        min(1100px, calc(100vw - 40px));
+
+      max-width:1100px;
+
+      min-height:100vh;
+
+      padding:
+        40px 20px;
+
+      box-sizing:border-box;
+
+      display:flex;
+
+      flex-direction:column;
+
+      align-items:center;
+
+      justify-content:center;
+
+      text-align:center;
+
+      animation:
+        landingContentIn
+        .9s
+        cubic-bezier(.16,1,.3,1)
+        both;
+    }
+
+    /* =====================================================
+       LOGO
+       ===================================================== */
+
+    .login-logo{
+      width:210px;
+
+      max-width:55vw;
+
+      max-height:120px;
+
+      object-fit:contain;
+
+      display:block;
+
+      margin-bottom:18px;
+
+      filter:
+        drop-shadow(
+          0 0 14px
+          rgba(0,255,200,.20)
+        )
+        drop-shadow(
+          0 12px 30px
+          rgba(0,0,0,.55)
+        );
+    }
+
+    /* =====================================================
+       EYEBROW
+       ===================================================== */
+
+    .eyebrow{
+      margin-bottom:8px;
+
+      color:#00e6bd;
+
+      font-size:11px;
+
+      font-weight:800;
+
+      letter-spacing:3px;
+
+      text-shadow:
+        0 0 12px
+        rgba(0,255,200,.25);
+    }
+
+    /* =====================================================
+       MAIN TITLE
+       ===================================================== */
+
+    .login-hero h1{
+      margin:0;
+
+      color:#ffffff;
+
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:
+        clamp(42px, 7vw, 76px);
+
+      line-height:1;
+
+      letter-spacing:2px;
+
+      text-shadow:
+        0 0 25px
+        rgba(0,255,200,.10),
+        0 12px 35px
+        rgba(0,0,0,.45);
+    }
+
+    .login-hero h2{
+      margin:
+        8px 0 20px;
+
+      color:#dcebf0;
+
+      font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+      font-size:
+        clamp(17px, 2.5vw, 25px);
+
+      font-weight:700;
+
+      letter-spacing:5px;
+
+      text-shadow:
+        0 4px 15px
+        rgba(0,0,0,.4);
+    }
+
+    .login-hero h3{
+      margin:
+        0 0 13px;
+
+      color:#00e6bd;
+
+      font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+      font-weight:800;
+
+      text-shadow:
+        0 0 16px
+        rgba(0,255,200,.12);
+    }
+
+    .login-hero > p{
+      margin:
+        0 0 30px;
+
+      color:#8fa9b4;
+
+      font-size:13px;
+
+      letter-spacing:.6px;
+    }
+
+    /* =====================================================
+       LOGIN BUTTON
+       ===================================================== */
+
+    .front-btn{
+      display:inline-flex;
+
+      align-items:center;
+      justify-content:center;
+
+      min-width:230px;
+
+      padding:
+        15px 27px;
+
+      border-radius:12px;
+
+      color:#001817;
+
+      background:
+        linear-gradient(
+          90deg,
+          #00e6bd,
+          #00b7ff
+        );
+
+      text-decoration:none;
+
+      font-family:
+        Inter,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+      font-size:14px;
+
+      font-weight:900;
+
+      letter-spacing:.3px;
+
+      box-shadow:
+        0 10px 30px
+        rgba(0,200,210,.20),
+        0 0 25px
+        rgba(0,255,200,.12);
+
+      transition:
+        transform .22s ease,
+        box-shadow .22s ease,
+        filter .22s ease;
+    }
+
+    .front-btn:hover{
+      transform:
+        translateY(-3px);
+
+      filter:
+        brightness(1.08);
+
+      box-shadow:
+        0 15px 40px
+        rgba(0,200,210,.30),
+        0 0 35px
+        rgba(0,255,200,.20);
+    }
+
+    .front-btn:active{
+      transform:
+        translateY(-1px)
+        scale(.99);
+    }
+
+    /* =====================================================
+       FEATURES
+       ===================================================== */
+
+    .feature-row{
+      width:100%;
+
+      max-width:920px;
+
+      margin-top:42px;
+
+      display:grid;
+
+      grid-template-columns:
+        repeat(6, 1fr);
+
+      gap:12px;
+    }
+
+    .feature{
+      min-height:72px;
+
+      padding:
+        13px 8px;
+
+      box-sizing:border-box;
+
+      display:flex;
+
+      flex-direction:column;
+
+      align-items:center;
+      justify-content:center;
+
+      border:
+        1px solid
+        rgba(0,255,200,.13);
+
+      border-radius:14px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(7,27,36,.72),
+          rgba(2,15,23,.58)
+        );
+
+      box-shadow:
+        inset 0 1px 0
+        rgba(255,255,255,.04),
+        0 8px 25px
+        rgba(0,0,0,.18);
+
+      backdrop-filter:
+        blur(14px);
+
+      -webkit-backdrop-filter:
+        blur(14px);
+
+      transition:
+        transform .22s ease,
+        border-color .22s ease,
+        background .22s ease;
+    }
+
+    .feature:hover{
+      transform:
+        translateY(-3px);
+
+      border-color:
+        rgba(0,255,200,.32);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(7,35,43,.82),
+          rgba(2,18,28,.70)
+        );
+    }
+
+    .feature b{
+      color:#dceff2;
+
+      font-size:12px;
+
+      font-weight:800;
+
+      letter-spacing:.2px;
+    }
+
+    .feature small{
+      margin-top:6px;
+
+      color:#718993;
+
+      font-size:9px;
+
+      letter-spacing:.2px;
+    }
+
+    /* =====================================================
+       ENTRANCE
+       ===================================================== */
+
+    @keyframes landingContentIn{
+
+      from{
+        opacity:0;
+
+        transform:
+          translateX(80px)
+          scale(.98);
+      }
+
+      to{
+        opacity:1;
+
+        transform:
+          translateX(0)
+          scale(1);
+      }
+
+    }
+
+    @keyframes landingGlow{
+
+      from{
+        transform:
+          translateX(-2%)
+          scale(1);
+      }
+
+      to{
+        transform:
+          translateX(2%)
+          scale(1.06);
+      }
+
+    }
+
+    /* =====================================================
+       EXIT
+       ===================================================== */
+
+    .login-page.is-leaving{
+      transform:
+        translateX(-100%);
+
+      opacity:0;
+    }
+
+    /* =====================================================
+       TABLET
+       ===================================================== */
+
+    @media(max-width:900px){
+
+      .login-hero{
+        width:
+          calc(100vw - 30px);
+
+        padding:
+          30px 15px;
+      }
+
+      .feature-row{
+        grid-template-columns:
+          repeat(3, 1fr);
+
+        max-width:680px;
+
+        margin-top:32px;
+      }
+
+    }
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
+    @media(max-width:560px){
+
+      .login-hero{
+        width:
+          calc(100vw - 22px);
+
+        min-height:100vh;
+
+        padding:
+          22px 11px;
+      }
+
+      .login-logo{
+        width:170px;
+
+        margin-bottom:13px;
+      }
+
+      .eyebrow{
+        font-size:8px;
+
+        letter-spacing:2px;
+      }
+
+      .login-hero h1{
+        font-size:42px;
+      }
+
+      .login-hero h2{
+        font-size:15px;
+
+        letter-spacing:3px;
+
+        margin-bottom:17px;
+      }
+
+      .login-hero h3{
+        font-size:17px !important;
+
+        letter-spacing:.7px;
+
+        margin-bottom:10px;
+      }
+
+      .login-hero > p{
+        font-size:10px;
+
+        line-height:1.6;
+
+        margin-bottom:22px;
+      }
+
+      .front-btn{
+        width:
+          min(280px, 85vw);
+
+        min-width:0;
+
+        box-sizing:border-box;
+
+        padding:
+          14px 20px;
+      }
+
+      .feature-row{
+        width:100%;
+
+        grid-template-columns:
+          repeat(2, 1fr);
+
+        gap:8px;
+
+        margin-top:25px;
+      }
+
+      .feature{
+        min-height:58px;
+
+        padding:9px 5px;
+      }
+
+      .feature b{
+        font-size:10px;
+      }
+
+      .feature small{
+        font-size:8px;
+      }
+
+    }
+
+    /* =====================================================
+       SMALL HEIGHT DEVICES
+       ===================================================== */
+
+    @media(max-height:700px){
+
+      .login-hero{
+        padding-top:15px;
+        padding-bottom:15px;
+      }
+
+      .login-logo{
+        width:150px;
+
+        margin-bottom:9px;
+      }
+
+      .login-hero h1{
+        font-size:42px;
+      }
+
+      .login-hero h2{
+        margin-bottom:12px;
+      }
+
+      .login-hero h3{
+        margin-bottom:8px;
+      }
+
+      .login-hero > p{
+        margin-bottom:17px;
+      }
+
+      .feature-row{
+        margin-top:20px;
+      }
+
+      .feature{
+        min-height:52px;
+      }
+
+    }
+
+    /* =====================================================
+       REDUCED MOTION
+       ===================================================== */
+
+    @media(prefers-reduced-motion:reduce){
+
+      *,
+      *::before,
+      *::after{
+        animation:none!important;
+        transition:none!important;
+      }
+
+      .login-page{
+        transform:none!important;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <div
+    class="login-page"
+    id="landingPage"
+  >
+
+    <section class="login-hero">
+
+      <img
+        class="login-logo"
+        src="/logo.svg"
+        alt="AL SABIHA Logo"
+      >
+
+      <div class="eyebrow">
+        YOUR TRUST • OUR PRIORITY
+      </div>
+
+      <h1>
+        AL SABIHA
+      </h1>
+
+      <h2>
+        GROUP OF COMPANIES
+      </h2>
+
+      <h3>
+        MANPOWER ATTENDANCE SYSTEM
+      </h3>
+
+      <p>
+        Smart Attendance &nbsp; | &nbsp;
+        Better Management &nbsp; | &nbsp;
+        Stronger Workforce
+      </p>
+
+      <a
+        class="front-btn"
+        id="loginLink"
+        href="/login.html"
+      >
+        Login to Continue &nbsp; →
+      </a>
+
+      <div class="feature-row">
+
+        <div class="feature">
+          <b>♙ Workers</b>
+          <small>Manage Workers</small>
+        </div>
+
+        <div class="feature">
+          <b>▦ Companies</b>
+          <small>Manage Companies</small>
+        </div>
+
+        <div class="feature">
+          <b>⌖ Sites</b>
+          <small>Manage Sites</small>
+        </div>
+
+        <div class="feature">
+          <b>▣ Attendance</b>
+          <small>QR Check-in/out</small>
+        </div>
+
+        <div class="feature">
+          <b>▤ Reports</b>
+          <small>Monthly Reports</small>
+        </div>
+
+        <div class="feature">
+          <b>⌖ GPS</b>
+          <small>Live Location</small>
+        </div>
+
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- Existing app.js -->
+  <script src="/app.js"></script>
+
+  <script>
+    /* =====================================================
+       LOGIN BUTTON → SMOOTH HORIZONTAL SWIPE
+       ===================================================== */
+
+    const loginLink =
+      document.getElementById("loginLink");
+
+    const landingPage =
+      document.getElementById("landingPage");
+
+
+    loginLink.addEventListener(
+      "click",
+      function(event){
+
+        event.preventDefault();
+
+        landingPage.classList.add(
+          "is-leaving"
+        );
+
+        setTimeout(
+          function(){
+
+            window.location.href =
+              "/login.html";
+
+          },
+          650
+        );
+
+      }
+    );
+  </script>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 
 <meta charset="utf-8">
@@ -29,13 +29,8 @@ shell("dashboard","Dashboard",`
 <style>
 
 /* =========================================================
-   AL SABIHA LUXURY DUBAI DASHBOARD
-   CLEAR REAL IMAGE + GLASSMORPHISM
-   ========================================================= */
-
-
-/* =========================================================
-   DASHBOARD BACKGROUND
+   AL SABIHA
+   PREMIUM LUXURY DUBAI DASHBOARD
    ========================================================= */
 
 .dashboard-page{
@@ -43,7 +38,6 @@ shell("dashboard","Dashboard",`
   position:relative !important;
 
   width:100% !important;
-
   max-width:none !important;
 
   min-height:
@@ -55,15 +49,12 @@ shell("dashboard","Dashboard",`
 
   overflow:hidden !important;
 
-  background:
-    transparent !important;
-
+  background:transparent !important;
 }
 
 
 /* =========================================================
-   REAL DUBAI IMAGE
-   VERY LIGHT OVERLAY
+   DUBAI BACKGROUND
    ========================================================= */
 
 .dashboard-page::before{
@@ -78,23 +69,18 @@ shell("dashboard","Dashboard",`
 
   background-image:
     linear-gradient(
-      rgba(3,16,29,.04),
-      rgba(3,16,29,.10)
+      rgba(3,16,29,.08),
+      rgba(3,16,29,.18)
     ),
-    url("/dashboard-dubai.jpg?v=1001") !important;
+    url("/dashboard-dubai.jpg?v=2001") !important;
 
   background-size:cover !important;
 
   background-position:center center !important;
 
   background-repeat:no-repeat !important;
-
 }
 
-
-/* =========================================================
-   SLIGHT GLASS/DARK EFFECT AT BOTTOM
-   ========================================================= */
 
 .dashboard-page::after{
 
@@ -102,13 +88,7 @@ shell("dashboard","Dashboard",`
 
   position:absolute !important;
 
-  left:0 !important;
-
-  right:0 !important;
-
-  bottom:0 !important;
-
-  height:180px !important;
+  inset:0 !important;
 
   z-index:0 !important;
 
@@ -116,24 +96,19 @@ shell("dashboard","Dashboard",`
 
   background:
     linear-gradient(
-      to top,
-      rgba(3,16,29,.22),
-      transparent
+      180deg,
+      rgba(3,16,29,.05) 0%,
+      rgba(3,16,29,.02) 45%,
+      rgba(3,16,29,.28) 100%
     ) !important;
-
 }
 
-
-/* =========================================================
-   ALL DASHBOARD CONTENT ABOVE IMAGE
-   ========================================================= */
 
 .dashboard-page > *{
 
   position:relative !important;
 
   z-index:2 !important;
-
 }
 
 
@@ -147,115 +122,158 @@ shell("dashboard","Dashboard",`
 
   overflow:hidden;
 
-  margin-bottom:24px;
+  margin-bottom:22px;
 
   padding:30px 32px;
 
-  border-radius:20px;
+  border-radius:24px;
 
   background:
     linear-gradient(
       135deg,
-      rgba(3,18,32,.62),
-      rgba(8,48,77,.38)
+      rgba(3,18,32,.72),
+      rgba(8,48,77,.42)
     );
 
   color:white;
-
-  box-shadow:
-    0 15px 40px
-    rgba(0,0,0,.18);
 
   border:
     1px solid
     rgba(245,212,119,.42);
 
-  backdrop-filter:
-    blur(7px);
+  box-shadow:
+    0 18px 45px
+    rgba(0,0,0,.24);
 
-  -webkit-backdrop-filter:
-    blur(7px);
+  backdrop-filter:blur(12px);
 
+  -webkit-backdrop-filter:blur(12px);
 }
 
 
-.dashboard-hero:after{
+.dashboard-hero::before{
 
   content:"";
 
   position:absolute;
 
-  right:-80px;
+  top:-100px;
 
-  bottom:-100px;
+  right:-100px;
 
-  width:260px;
+  width:280px;
 
-  height:260px;
-
-  border:
-    1px solid
-    rgba(245,212,119,.24);
+  height:280px;
 
   border-radius:50%;
 
+  border:
+    1px solid
+    rgba(245,212,119,.22);
+
+  box-shadow:
+    0 0 60px
+    rgba(245,212,119,.08);
+}
+
+
+.dashboard-hero::after{
+
+  content:"";
+
+  position:absolute;
+
+  width:140px;
+
+  height:140px;
+
+  right:60px;
+
+  bottom:-100px;
+
+  border-radius:50%;
+
+  background:
+    rgba(245,212,119,.10);
+
+  filter:blur(2px);
 }
 
 
 .dashboard-hero h1{
 
+  position:relative;
+
+  z-index:2;
+
   margin:
-    0 0 7px;
+    0 0 8px;
+
+  color:#ffffff;
 
   font-family:
-    Georgia,serif;
+    Georgia,
+    serif;
 
   font-size:30px;
 
   letter-spacing:.2px;
-
 }
 
 
 .dashboard-hero p{
 
+  position:relative;
+
+  z-index:2;
+
   margin:0;
 
-  color:#eef5fc;
+  color:#edf6ff;
 
   font-size:14px;
 
+  letter-spacing:.3px;
 }
 
 
 .dashboard-date{
 
-  margin-top:17px;
+  position:relative;
+
+  z-index:2;
 
   display:inline-flex;
 
-  padding:7px 13px;
+  align-items:center;
+
+  margin-top:17px;
+
+  padding:8px 15px;
 
   border-radius:30px;
 
   background:
-    rgba(245,212,119,.18);
+    rgba(245,212,119,.16);
 
   border:
     1px solid
-    rgba(245,212,119,.38);
+    rgba(245,212,119,.42);
 
   color:#f5d477;
 
   font-size:12px;
 
-  font-weight:700;
+  font-weight:800;
 
+  box-shadow:
+    0 5px 20px
+    rgba(0,0,0,.10);
 }
 
 
 /* =========================================================
-   STAT CARDS
+   SIX STAT CARDS
    ========================================================= */
 
 .dashboard-stats{
@@ -265,10 +283,9 @@ shell("dashboard","Dashboard",`
   grid-template-columns:
     repeat(6,minmax(0,1fr));
 
-  gap:16px;
+  gap:15px;
 
-  margin-bottom:24px;
-
+  margin-bottom:22px;
 }
 
 
@@ -278,59 +295,47 @@ shell("dashboard","Dashboard",`
 
   overflow:hidden;
 
-  min-height:145px;
+  min-height:142px;
 
-  padding:20px;
+  padding:19px;
+
+  border-radius:19px;
 
   background:
-    rgba(255,255,255,.48);
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.68),
+      rgba(255,255,255,.39)
+    );
 
   border:
     1px solid
-    rgba(255,255,255,.70);
-
-  border-radius:18px;
+    rgba(255,255,255,.78);
 
   box-shadow:
-    0 10px 30px
-    rgba(0,0,0,.16);
+    0 12px 30px
+    rgba(0,0,0,.17);
 
-  backdrop-filter:
-    blur(7px);
+  backdrop-filter:blur(12px);
 
-  -webkit-backdrop-filter:
-    blur(7px);
+  -webkit-backdrop-filter:blur(12px);
 
   transition:
-    .2s ease;
-
+    transform .22s ease,
+    box-shadow .22s ease,
+    border-color .22s ease;
 }
 
 
-.dashboard-stat:hover{
-
-  transform:
-    translateY(-3px);
-
-  box-shadow:
-    0 15px 35px
-    rgba(0,0,0,.23);
-
-  border-color:
-    rgba(197,151,50,.55);
-
-}
-
-
-.dashboard-stat:after{
+.dashboard-stat::before{
 
   content:"";
 
   position:absolute;
 
-  right:-35px;
+  top:-50px;
 
-  bottom:-55px;
+  right:-50px;
 
   width:120px;
 
@@ -339,16 +344,31 @@ shell("dashboard","Dashboard",`
   border-radius:50%;
 
   background:
-    rgba(245,212,119,.18);
+    rgba(245,212,119,.17);
+}
 
+
+.dashboard-stat:hover{
+
+  transform:
+    translateY(-5px);
+
+  border-color:
+    rgba(197,151,50,.62);
+
+  box-shadow:
+    0 18px 38px
+    rgba(0,0,0,.23);
 }
 
 
 .stat-icon{
 
-  width:43px;
+  position:relative;
 
-  height:43px;
+  width:45px;
+
+  height:45px;
 
   display:flex;
 
@@ -356,38 +376,54 @@ shell("dashboard","Dashboard",`
 
   justify-content:center;
 
-  border-radius:12px;
+  margin-bottom:15px;
+
+  border-radius:13px;
 
   background:
-    rgba(248,241,220,.82);
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.92),
+      rgba(248,241,220,.76)
+    );
+
+  border:
+    1px solid
+    rgba(217,173,77,.30);
 
   color:#9d7425;
 
   font-size:21px;
 
-  font-weight:700;
+  font-weight:800;
 
-  margin-bottom:15px;
-
+  box-shadow:
+    0 7px 18px
+    rgba(157,116,37,.12);
 }
 
 
 .dashboard-stat-number{
 
+  position:relative;
+
   display:block;
 
   color:#061a30;
 
-  font-size:28px;
+  font-size:29px;
 
   line-height:1;
 
-  font-weight:800;
+  font-weight:900;
 
+  letter-spacing:-.5px;
 }
 
 
 .dashboard-stat-label{
+
+  position:relative;
 
   display:block;
 
@@ -395,42 +431,46 @@ shell("dashboard","Dashboard",`
 
   color:#40566b;
 
-  font-size:12px;
+  font-size:11px;
 
-  font-weight:700;
+  font-weight:800;
 
+  text-transform:uppercase;
+
+  letter-spacing:.45px;
 }
 
 
 /* =========================================================
-   SECTION CARDS
+   GENERAL CARD
    ========================================================= */
 
 .dashboard-card{
 
-  background:
-    rgba(255,255,255,.50);
-
-  border:
-    1px solid
-    rgba(255,255,255,.72);
-
-  border-radius:18px;
+  margin-bottom:20px;
 
   padding:22px;
 
+  border-radius:20px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.62),
+      rgba(255,255,255,.40)
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.78);
+
   box-shadow:
-    0 10px 30px
-    rgba(0,0,0,.16);
+    0 12px 32px
+    rgba(0,0,0,.17);
 
-  margin-bottom:20px;
+  backdrop-filter:blur(12px);
 
-  backdrop-filter:
-    blur(8px);
-
-  -webkit-backdrop-filter:
-    blur(8px);
-
+  -webkit-backdrop-filter:blur(12px);
 }
 
 
@@ -445,7 +485,6 @@ shell("dashboard","Dashboard",`
   gap:15px;
 
   margin-bottom:18px;
-
 }
 
 
@@ -456,23 +495,23 @@ shell("dashboard","Dashboard",`
   color:#061a30;
 
   font-family:
-    Georgia,serif;
+    Georgia,
+    serif;
 
   font-size:19px;
-
 }
 
 
 .dashboard-card-header p{
 
-  margin:5px 0 0;
+  margin:
+    5px 0 0;
 
   color:#40566b;
 
   font-size:12px;
 
   font-weight:600;
-
 }
 
 
@@ -485,54 +524,76 @@ shell("dashboard","Dashboard",`
   display:grid;
 
   grid-template-columns:
-    repeat(auto-fit,minmax(240px,1fr));
+    repeat(auto-fit,minmax(230px,1fr));
 
-  gap:15px;
-
+  gap:14px;
 }
 
 
 .company-box{
 
+  position:relative;
+
+  overflow:hidden;
+
   padding:18px;
 
-  border-radius:16px;
+  border-radius:17px;
 
   background:
-    rgba(255,255,255,.40);
+    rgba(255,255,255,.43);
 
   border:
     1px solid
-    rgba(255,255,255,.70);
+    rgba(255,255,255,.75);
+
+  backdrop-filter:blur(8px);
+
+  -webkit-backdrop-filter:blur(8px);
 
   transition:
-    .2s ease;
+    transform .2s ease,
+    box-shadow .2s ease;
+}
 
-  backdrop-filter:
-    blur(6px);
 
-  -webkit-backdrop-filter:
-    blur(6px);
+.company-box::after{
 
+  content:"";
+
+  position:absolute;
+
+  right:-35px;
+
+  bottom:-45px;
+
+  width:100px;
+
+  height:100px;
+
+  border-radius:50%;
+
+  background:
+    rgba(245,212,119,.13);
 }
 
 
 .company-box:hover{
 
   transform:
-    translateY(-2px);
-
-  border-color:
-    rgba(197,151,50,.55);
+    translateY(-3px);
 
   box-shadow:
-    0 8px 22px
-    rgba(6,26,48,.12);
-
+    0 10px 25px
+    rgba(6,26,48,.13);
 }
 
 
 .company-name{
+
+  position:relative;
+
+  z-index:2;
 
   margin:
     0 0 16px;
@@ -541,12 +602,15 @@ shell("dashboard","Dashboard",`
 
   font-size:15px;
 
-  font-weight:800;
-
+  font-weight:900;
 }
 
 
 .company-numbers{
+
+  position:relative;
+
+  z-index:2;
 
   display:grid;
 
@@ -554,7 +618,6 @@ shell("dashboard","Dashboard",`
     repeat(3,1fr);
 
   gap:8px;
-
 }
 
 
@@ -564,11 +627,14 @@ shell("dashboard","Dashboard",`
 
   padding:10px 5px;
 
-  border-radius:10px;
+  border-radius:11px;
 
   background:
-    rgba(255,255,255,.52);
+    rgba(255,255,255,.56);
 
+  border:
+    1px solid
+    rgba(255,255,255,.62);
 }
 
 
@@ -579,7 +645,6 @@ shell("dashboard","Dashboard",`
   color:#061a30;
 
   font-size:20px;
-
 }
 
 
@@ -593,22 +658,19 @@ shell("dashboard","Dashboard",`
 
   font-size:10px;
 
-  font-weight:700;
-
+  font-weight:800;
 }
 
 
 .present-number strong{
 
   color:#16834b;
-
 }
 
 
 .absent-number strong{
 
   color:#cf3d3d;
-
 }
 
 
@@ -625,7 +687,6 @@ shell("dashboard","Dashboard",`
     minmax(300px,1fr);
 
   gap:20px;
-
 }
 
 
@@ -637,6 +698,7 @@ shell("dashboard","Dashboard",`
 
   overflow-x:auto;
 
+  border-radius:13px;
 }
 
 
@@ -647,7 +709,6 @@ shell("dashboard","Dashboard",`
   border-collapse:collapse;
 
   min-width:650px;
-
 }
 
 
@@ -668,8 +729,7 @@ shell("dashboard","Dashboard",`
 
   border-bottom:
     1px solid
-    rgba(255,255,255,.55);
-
+    rgba(255,255,255,.60);
 }
 
 
@@ -687,15 +747,20 @@ shell("dashboard","Dashboard",`
   border-bottom:
     1px solid
     rgba(255,255,255,.45);
+}
 
+
+.dashboard-table tbody tr{
+
+  transition:
+    background .18s ease;
 }
 
 
 .dashboard-table tbody tr:hover{
 
   background:
-    rgba(255,255,255,.35);
-
+    rgba(255,255,255,.38);
 }
 
 
@@ -703,30 +768,30 @@ shell("dashboard","Dashboard",`
 
   display:inline-flex;
 
+  align-items:center;
+
   padding:
-    5px 9px;
+    5px 10px;
 
   border-radius:20px;
 
   background:
-    rgba(237,248,242,.85);
+    rgba(237,248,242,.90);
 
   color:#16834b;
 
   font-size:10px;
 
-  font-weight:700;
-
+  font-weight:800;
 }
 
 
 .status-out{
 
   background:
-    rgba(241,243,245,.85);
+    rgba(241,243,245,.90);
 
   color:#66717d;
-
 }
 
 
@@ -742,7 +807,6 @@ shell("dashboard","Dashboard",`
     repeat(2,1fr);
 
   gap:11px;
-
 }
 
 
@@ -760,48 +824,46 @@ shell("dashboard","Dashboard",`
 
   border:
     1px solid
-    rgba(255,255,255,.70);
+    rgba(255,255,255,.75);
 
-  border-radius:13px;
+  border-radius:14px;
 
   background:
-    rgba(255,255,255,.42);
+    rgba(255,255,255,.43);
 
   text-decoration:none;
 
   color:#172b3f;
 
   transition:
-    .2s ease;
+    transform .2s ease,
+    background .2s ease,
+    border-color .2s ease;
 
-  backdrop-filter:
-    blur(6px);
+  backdrop-filter:blur(7px);
 
-  -webkit-backdrop-filter:
-    blur(6px);
-
+  -webkit-backdrop-filter:blur(7px);
 }
 
 
 .quick-action:hover{
 
   background:
-    rgba(255,255,255,.68);
+    rgba(255,255,255,.72);
 
   border-color:
-    rgba(197,151,50,.55);
+    rgba(197,151,50,.58);
 
   transform:
-    translateY(-2px);
-
+    translateY(-3px);
 }
 
 
 .quick-icon{
 
-  width:36px;
+  width:37px;
 
-  height:36px;
+  height:37px;
 
   flex:none;
 
@@ -811,17 +873,24 @@ shell("dashboard","Dashboard",`
 
   justify-content:center;
 
-  border-radius:10px;
+  border-radius:11px;
 
   background:
-    rgba(248,241,220,.90);
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.94),
+      rgba(248,241,220,.78)
+    );
+
+  border:
+    1px solid
+    rgba(217,173,77,.28);
 
   color:#a97921;
 
   font-size:17px;
 
-  font-weight:700;
-
+  font-weight:800;
 }
 
 
@@ -829,45 +898,43 @@ shell("dashboard","Dashboard",`
 
   font-size:11px;
 
+  line-height:1.35;
 }
 
 
 /* =========================================================
-   BRAND
+   BRAND FOOTER
    ========================================================= */
 
 .dashboard-brand{
 
   padding:
-    32px 20px;
+    30px 20px;
 
   text-align:center;
 
-  border-radius:20px;
+  border-radius:22px;
 
   background:
     linear-gradient(
       145deg,
-      rgba(6,26,48,.68),
-      rgba(11,53,87,.48)
+      rgba(6,26,48,.76),
+      rgba(11,53,87,.52)
     );
 
   color:white;
 
   border:
     1px solid
-    rgba(245,212,119,.36);
+    rgba(245,212,119,.38);
 
   box-shadow:
-    0 12px 35px
-    rgba(0,0,0,.20);
+    0 14px 38px
+    rgba(0,0,0,.23);
 
-  backdrop-filter:
-    blur(7px);
+  backdrop-filter:blur(10px);
 
-  -webkit-backdrop-filter:
-    blur(7px);
-
+  -webkit-backdrop-filter:blur(10px);
 }
 
 
@@ -877,8 +944,7 @@ shell("dashboard","Dashboard",`
 
   max-width:75%;
 
-  margin-bottom:12px;
-
+  margin-bottom:10px;
 }
 
 
@@ -890,12 +956,12 @@ shell("dashboard","Dashboard",`
   color:#f5d477;
 
   font-family:
-    Georgia,serif;
+    Georgia,
+    serif;
 
   font-size:20px;
 
   line-height:1.5;
-
 }
 
 
@@ -915,7 +981,6 @@ shell("dashboard","Dashboard",`
   color:#40566b;
 
   font-size:12px;
-
 }
 
 
@@ -929,7 +994,6 @@ shell("dashboard","Dashboard",`
 
     grid-template-columns:
       repeat(3,1fr);
-
   }
 
 }
@@ -940,7 +1004,6 @@ shell("dashboard","Dashboard",`
   .dashboard-grid{
 
     grid-template-columns:1fr;
-
   }
 
 }
@@ -951,15 +1014,15 @@ shell("dashboard","Dashboard",`
   .dashboard-page{
 
     padding:16px !important;
-
   }
+
 
   .dashboard-page::before{
 
     background-position:
       center top !important;
-
   }
+
 
   .dashboard-stats{
 
@@ -967,40 +1030,39 @@ shell("dashboard","Dashboard",`
       repeat(2,1fr);
 
     gap:11px;
-
   }
+
 
   .dashboard-stat{
 
     min-height:125px;
 
     padding:15px;
-
   }
+
 
   .dashboard-stat-number{
 
     font-size:24px;
-
   }
+
 
   .dashboard-hero{
 
     padding:
       23px 20px;
-
   }
+
 
   .dashboard-hero h1{
 
     font-size:24px;
-
   }
+
 
   .dashboard-card{
 
     padding:16px;
-
   }
 
 }
@@ -1011,13 +1073,12 @@ shell("dashboard","Dashboard",`
   .dashboard-stats{
 
     grid-template-columns:1fr;
-
   }
+
 
   .quick-actions{
 
     grid-template-columns:1fr;
-
   }
 
 }
@@ -1054,7 +1115,7 @@ shell("dashboard","Dashboard",`
 
 
   <!-- =====================================================
-       SIX MAIN STATS
+       MAIN STATS
   ====================================================== -->
 
   <div class="dashboard-stats">
@@ -1069,16 +1130,11 @@ shell("dashboard","Dashboard",`
       <span
         class="dashboard-stat-number"
         id="workers">
-
         0
-
       </span>
 
-      <span
-        class="dashboard-stat-label">
-
+      <span class="dashboard-stat-label">
         Total Workers
-
       </span>
 
     </div>
@@ -1093,16 +1149,11 @@ shell("dashboard","Dashboard",`
       <span
         class="dashboard-stat-number"
         id="companies">
-
         0
-
       </span>
 
-      <span
-        class="dashboard-stat-label">
-
+      <span class="dashboard-stat-label">
         Total Companies
-
       </span>
 
     </div>
@@ -1117,16 +1168,11 @@ shell("dashboard","Dashboard",`
       <span
         class="dashboard-stat-number"
         id="sites">
-
         0
-
       </span>
 
-      <span
-        class="dashboard-stat-label">
-
+      <span class="dashboard-stat-label">
         Active Sites
-
       </span>
 
     </div>
@@ -1141,16 +1187,11 @@ shell("dashboard","Dashboard",`
       <span
         class="dashboard-stat-number"
         id="present">
-
         0
-
       </span>
 
-      <span
-        class="dashboard-stat-label">
-
+      <span class="dashboard-stat-label">
         Today Present
-
       </span>
 
     </div>
@@ -1165,16 +1206,11 @@ shell("dashboard","Dashboard",`
       <span
         class="dashboard-stat-number"
         id="absent">
-
         0
-
       </span>
 
-      <span
-        class="dashboard-stat-label">
-
+      <span class="dashboard-stat-label">
         Today Absent
-
       </span>
 
     </div>
@@ -1189,16 +1225,11 @@ shell("dashboard","Dashboard",`
       <span
         class="dashboard-stat-number"
         id="checkedin">
-
         0
-
       </span>
 
-      <span
-        class="dashboard-stat-label">
-
+      <span class="dashboard-stat-label">
         Currently Checked In
-
       </span>
 
     </div>
@@ -1233,20 +1264,17 @@ shell("dashboard","Dashboard",`
     <div
       id="companySummary"
       class="company-summary">
-
     </div>
 
   </div>
 
 
   <!-- =====================================================
-       RECENT + QUICK ACTIONS
+       RECENT ATTENDANCE + QUICK ACTIONS
   ====================================================== -->
 
   <div class="dashboard-grid">
 
-
-    <!-- RECENT ATTENDANCE -->
 
     <div class="dashboard-card">
 
@@ -1275,34 +1303,16 @@ shell("dashboard","Dashboard",`
 
             <tr>
 
-              <th>
-                Worker
-              </th>
-
-              <th>
-                Company
-              </th>
-
-              <th>
-                Site
-              </th>
-
-              <th>
-                Check In
-              </th>
-
-              <th>
-                Check Out
-              </th>
-
-              <th>
-                Status
-              </th>
+              <th>Worker</th>
+              <th>Company</th>
+              <th>Site</th>
+              <th>Check In</th>
+              <th>Check Out</th>
+              <th>Status</th>
 
             </tr>
 
           </thead>
-
 
           <tbody id="rows"></tbody>
 
@@ -1312,8 +1322,6 @@ shell("dashboard","Dashboard",`
 
     </div>
 
-
-    <!-- QUICK ACTIONS -->
 
     <div class="dashboard-card">
 
@@ -1446,11 +1454,9 @@ shell("dashboard","Dashboard",`
       alt="AL SABIHA">
 
     <h2>
-
       Right People<br>
       Right Place<br>
       Right Time
-
     </h2>
 
   </div>
@@ -1648,33 +1654,23 @@ shell("dashboard","Dashboard",`
 
             <tr>
 
-
               <td>
-
                 ${esc(
                   r.worker_name || "—"
                 )}
-
               </td>
 
-
               <td>
-
                 ${esc(
                   r.company_name || "—"
                 )}
-
               </td>
 
-
               <td>
-
                 ${esc(
                   r.site_name || "—"
                 )}
-
               </td>
-
 
               <td>
 
@@ -1688,7 +1684,6 @@ shell("dashboard","Dashboard",`
 
               </td>
 
-
               <td>
 
                 ${
@@ -1700,7 +1695,6 @@ shell("dashboard","Dashboard",`
                 }
 
               </td>
-
 
               <td>
 
@@ -1721,7 +1715,6 @@ shell("dashboard","Dashboard",`
                 </span>
 
               </td>
-
 
             </tr>
 

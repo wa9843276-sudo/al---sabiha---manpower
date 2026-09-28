@@ -2,341 +2,854 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <title>AL SABIHA | Login</title>
+
   <link rel="icon" href="/logo.svg">
+  <link rel="stylesheet" href="/style.css">
+
   <style>
-    :root{
-      --navy:#061526;
-      --navy2:#0d1117;
-      --gold:#ffd369;
-      --gold2:#f4c95d;
-      --blue:#00aaff;
-      --blue2:#007bff;
-      --white:#fff;
-      --muted:#9aa8b7;
+    /* =====================================================
+       AL SABIHA — PREMIUM FULL SCREEN LOGIN
+       ===================================================== */
+
+    html,
+    body{
+      width:100%;
+      height:100%;
+      margin:0;
+      overflow:hidden;
     }
 
-    *{box-sizing:border-box}
-
-    html,body{min-height:100%;margin:0}
-
     body{
-      min-height:100vh;
+      background:#020b12;
+    }
+
+    /* =====================================================
+       LOGIN SCREEN
+       ===================================================== */
+
+    .login-screen{
+      position:fixed;
+      inset:0;
+      width:100%;
+      height:100%;
+
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:30px 16px;
-      font-family:Inter,"Segoe UI",Arial,sans-serif;
-      color:var(--white);
+
       overflow:hidden;
+
       background:
-        linear-gradient(rgba(2,12,23,.78),rgba(2,12,23,.88)),
-        url("/dashboard-dubai.jpg") center/cover fixed no-repeat;
+        radial-gradient(
+          circle at 50% 45%,
+          rgba(0,210,190,.12),
+          transparent 38%
+        ),
+        linear-gradient(
+          135deg,
+          #020b12 0%,
+          #061b25 48%,
+          #020b12 100%
+        );
+
+      animation:
+        loginScreenIn .8s cubic-bezier(.22,.8,.25,1) both;
     }
 
-    body::before{
+    /* =====================================================
+       AMBIENT GLOW
+       ===================================================== */
+
+    .login-screen::before{
       content:"";
-      position:fixed;
-      inset:0;
-      pointer-events:none;
+
+      position:absolute;
+      inset:-30%;
+
       background:
-        radial-gradient(circle at 50% 25%,rgba(255,211,105,.10),transparent 30%),
-        linear-gradient(120deg,rgba(0,170,255,.05),transparent 45%,rgba(255,211,105,.05));
+        radial-gradient(
+          circle at 20% 50%,
+          rgba(0,255,200,.10),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 80% 45%,
+          rgba(0,170,255,.10),
+          transparent 30%
+        );
+
+      filter:blur(25px);
+
+      animation:
+        ambientGlow 7s ease-in-out infinite alternate;
+
+      pointer-events:none;
     }
 
-    .login-wrap{
-      width:min(430px,100%);
+    /* =====================================================
+       HORIZONTAL LIGHT LINE
+       ===================================================== */
+
+    .login-screen::after{
+      content:"";
+
+      position:absolute;
+
+      width:140%;
+      height:1px;
+
+      left:-20%;
+      top:50%;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(0,255,200,.0),
+          rgba(0,255,200,.45),
+          rgba(0,170,255,.45),
+          transparent
+        );
+
+      opacity:.5;
+
+      transform:rotate(-8deg);
+
+      pointer-events:none;
+    }
+
+    /* =====================================================
+       LOGIN CONTENT
+       ===================================================== */
+
+    .login-content{
       position:relative;
-      z-index:2;
-      animation:fadeIn .9s ease both;
+      z-index:5;
+
+      width:min(440px,calc(100% - 30px));
+
+      animation:
+        loginPanelIn .9s cubic-bezier(.16,1,.3,1) .12s both;
     }
 
-    .brand{
+    /* =====================================================
+       LOGO
+       ===================================================== */
+
+    .login-brand{
       display:flex;
       justify-content:center;
+
       margin-bottom:18px;
     }
 
-    .brand img{
-      width:220px;
-      max-width:82%;
-      padding:12px 18px;
-      border-radius:16px;
-      background:rgba(6,21,38,.78);
-      border:1px solid rgba(255,211,105,.16);
-      box-shadow:0 12px 35px rgba(0,0,0,.28);
+    .login-brand img{
+      width:190px;
+      max-width:70%;
+
+      filter:
+        drop-shadow(0 0 10px rgba(0,255,200,.18))
+        drop-shadow(0 8px 25px rgba(0,0,0,.4));
     }
 
-    .login-container{
-      text-align:center;
-      padding:42px 36px 34px;
+    /* =====================================================
+       LOGIN PANEL
+       ===================================================== */
+
+    .login-panel{
+      position:relative;
+
+      padding:38px 34px 30px;
+
+      border-radius:24px;
+
       background:
-        linear-gradient(145deg,rgba(13,17,23,.97),rgba(8,20,32,.96));
-      border:1px solid rgba(255,211,105,.55);
-      border-radius:22px;
-      width:100%;
-      color:#fff;
+        linear-gradient(
+          145deg,
+          rgba(7,27,36,.92),
+          rgba(2,15,23,.88)
+        );
+
+      border:
+        1px solid rgba(0,255,200,.34);
+
       box-shadow:
-        0 25px 80px rgba(0,0,0,.52),
-        inset 0 1px 0 rgba(255,255,255,.04);
-      animation:cardIn .9s cubic-bezier(.2,.8,.2,1) both;
-      backdrop-filter:blur(12px);
+        0 30px 90px rgba(0,0,0,.65),
+        0 0 45px rgba(0,255,200,.07),
+        inset 0 1px 0 rgba(255,255,255,.07);
+
+      backdrop-filter:blur(22px);
+      -webkit-backdrop-filter:blur(22px);
+
+      overflow:hidden;
     }
 
-    .lamp{
-      width:80px;
-      height:80px;
-      margin:0 auto 22px;
+    .login-panel::before{
+      content:"";
+
+      position:absolute;
+
+      left:12%;
+      right:12%;
+      top:0;
+
+      height:1px;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          rgba(0,255,200,.85),
+          rgba(0,170,255,.7),
+          transparent
+        );
+
+      box-shadow:
+        0 0 15px rgba(0,255,200,.5);
+    }
+
+    .login-panel::after{
+      content:"";
+
+      position:absolute;
+
+      width:180px;
+      height:180px;
+
+      right:-100px;
+      top:-100px;
+
       border-radius:50%;
+
       background:
-        radial-gradient(circle at 35% 30%,#fff5bd 0 8%,#ffd369 28%,#ffc107 72%);
+        radial-gradient(
+          circle,
+          rgba(0,255,200,.12),
+          transparent 68%
+        );
+
+      pointer-events:none;
+    }
+
+    /* =====================================================
+       GLOW ORB
+       ===================================================== */
+
+    .login-orb{
+      width:74px;
+      height:74px;
+
+      margin:0 auto 20px;
+
+      border-radius:50%;
+
+      background:
+        radial-gradient(
+          circle at 35% 30%,
+          #dffff8 0 5%,
+          #00ffd0 22%,
+          #00aaff 58%,
+          #073343 100%
+        );
+
       box-shadow:
-        0 0 20px #ffd369,
-        0 0 55px rgba(255,211,105,.48);
-      animation:glow 2s infinite;
+        0 0 12px rgba(0,255,210,.9),
+        0 0 35px rgba(0,255,200,.55),
+        0 0 75px rgba(0,170,255,.22);
+
+      animation:
+        orbPulse 2.8s ease-in-out infinite;
     }
 
-    .login-container h1{
-      margin:0 0 7px;
-      font-family:Georgia,"Times New Roman",serif;
-      font-size:32px;
-      color:#ffd369;
-      letter-spacing:.2px;
-    }
+    /* =====================================================
+       TEXT
+       ===================================================== */
 
-    .login-container .subtitle{
-      margin:0 0 28px;
-      color:#aeb9c5;
-      font-size:13px;
-    }
-
-    .field{
-      text-align:left;
-      margin:14px 0;
-    }
-
-    .field label{
-      display:block;
-      margin:0 0 7px 4px;
-      color:#aeb9c5;
-      font-size:12px;
-      font-weight:600;
-    }
-
-    input{
-      width:100%;
-      padding:14px 15px;
+    .login-panel h1{
       margin:0;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:10px;
-      background:#161b22;
+
+      text-align:center;
+
       color:#fff;
-      outline:none;
-      transition:.22s ease;
+
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:30px;
+
+      letter-spacing:.3px;
+
+      text-shadow:
+        0 0 18px rgba(0,255,200,.12);
     }
 
-    input::placeholder{color:#687789}
+    .login-subtitle{
+      margin:7px 0 26px;
 
-    input:focus{
-      border-color:#00aaff;
-      box-shadow:0 0 0 3px rgba(0,170,255,.10),0 0 18px rgba(0,170,255,.10);
+      text-align:center;
+
+      color:#8fa9b4;
+
+      font-size:12px;
+
+      letter-spacing:.5px;
+    }
+
+    /* =====================================================
+       FIELDS
+       ===================================================== */
+
+    .login-field{
+      margin-bottom:15px;
+    }
+
+    .login-field label{
+      display:block;
+
+      margin:0 0 7px 3px;
+
+      color:#9bb1bb;
+
+      font-size:11px;
+
+      font-weight:700;
+
+      letter-spacing:.3px;
+    }
+
+    .login-field input{
+      width:100%;
+      box-sizing:border-box;
+
+      padding:14px 15px;
+
+      border-radius:11px;
+
+      border:
+        1px solid rgba(255,255,255,.09);
+
+      outline:none;
+
+      background:
+        rgba(3,15,22,.82);
+
+      color:#fff;
+
+      box-shadow:
+        inset 0 1px 4px rgba(0,0,0,.25);
+
+      transition:
+        border-color .22s ease,
+        box-shadow .22s ease,
+        transform .22s ease;
+    }
+
+    .login-field input::placeholder{
+      color:#536b76;
+    }
+
+    .login-field input:focus{
+      border-color:
+        rgba(0,255,200,.65);
+
+      box-shadow:
+        0 0 0 3px rgba(0,255,200,.07),
+        0 0 22px rgba(0,255,200,.10),
+        inset 0 1px 4px rgba(0,0,0,.25);
+
       transform:translateY(-1px);
     }
 
-    .login-btn{
+    /* =====================================================
+       LOGIN BUTTON
+       ===================================================== */
+
+    .login-submit{
       width:100%;
-      padding:14px 12px;
-      margin-top:12px;
-      background:linear-gradient(45deg,#00aaff,#007bff);
-      border:none;
-      color:#fff;
-      border-radius:10px;
-      font-weight:800;
-      letter-spacing:.2px;
+
+      margin-top:7px;
+
+      padding:14px 15px;
+
+      border:0;
+
+      border-radius:11px;
+
+      color:#001817;
+
+      background:
+        linear-gradient(
+          90deg,
+          #00e6bd,
+          #00b7ff
+        );
+
+      font-weight:900;
+
+      letter-spacing:.3px;
+
       cursor:pointer;
-      transition:.22s ease;
-      box-shadow:0 8px 24px rgba(0,123,255,.20);
+
+      box-shadow:
+        0 8px 25px rgba(0,200,210,.20),
+        0 0 18px rgba(0,255,200,.12);
+
+      transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
     }
 
-    .login-btn:hover{
-      transform:scale(1.025);
-      box-shadow:0 0 20px rgba(0,170,255,.45);
+    .login-submit:hover{
+      transform:translateY(-2px);
+
+      filter:brightness(1.08);
+
+      box-shadow:
+        0 12px 35px rgba(0,200,210,.30),
+        0 0 30px rgba(0,255,200,.20);
     }
 
-    .login-btn:active{transform:scale(.99)}
+    .login-submit:active{
+      transform:translateY(0) scale(.99);
+    }
 
-    .login-btn:disabled{
-      opacity:.65;
+    .login-submit:disabled{
+      opacity:.6;
       cursor:wait;
       transform:none;
     }
 
-    .error{
+    /* =====================================================
+       ERROR
+       ===================================================== */
+
+    .login-error{
       display:none;
-      margin-top:14px;
+
+      margin-top:13px;
+
       padding:10px 12px;
+
       border-radius:9px;
-      background:rgba(210,71,80,.12);
-      border:1px solid rgba(210,71,80,.30);
-      color:#ff9ea5;
-      font-size:12px;
+
+      background:
+        rgba(210,71,80,.10);
+
+      border:
+        1px solid rgba(255,100,110,.25);
+
+      color:#ff9da5;
+
+      font-size:11px;
+
+      text-align:center;
     }
 
-    .back{
-      display:inline-block;
-      margin-top:23px;
-      color:#aeb9c5;
-      font-size:12px;
+    /* =====================================================
+       FOOTER
+       ===================================================== */
+
+    .login-back{
+      display:block;
+
+      margin-top:19px;
+
+      text-align:center;
+
+      color:#718993;
+
+      font-size:11px;
+
       transition:.2s ease;
     }
 
-    .back:hover{
-      color:#ffd369;
-      transform:translateX(-2px);
+    .login-back:hover{
+      color:#00e6bd;
     }
 
-    .secure{
-      margin-top:20px;
-      color:#718092;
-      font-size:11px;
-      letter-spacing:.2px;
+    .login-secure{
+      margin-top:14px;
+
+      text-align:center;
+
+      color:#526a75;
+
+      font-size:9px;
+
+      letter-spacing:.6px;
     }
 
-    @keyframes glow{
-      0%,100%{
-        box-shadow:
-          0 0 20px #ffd369,
-          0 0 45px rgba(255,211,105,.35);
-      }
-      50%{
-        box-shadow:
-          0 0 38px #ffc107,
-          0 0 75px rgba(255,193,7,.48);
-      }
-    }
+    /* =====================================================
+       ENTRANCE ANIMATIONS
+       ===================================================== */
 
-    @keyframes fadeIn{
-      from{opacity:0}
-      to{opacity:1}
-    }
-
-    @keyframes cardIn{
+    @keyframes loginScreenIn{
       from{
         opacity:0;
-        transform:translateY(30px) scale(.97);
+        transform:translateX(100%);
       }
+
       to{
         opacity:1;
-        transform:translateY(0) scale(1);
+        transform:translateX(0);
       }
     }
 
-    @media(max-width:520px){
-      body{padding:20px 12px}
-      .login-container{padding:34px 22px 28px}
-      .login-container h1{font-size:28px}
-      .lamp{width:70px;height:70px}
+    @keyframes loginPanelIn{
+      from{
+        opacity:0;
+        transform:
+          translateX(90px)
+          scale(.96);
+      }
+
+      to{
+        opacity:1;
+        transform:
+          translateX(0)
+          scale(1);
+      }
     }
 
+    @keyframes ambientGlow{
+      from{
+        transform:
+          translateX(-2%)
+          scale(1);
+      }
+
+      to{
+        transform:
+          translateX(2%)
+          scale(1.06);
+      }
+    }
+
+    @keyframes orbPulse{
+      0%,100%{
+        transform:scale(1);
+
+        box-shadow:
+          0 0 12px rgba(0,255,210,.9),
+          0 0 35px rgba(0,255,200,.55),
+          0 0 75px rgba(0,170,255,.22);
+      }
+
+      50%{
+        transform:scale(1.06);
+
+        box-shadow:
+          0 0 18px rgba(0,255,210,1),
+          0 0 48px rgba(0,255,200,.65),
+          0 0 90px rgba(0,170,255,.28);
+      }
+    }
+
+    /* =====================================================
+       SUCCESS EXIT ANIMATION
+       ===================================================== */
+
+    body.login-exiting{
+      animation:
+        loginExit .58s cubic-bezier(.76,0,.24,1) forwards;
+
+      pointer-events:none;
+    }
+
+    @keyframes loginExit{
+      from{
+        opacity:1;
+        transform:translateX(0);
+      }
+
+      to{
+        opacity:0;
+        transform:translateX(-100%);
+      }
+    }
+
+    /* =====================================================
+       MOBILE
+       ===================================================== */
+
+    @media(max-width:520px){
+
+      .login-content{
+        width:calc(100% - 22px);
+      }
+
+      .login-panel{
+        padding:30px 21px 25px;
+        border-radius:20px;
+      }
+
+      .login-brand img{
+        width:165px;
+      }
+
+      .login-panel h1{
+        font-size:27px;
+      }
+
+      .login-orb{
+        width:65px;
+        height:65px;
+      }
+    }
+
+    /* =====================================================
+       REDUCED MOTION
+       ===================================================== */
+
     @media(prefers-reduced-motion:reduce){
-      *{animation:none!important;transition:none!important}
+
+      *,
+      *::before,
+      *::after{
+        animation:none!important;
+        transition:none!important;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <main class="login-wrap">
+  <main class="login-screen">
 
-    <div class="brand">
-      <img src="/logo.svg" alt="AL SABIHA GROUP OF COMPANIES">
-    </div>
+    <div class="login-content">
 
-    <div class="login-container">
-
-      <div class="lamp"></div>
-
-      <h1>Welcome Back</h1>
-      <p class="subtitle">Manpower Attendance System</p>
-
-      <form id="loginForm" autocomplete="on">
-
-        <div class="field">
-          <label for="username">Username</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            placeholder="Username"
-            autocomplete="username"
-            required
-          >
-        </div>
-
-        <div class="field">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            placeholder="Password"
-            autocomplete="current-password"
-            required
-          >
-        </div>
-
-        <button class="login-btn" id="loginButton" type="submit">
-          Login &nbsp; →
-        </button>
-
-        <div class="error" id="loginError"></div>
-
-      </form>
-
-      <a class="back" href="/">← Back to Home</a>
-
-      <div class="secure">
-        Secure &nbsp; • &nbsp; Reliable &nbsp; • &nbsp; Professional
+      <div class="login-brand">
+        <img
+          src="/logo.svg"
+          alt="AL SABIHA GROUP OF COMPANIES"
+        >
       </div>
+
+      <section class="login-panel">
+
+        <div class="login-orb"></div>
+
+        <h1>Welcome Back</h1>
+
+        <p class="login-subtitle">
+          MANPOWER ATTENDANCE SYSTEM
+        </p>
+
+        <form
+          id="loginForm"
+          autocomplete="on"
+        >
+
+          <div class="login-field">
+
+            <label for="username">
+              USERNAME
+            </label>
+
+            <input
+              id="username"
+              name="username"
+              type="text"
+              placeholder="Enter username"
+              autocomplete="username"
+              required
+            >
+
+          </div>
+
+          <div class="login-field">
+
+            <label for="password">
+              PASSWORD
+            </label>
+
+            <input
+              id="password"
+              name="password"
+              type="password"
+              placeholder="Enter password"
+              autocomplete="current-password"
+              required
+            >
+
+          </div>
+
+          <button
+            class="login-submit"
+            id="loginButton"
+            type="submit"
+          >
+            Login &nbsp; →
+          </button>
+
+          <div
+            class="login-error"
+            id="loginError"
+          ></div>
+
+        </form>
+
+        <a
+          class="login-back"
+          href="/"
+        >
+          ← Back to Home
+        </a>
+
+        <div class="login-secure">
+          SECURE • RELIABLE • PROFESSIONAL
+        </div>
+
+      </section>
 
     </div>
 
   </main>
 
+  <!-- =====================================================
+       EXISTING APP.JS
+       DO NOT REPLACE
+       ===================================================== -->
+
   <script src="/app.js"></script>
+
   <script>
-    const form = document.getElementById("loginForm");
-    const button = document.getElementById("loginButton");
-    const errorBox = document.getElementById("loginError");
+    /* =====================================================
+       LOGIN
+       ===================================================== */
 
-    form.addEventListener("submit", async function(e){
-      e.preventDefault();
+    const form =
+      document.getElementById("loginForm");
 
-      errorBox.style.display = "none";
-      button.disabled = true;
-      button.textContent = "Signing in...";
+    const button =
+      document.getElementById("loginButton");
 
-      try{
-        await api("/api/auth/login", {
-          method:"POST",
-          body:JSON.stringify({
-            username:document.getElementById("username").value.trim(),
-            password:document.getElementById("password").value
-          })
-        });
+    const errorBox =
+      document.getElementById("loginError");
 
-        window.location.href = "/dashboard.html";
-      }catch(err){
-        errorBox.textContent = err.message || "Invalid username or password.";
-        errorBox.style.display = "block";
-        button.disabled = false;
-        button.textContent = "Login  →";
+
+    form.addEventListener(
+      "submit",
+      async function(e){
+
+        e.preventDefault();
+
+        if(button.disabled) return;
+
+        errorBox.style.display = "none";
+        errorBox.textContent = "";
+
+        button.disabled = true;
+        button.textContent = "Signing in...";
+
+        try{
+
+          const username =
+            document
+              .getElementById("username")
+              .value
+              .trim();
+
+          const password =
+            document
+              .getElementById("password")
+              .value;
+
+
+          /* =============================================
+             EXISTING LOGIN API
+             ============================================= */
+
+          await api(
+            "/api/auth/login",
+            {
+              method:"POST",
+
+              body:JSON.stringify({
+                username:username,
+                password:password
+              })
+            }
+          );
+
+
+          /* =============================================
+             SUCCESS
+             HORIZONTAL SWIPE
+             ============================================= */
+
+          document.body.classList.add(
+            "login-exiting"
+          );
+
+
+          /* Wait for animation to complete */
+
+          setTimeout(
+            function(){
+
+              window.location.href =
+                "/dashboard.html";
+
+            },
+            580
+          );
+
+
+        }catch(err){
+
+          errorBox.textContent =
+            err?.message ||
+            "Invalid username or password.";
+
+          errorBox.style.display =
+            "block";
+
+          button.disabled =
+            false;
+
+          button.textContent =
+            "Login  →";
+        }
+
       }
-    });
+    );
 
-    window.addEventListener("load", function(){
-      document.getElementById("username").focus();
-    });
+
+    /* =====================================================
+       AUTO FOCUS
+       ===================================================== */
+
+    window.addEventListener(
+      "load",
+      function(){
+
+        setTimeout(
+          function(){
+
+            const username =
+              document.getElementById(
+                "username"
+              );
+
+            if(username){
+              username.focus();
+            }
+
+          },
+          700
+        );
+
+      }
+    );
   </script>
+
 </body>
 </html>

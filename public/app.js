@@ -9,17 +9,19 @@ const esc = s =>
     "'": "&#39;"
   }[m]));
 
+
 /* =========================================
 API
 ========================================= */
 
 async function api(url, opt = {}) {
+
   const r = await fetch(url, {
+    ...opt,
     headers: {
       "Content-Type": "application/json",
       ...(opt.headers || {})
-    },
-    ...opt
+    }
   });
 
   let d = {};
@@ -34,14 +36,13 @@ async function api(url, opt = {}) {
   }
 
   if (!r.ok) {
-    throw Error(d.error || "Request failed");
+    throw new Error(d.error || "Request failed");
   }
 
   return d;
 }
 
 const API = api;
-
 /* =========================================
 AL SABIHA PREMIUM UI
 ========================================= */
@@ -76,32 +77,33 @@ overflow-y:auto !important;
 z-index:50 !important;
 
 background:
-  radial-gradient(
-    circle at 20% 10%,
-    rgba(245,212,119,.10),
-    transparent 28%
-  ),
-  linear-gradient(
-    180deg,
-    #061a30 0%,
-    #03101f 100%
-  ) !important;
+radial-gradient(
+circle at 20% 10%,
+rgba(245,212,119,.10),
+transparent 28%
+),
+linear-gradient(
+180deg,
+#061a30 0%,
+#03101f 100%
+) !important;
 
 color:#fff !important;
 
 border-right:
-  1px solid
-  rgba(245,212,119,.22) !important;
+1px solid
+rgba(245,212,119,.22) !important;
 
 box-shadow:
-  8px 0 30px
-  rgba(0,0,0,.25) !important;
+8px 0 30px
+rgba(0,0,0,.25) !important;
 
 backdrop-filter:blur(14px);
 
 -webkit-backdrop-filter:blur(14px);
 
 }
+
 
 /* =========================================
 LOGO
@@ -121,8 +123,8 @@ padding:8px 12px !important;
 margin-bottom:8px !important;
 
 border-bottom:
-  1px solid
-  rgba(245,212,119,.16) !important;
+1px solid
+rgba(245,212,119,.16) !important;
 
 }
 
@@ -138,6 +140,7 @@ object-fit:contain !important;
 display:block !important;
 
 }
+
 
 /* =========================================
 NAVIGATION
@@ -164,7 +167,7 @@ letter-spacing:1.8px !important;
 text-transform:uppercase !important;
 
 padding:
-  14px 9px 6px !important;
+14px 9px 6px !important;
 
 }
 
@@ -182,20 +185,20 @@ width:100% !important;
 min-height:39px !important;
 
 padding:
-  8px 10px !important;
+8px 10px !important;
 
 margin:
-  3px 0 !important;
+3px 0 !important;
 
 border-radius:9px !important;
 
 color:#dce7f0 !important;
 
 font-family:
-  Inter,
-  "Segoe UI",
-  Arial,
-  sans-serif !important;
+Inter,
+"Segoe UI",
+Arial,
+sans-serif !important;
 
 font-size:12.5px !important;
 
@@ -206,10 +209,10 @@ letter-spacing:.15px !important;
 text-decoration:none !important;
 
 transition:
-  background .2s ease,
-  color .2s ease,
-  transform .2s ease,
-  box-shadow .2s ease !important;
+background .2s ease,
+color .2s ease,
+transform .2s ease,
+box-shadow .2s ease !important;
 
 }
 
@@ -220,7 +223,7 @@ rgba(245,212,119,.09) !important;
 color:#f5d477 !important;
 
 transform:
-  translateX(2px) !important;
+translateX(2px) !important;
 
 }
 
@@ -237,10 +240,11 @@ color:#07192b !important;
 font-weight:700 !important;
 
 box-shadow:
-  0 5px 15px
-  rgba(245,212,119,.18) !important;
+0 5px 15px
+rgba(245,212,119,.18) !important;
 
 }
+
 
 /* =========================================
 SMALL PROFESSIONAL SVG ICONS
@@ -285,14 +289,14 @@ stroke-linecap:round !important;
 stroke-linejoin:round !important;
 
 filter:
-  drop-shadow(
-    0 1px 1px
-    rgba(0,0,0,.35)
-  ) !important;
+drop-shadow(
+0 1px 1px
+rgba(0,0,0,.35)
+) !important;
 
 transition:
-  transform .2s ease,
-  filter .2s ease !important;
+transform .2s ease,
+filter .2s ease !important;
 
 }
 
@@ -302,10 +306,10 @@ translateY(-1px)
 scale(1.05) !important;
 
 filter:
-  drop-shadow(
-    0 2px 2px
-    rgba(0,0,0,.40)
-  ) !important;
+drop-shadow(
+0 2px 2px
+rgba(0,0,0,.40)
+) !important;
 
 }
 
@@ -328,6 +332,7 @@ color:inherit !important;
 
 }
 
+
 /* =========================================
 MAIN AREA
 ========================================= */
@@ -344,11 +349,11 @@ isolation:isolate !important;
 background-color:#061526 !important;
 
 background-image:
-  linear-gradient(
-    rgba(3,16,29,.28),
-    rgba(3,16,29,.42)
-  ),
-  url("/dashboard-dubai.jpg?v=3") !important;
+linear-gradient(
+rgba(3,16,29,.28),
+rgba(3,16,29,.42)
+),
+url("/dashboard-dubai.jpg?v=3") !important;
 
 background-size:cover !important;
 
@@ -378,13 +383,14 @@ z-index:-1 !important;
 pointer-events:none !important;
 
 background:
-  linear-gradient(
-    180deg,
-    rgba(2,14,25,.08),
-    rgba(2,14,25,.22)
-  ) !important;
+linear-gradient(
+180deg,
+rgba(2,14,25,.08),
+rgba(2,14,25,.22)
+) !important;
 
 }
+
 
 /* =========================================
 TOP BAR
@@ -399,14 +405,14 @@ rgba(9,39,68,.94)
 ) !important;
 
 border-bottom:
-  1px solid
-  rgba(245,212,119,.25) !important;
+1px solid
+rgba(245,212,119,.25) !important;
 
 min-height:64px !important;
 
 box-shadow:
-  0 4px 18px
-  rgba(0,0,0,.25) !important;
+0 4px 18px
+rgba(0,0,0,.25) !important;
 
 position:sticky !important;
 
@@ -421,17 +427,39 @@ background:
 rgba(255,255,255,.09) !important;
 
 border:
-  1px solid
-  rgba(255,255,255,.15) !important;
+1px solid
+rgba(255,255,255,.15) !important;
 
 color:white !important;
 
 border-radius:9px !important;
 
+outline:none !important;
+
+transition:
+border .2s ease,
+box-shadow .2s ease,
+background .2s ease !important;
+
 }
 
 .search::placeholder{
 color:#cbd5e1 !important;
+}
+
+.search:focus{
+border-color:
+rgba(245,212,119,.55) !important;
+
+background:
+rgba(255,255,255,.12) !important;
+
+box-shadow:
+0 0 0 3px
+rgba(245,212,119,.08),
+0 0 18px
+rgba(245,212,119,.08) !important;
+
 }
 
 .avatar{
@@ -455,6 +483,7 @@ color:white !important;
 .user small{
 color:#cbd5e1 !important;
 }
+
 
 /* =========================================
 CONTENT
@@ -480,6 +509,199 @@ letter-spacing:.2px;
 
 }
 
+
+/* =========================================
+GLOBAL SEARCH DROPDOWN
+========================================= */
+
+.global-search-results{
+
+position:absolute;
+
+top:48px;
+
+left:0;
+
+width:360px;
+
+max-height:430px;
+
+overflow-y:auto;
+
+display:none;
+
+padding:8px;
+
+border-radius:14px;
+
+background:
+rgba(5,20,36,.97);
+
+border:
+1px solid
+rgba(245,212,119,.28);
+
+box-shadow:
+0 18px 40px
+rgba(0,0,0,.38);
+
+backdrop-filter:
+blur(16px);
+
+-webkit-backdrop-filter:
+blur(16px);
+
+z-index:9999;
+
+}
+
+.global-search-results::-webkit-scrollbar{
+width:5px;
+}
+
+.global-search-results::-webkit-scrollbar-thumb{
+background:
+rgba(245,212,119,.35);
+
+border-radius:10px;
+}
+
+.global-search-empty{
+
+padding:16px;
+
+text-align:center;
+
+color:#9fb1c2;
+
+font-size:12px;
+
+line-height:1.5;
+
+}
+
+.global-search-item{
+
+display:flex;
+
+align-items:center;
+
+gap:11px;
+
+width:100%;
+
+padding:11px;
+
+margin:3px 0;
+
+border:0;
+
+border-radius:10px;
+
+background:transparent;
+
+color:#fff;
+
+text-align:left;
+
+cursor:pointer;
+
+transition:
+background .18s ease,
+transform .18s ease;
+
+}
+
+.global-search-item:hover{
+
+background:
+rgba(245,212,119,.12);
+
+transform:
+translateX(2px);
+
+}
+
+.global-search-icon{
+
+width:34px;
+
+height:34px;
+
+flex:none;
+
+display:flex;
+
+align-items:center;
+
+justify-content:center;
+
+border-radius:9px;
+
+background:
+rgba(245,212,119,.12);
+
+border:
+1px solid
+rgba(245,212,119,.20);
+
+color:#f5d477;
+
+font-size:15px;
+
+}
+
+.global-search-text{
+
+min-width:0;
+
+flex:1;
+
+}
+
+.global-search-name{
+
+display:block;
+
+color:#fff;
+
+font-size:12px;
+
+font-weight:700;
+
+white-space:nowrap;
+
+overflow:hidden;
+
+text-overflow:ellipsis;
+
+}
+
+.global-search-type{
+
+display:block;
+
+margin-top:3px;
+
+color:#91a8bc;
+
+font-size:10px;
+
+}
+
+.global-search-loading{
+
+padding:16px;
+
+text-align:center;
+
+color:#f5d477;
+
+font-size:12px;
+
+}
+
+
 /* =========================================
 MOBILE SIDEBAR
 ========================================= */
@@ -487,54 +709,70 @@ MOBILE SIDEBAR
 @media(max-width:800px){
 
 .sidebar{
-  width:220px !important;
+width:220px !important;
 
-  transform:
-    translateX(-100%);
+transform:
+translateX(-100%);
 
-  transition:
-    transform .25s ease;
+transition:
+transform .25s ease;
 }
 
 .sidebar.mobile-open{
-  transform:
-    translateX(0);
+transform:
+translateX(0);
 }
 
 .main{
-  margin-left:0 !important;
+margin-left:0 !important;
 
-  background-attachment:scroll !important;
+background-attachment:scroll !important;
 }
 
 .main::before{
-  left:0 !important;
+left:0 !important;
 }
 
 .brand img{
-  width:145px !important;
+width:145px !important;
 }
 
 .nav a{
-  font-size:12.5px !important;
+font-size:12.5px !important;
 
-  min-height:38px !important;
+min-height:38px !important;
 
-  padding:8px 9px !important;
+padding:8px 9px !important;
 }
 
 .menu-icon{
-  width:19px !important;
+width:19px !important;
 
-  min-width:19px !important;
+min-width:19px !important;
 
-  height:19px !important;
+height:19px !important;
 }
 
 .menu-icon svg{
-  width:16px !important;
+width:16px !important;
 
-  height:16px !important;
+height:16px !important;
+}
+
+.global-search-results{
+
+position:fixed;
+
+top:70px;
+
+left:10px;
+
+right:10px;
+
+width:auto;
+
+max-height:55vh;
+
 }
 
 }
@@ -543,6 +781,537 @@ MOBILE SIDEBAR
 
   document.head.appendChild(style);
 }
+
+
+/* =========================================
+GLOBAL SEARCH
+========================================= */
+
+function initGlobalSearch(){
+
+  const search =
+    document.querySelector(".search");
+
+  if(!search) return;
+
+  if(search.dataset.globalSearchReady === "1"){
+    return;
+  }
+
+  search.dataset.globalSearchReady = "1";
+
+
+  /* =========================================
+  SEARCH WRAPPER
+  ========================================= */
+
+  const wrapper =
+    search.parentElement;
+
+  if(wrapper){
+    wrapper.style.position = "relative";
+  }
+
+
+  /* =========================================
+  RESULTS BOX
+  ========================================= */
+
+  const box =
+    document.createElement("div");
+
+  box.className =
+    "global-search-results";
+
+
+  box.innerHTML = `
+    <div class="global-search-empty">
+      Type to search workers, companies or sites...
+    </div>
+  `;
+
+
+  if(wrapper){
+    wrapper.appendChild(box);
+  }
+
+
+  let timer = null;
+
+
+  /* =========================================
+  PERFORM SEARCH
+  ========================================= */
+
+  async function performSearch(){
+
+    const q =
+      String(search.value || "")
+        .trim()
+        .toLowerCase();
+
+
+    if(!q){
+
+      box.style.display = "none";
+
+      return;
+
+    }
+
+
+    box.style.display = "block";
+
+
+    box.innerHTML = `
+      <div class="global-search-loading">
+        Searching...
+      </div>
+    `;
+
+
+    const results = [];
+
+
+    /* =========================================
+    WORKERS
+    ========================================= */
+
+    try{
+
+      const d =
+        await api("/api/workers");
+
+
+      const list =
+        Array.isArray(d)
+          ? d
+          : (
+              d?.workers ||
+              d?.data ||
+              []
+            );
+
+
+      if(Array.isArray(list)){
+
+        list.forEach(w => {
+
+          const name =
+            w.name ||
+            w.worker_name ||
+            w.full_name ||
+            "";
+
+
+          const id =
+            w.worker_id ||
+            w.employee_id ||
+            w.id ||
+            "";
+
+
+          const phone =
+            w.phone ||
+            w.mobile ||
+            "";
+
+
+          const text =
+            `${name} ${id} ${phone}`
+              .toLowerCase();
+
+
+          if(text.includes(q)){
+
+            results.push({
+
+              type:"Worker",
+
+              name:
+                name ||
+                `Worker ${id}`,
+
+              detail:
+                id
+                  ? `ID: ${id}`
+                  : phone
+                    ? phone
+                    : "Worker",
+
+              icon:"♙",
+
+              url:"/workers.html"
+
+            });
+
+          }
+
+        });
+
+      }
+
+    }catch(error){
+
+      console.warn(
+        "Workers search unavailable:",
+        error
+      );
+
+    }
+
+
+    /* =========================================
+    COMPANIES
+    ========================================= */
+
+    try{
+
+      const d =
+        await api("/api/companies");
+
+
+      const list =
+        Array.isArray(d)
+          ? d
+          : (
+              d?.companies ||
+              d?.data ||
+              []
+            );
+
+
+      if(Array.isArray(list)){
+
+        list.forEach(c => {
+
+          const name =
+            c.name ||
+            c.company_name ||
+            c.title ||
+            "";
+
+
+          const text =
+            String(name)
+              .toLowerCase();
+
+
+          if(
+            name &&
+            text.includes(q)
+          ){
+
+            results.push({
+
+              type:"Company",
+
+              name:name,
+
+              detail:"Company",
+
+              icon:"▦",
+
+              url:"/companies.html"
+
+            });
+
+          }
+
+        });
+
+      }
+
+    }catch(error){
+
+      console.warn(
+        "Companies search unavailable:",
+        error
+      );
+
+    }
+
+
+    /* =========================================
+    SITES
+    ========================================= */
+
+    try{
+
+      const d =
+        await api("/api/sites");
+
+
+      const list =
+        Array.isArray(d)
+          ? d
+          : (
+              d?.sites ||
+              d?.data ||
+              []
+            );
+
+
+      if(Array.isArray(list)){
+
+        list.forEach(s => {
+
+          const name =
+            s.name ||
+            s.site_name ||
+            s.location ||
+            s.title ||
+            "";
+
+
+          const location =
+            s.location ||
+            s.address ||
+            "";
+
+
+          const text =
+            `${name} ${location}`
+              .toLowerCase();
+
+
+          if(
+            name &&
+            text.includes(q)
+          ){
+
+            results.push({
+
+              type:"Site",
+
+              name:
+                name ||
+                "Site",
+
+              detail:
+                location ||
+                "Site / Location",
+
+              icon:"⌖",
+
+              url:"/sites.html"
+
+            });
+
+          }
+
+        });
+
+      }
+
+    }catch(error){
+
+      console.warn(
+        "Sites search unavailable:",
+        error
+      );
+
+    }
+
+
+    /* =========================================
+    LIMIT RESULTS
+    ========================================= */
+
+    const finalResults =
+      results.slice(0,12);
+
+
+    /* =========================================
+    NO RESULTS
+    ========================================= */
+
+    if(!finalResults.length){
+
+      box.innerHTML = `
+
+        <div class="global-search-empty">
+
+          No results found for
+
+          <b style="color:#f5d477">
+            ${esc(search.value)}
+          </b>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+
+    /* =========================================
+    SHOW RESULTS
+    ========================================= */
+
+    box.innerHTML =
+      finalResults.map((r,index) => `
+
+        <button
+          type="button"
+          class="global-search-item"
+          data-result-index="${index}"
+        >
+
+          <span class="global-search-icon">
+            ${r.icon}
+          </span>
+
+          <span class="global-search-text">
+
+            <span class="global-search-name">
+              ${esc(r.name)}
+            </span>
+
+            <span class="global-search-type">
+
+              ${esc(r.type)}
+
+              ${
+                r.detail
+                  ? " • " + esc(r.detail)
+                  : ""
+              }
+
+            </span>
+
+          </span>
+
+        </button>
+
+      `).join("");
+
+
+    /* =========================================
+    RESULT CLICK
+    ========================================= */
+
+    box
+      .querySelectorAll(
+        ".global-search-item"
+      )
+      .forEach((btn,index) => {
+
+        btn.addEventListener(
+          "click",
+          () => {
+
+            const result =
+              finalResults[index];
+
+            if(!result) return;
+
+            window.location.href =
+              result.url;
+
+          }
+        );
+
+      });
+
+  }
+
+
+  /* =========================================
+  INPUT
+  ========================================= */
+
+  search.addEventListener(
+    "input",
+    () => {
+
+      clearTimeout(timer);
+
+      timer =
+        setTimeout(
+          performSearch,
+          250
+        );
+
+    }
+  );
+
+
+  /* =========================================
+  FOCUS
+  ========================================= */
+
+  search.addEventListener(
+    "focus",
+    () => {
+
+      if(search.value.trim()){
+
+        performSearch();
+
+      }
+
+    }
+  );
+
+
+  /* =========================================
+  ENTER / ESCAPE
+  ========================================= */
+
+  search.addEventListener(
+    "keydown",
+    event => {
+
+      if(event.key === "Enter"){
+
+        event.preventDefault();
+
+        performSearch();
+
+      }
+
+
+      if(event.key === "Escape"){
+
+        search.value = "";
+
+        box.style.display = "none";
+
+        search.blur();
+
+      }
+
+    }
+  );
+
+
+  /* =========================================
+  CLICK OUTSIDE
+  ========================================= */
+
+  document.addEventListener(
+    "click",
+    event => {
+
+      if(
+        !wrapper ||
+        wrapper.contains(event.target)
+      ){
+
+        return;
+
+      }
+
+      box.style.display = "none";
+
+    }
+  );
+
+}
+
 
 /* =========================================
 SHELL
@@ -557,165 +1326,380 @@ function shell(active, title, body) {
 <aside class="sidebar">
 
   <div class="brand">
-    <img src="/logo.svg" alt="AL SABIHA">
+    <img
+      src="/logo.svg"
+      alt="AL SABIHA"
+    >
   </div>
+
 
   <div class="nav-title">
     Main Menu
   </div>
 
+
   <div class="nav">
 
     <a
       class="${active === "dashboard" ? "active" : ""}"
-      href="/dashboard.html">
+      href="/dashboard.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="3" y="3" width="7" height="7" rx="2"></rect>
-          <rect x="14" y="3" width="7" height="7" rx="2"></rect>
-          <rect x="3" y="14" width="7" height="7" rx="2"></rect>
-          <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <rect
+            x="3"
+            y="3"
+            width="7"
+            height="7"
+            rx="2"
+          ></rect>
+
+          <rect
+            x="14"
+            y="3"
+            width="7"
+            height="7"
+            rx="2"
+          ></rect>
+
+          <rect
+            x="3"
+            y="14"
+            width="7"
+            height="7"
+            rx="2"
+          ></rect>
+
+          <rect
+            x="14"
+            y="14"
+            width="7"
+            height="7"
+            rx="2"
+          ></rect>
+
         </svg>
+
       </span>
 
       <span>Dashboard</span>
 
     </a>
 
+
     <a
       class="${active === "workers" ? "active" : ""}"
-      href="/workers.html">
+      href="/workers.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="9" cy="8" r="3"></circle>
-          <path d="M3.5 19c.5-3.2 2.4-5 5.5-5s5 1.8 5.5 5"></path>
-          <circle cx="17" cy="9" r="2.5"></circle>
-          <path d="M15 15c2.8-.2 4.7 1.2 5.5 4"></path>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <circle
+            cx="9"
+            cy="8"
+            r="3"
+          ></circle>
+
+          <path
+            d="M3.5 19c.5-3.2 2.4-5 5.5-5s5 1.8 5.5 5"
+          ></path>
+
+          <circle
+            cx="17"
+            cy="9"
+            r="2.5"
+          ></circle>
+
+          <path
+            d="M15 15c2.8-.2 4.7 1.2 5.5 4"
+          ></path>
+
         </svg>
+
       </span>
 
       <span>Workers</span>
 
     </a>
 
+
     <a
       class="${active === "companies" ? "active" : ""}"
-      href="/companies.html">
+      href="/companies.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 21V5.5L12 2l8 3.5V21"></path>
-          <path d="M8 21v-4h8v4"></path>
-          <path d="M8 9h1M12 9h1M16 9h1M8 12h1M12 12h1M16 12h1"></path>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <path
+            d="M4 21V5.5L12 2l8 3.5V21"
+          ></path>
+
+          <path
+            d="M8 21v-4h8v4"
+          ></path>
+
+          <path
+            d="M8 9h1M12 9h1M16 9h1M8 12h1M12 12h1M16 12h1"
+          ></path>
+
         </svg>
+
       </span>
 
       <span>Companies</span>
 
     </a>
 
+
     <a
       class="${active === "sites" ? "active" : ""}"
-      href="/sites.html">
+      href="/sites.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
-          <circle cx="12" cy="10" r="2.5"></circle>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <path
+            d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"
+          ></path>
+
+          <circle
+            cx="12"
+            cy="10"
+            r="2.5"
+          ></circle>
+
         </svg>
+
       </span>
 
       <span>Sites & Location</span>
 
     </a>
 
+
     <div class="nav-title">
       Attendance
     </div>
 
+
     <a
       class="${active === "scan" ? "active" : ""}"
-      href="/scan.html">
+      href="/scan.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 4h6v2H6v4H4V4Zm10 0h6v6h-2V6h-4V4ZM4 14h2v4h4v2H4v-6Zm14 0h2v6h-6v-2h4v-4Z"></path>
-          <rect x="8" y="8" width="3" height="3"></rect>
-          <rect x="13" y="8" width="3" height="3"></rect>
-          <rect x="8" y="13" width="3" height="3"></rect>
-          <rect x="13" y="13" width="3" height="3"></rect>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <path
+            d="M4 4h6v2H6v4H4V4Zm10 0h6v6h-2V6h-4V4ZM4 14h2v4h4v2H4v-6Zm14 0h2v6h-6v-2h4v-4Z"
+          ></path>
+
+          <rect
+            x="8"
+            y="8"
+            width="3"
+            height="3"
+          ></rect>
+
+          <rect
+            x="13"
+            y="8"
+            width="3"
+            height="3"
+          ></rect>
+
+          <rect
+            x="8"
+            y="13"
+            width="3"
+            height="3"
+          ></rect>
+
+          <rect
+            x="13"
+            y="13"
+            width="3"
+            height="3"
+          ></rect>
+
         </svg>
+
       </span>
 
       <span>Scan QR Attendance</span>
 
     </a>
 
+
     <a
       class="${active === "manual" ? "active" : ""}"
-      href="/manual-attendance.html">
+      href="/manual-attendance.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="5" y="3" width="14" height="18" rx="2"></rect>
-          <path d="M9 3.5h6v3H9z"></path>
-          <path d="m8 12 2 2 5-5"></path>
-          <path d="M8 17h8"></path>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <rect
+            x="5"
+            y="3"
+            width="14"
+            height="18"
+            rx="2"
+          ></rect>
+
+          <path
+            d="M9 3.5h6v3H9z"
+          ></path>
+
+          <path
+            d="m8 12 2 2 5-5"
+          ></path>
+
+          <path
+            d="M8 17h8"
+          ></path>
+
         </svg>
+
       </span>
 
       <span>Manual Attendance</span>
 
     </a>
 
+
     <a
       class="${active === "reports" ? "active" : ""}"
-      href="/reports.html">
+      href="/reports.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <rect x="4" y="3" width="16" height="18" rx="2"></rect>
-          <path d="M8 16v-4"></path>
-          <path d="M12 16V8"></path>
-          <path d="M16 16v-6"></path>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <rect
+            x="4"
+            y="3"
+            width="16"
+            height="18"
+            rx="2"
+          ></rect>
+
+          <path
+            d="M8 16v-4"
+          ></path>
+
+          <path
+            d="M12 16V8"
+          ></path>
+
+          <path
+            d="M16 16v-6"
+          ></path>
+
         </svg>
+
       </span>
 
       <span>Reports</span>
 
     </a>
 
+
     <div class="nav-title">
       System
     </div>
 
+
     <a
       class="${active === "settings" ? "active" : ""}"
-      href="/settings.html">
+      href="/settings.html"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.5V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8-.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H4v-2.5h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V5h2.5v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v2.5h-.2a1.7 1.7 0 0 0-1.6 1Z"></path>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <circle
+            cx="12"
+            cy="12"
+            r="3"
+          ></circle>
+
+          <path
+            d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 1.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-2.5V20a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1-1.8-1.8-.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.6-1H4v-2.5h.2a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1 1.8-1.8.1.1a1.7 1.7 0 0 0 1.9.3 1.7 1.7 0 0 0 1-1.6V5h2.5v.2a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1 1.8 1.8-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v2.5h-.2a1.7 1.7 0 0 0-1.6 1Z"
+          ></path>
+
         </svg>
+
       </span>
 
       <span>Setting</span>
 
     </a>
 
+
     <a
       href="#"
-      onclick="logout();return false;">
+      onclick="logout();return false;"
+    >
 
       <span class="menu-icon">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"></path>
-          <path d="M14 8l4 4-4 4"></path>
-          <path d="M8 12h10"></path>
+
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+        >
+
+          <path
+            d="M10 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h5"
+          ></path>
+
+          <path
+            d="M14 8l4 4-4 4"
+          ></path>
+
+          <path
+            d="M8 12h10"
+          ></path>
+
         </svg>
+
       </span>
 
       <span>Logout</span>
@@ -726,15 +1710,18 @@ function shell(active, title, body) {
 
 </aside>
 
+
 <main class="main">
 
   <header class="topbar">
 
-    <div style="
-      display:flex;
-      align-items:center;
-      gap:14px;
-    ">
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        gap:14px;
+      "
+    >
 
       <button
         onclick="toggleSidebar()"
@@ -744,22 +1731,23 @@ function shell(active, title, body) {
           color:white;
           font-size:23px;
           cursor:pointer;
-        ">
-
+        "
+        aria-label="Toggle Menu"
+      >
         ☰
-
       </button>
+
 
       <input
         class="search"
-        placeholder="Search..."
-        onkeydown="
-          if(event.key==='Enter')
-            alert('Use the relevant page search.')
-        "
+        type="search"
+        placeholder="Search workers, companies, sites..."
+        autocomplete="off"
+        aria-label="Global Search"
       >
 
     </div>
+
 
     <div class="user">
 
@@ -767,20 +1755,21 @@ function shell(active, title, body) {
         AS
       </div>
 
+
       <div>
 
         <b id="topUser">
           Admin
         </b>
 
+
         <small
           style="
             display:block;
             color:#718096;
-          ">
-
+          "
+        >
           Administrator
-
         </small>
 
       </div>
@@ -788,6 +1777,7 @@ function shell(active, title, body) {
     </div>
 
   </header>
+
 
   <section class="content">
 
@@ -797,13 +1787,13 @@ function shell(active, title, body) {
         style="
           font-family:Georgia,serif;
           margin:0;
-        ">
-
+        "
+      >
         ${title}
-
       </h1>
 
     </div>
+
 
     ${body}
 
@@ -811,8 +1801,17 @@ function shell(active, title, body) {
 
 </main>
 
-`;
+  `;
+
+
+  /* =========================================
+  START GLOBAL SEARCH
+  ========================================= */
+
+  initGlobalSearch();
+
 }
+
 
 /* =========================================
 MOBILE SIDEBAR
@@ -820,12 +1819,17 @@ MOBILE SIDEBAR
 
 function toggleSidebar() {
 
-  const sidebar = document.querySelector(".sidebar");
+  const sidebar =
+    document.querySelector(".sidebar");
 
-  if (!sidebar) return;
+  if(!sidebar) return;
 
-  sidebar.classList.toggle("mobile-open");
+  sidebar.classList.toggle(
+    "mobile-open"
+  );
+
 }
+
 
 /* =========================================
 LOGOUT
@@ -837,7 +1841,9 @@ async function logout() {
 
     await api(
       "/api/auth/logout",
-      { method: "POST" }
+      {
+        method:"POST"
+      }
     );
 
   } finally {
@@ -845,7 +1851,9 @@ async function logout() {
     location.href = "/";
 
   }
+
 }
+
 
 /* =========================================
 CURRENT USER
@@ -855,17 +1863,25 @@ async function loadMe() {
 
   try {
 
-    const d = await api("/api/auth/me");
+    const d =
+      await api("/api/auth/me");
 
-    const x = $("#topUser");
 
-    if (x) {
-      x.textContent = d.user.username;
+    const x =
+      $("#topUser");
+
+
+    if(x){
+
+      x.textContent =
+        d.user.username;
+
     }
 
   } catch {}
 
 }
+
 
 /* =========================================
 TOAST
