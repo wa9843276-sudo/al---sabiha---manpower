@@ -1,3 +1,4 @@
+require("dotenv").config();
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcryptjs");
@@ -2639,6 +2640,656 @@ app.use(
   )
 );
 
+/* =========================================================
+   AL SABIHA MOBILE APP API
+   Mobile: QR Scan / Worker Code / Check-In / Check-Out / Add Worker
+   ========================================================= */
+
+const mobileAuth = (req, res, next) => {
+  const configuredPin = process.env.MOBILE_APP_PIN;
+
+  if (!configuredPin) {
+    return res.status(503).json({
+      success: false,
+      message: "Mobile App PIN is not configured."
+    });
+  }
+
+  const mobilePin =
+    req.headers["x-mobile-pin"] ||
+    req.body?.mobile_pin ||
+    req.query?.mobile_pin;
+
+  if (String(mobilePin || "") !== String(configuredPin)) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid Mobile App PIN."
+    });
+  }
+
+  next();
+};
+
+
+/* ---------------------------------------------------------
+   MOBILE: FIND WORKER
+   --------------------------------------------------------- */
+app.get("/api/mobile/worker", mobileAuth, (req, res) => {
+  try {
+    const workerCode = String(req.query.worker_code || "").trim();
+
+    if (!workerCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker Code is required."
+      });
+    }
+
+    const worker = db.prepare(`
+      SELECT
+        w.id,
+        w.worker_code,
+        w.name,
+        w.employee_type,
+        w.vendor,
+        w.mobile,
+        w.designation,
+        w.salary,
+        w.status,
+        w.joining_date,
+        w.company_id,
+        c.name AS company_name
+      FROM workers w
+      LEFT JOIN companies c ON c.id = w.company_id
+      WHERE w.worker_code = ?
+      LIMIT 1
+    `).get(workerCode);
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: "Worker not found."
+      });
+    }
+
+    if (worker.status !== "Active") {
+      return res.status(400).json({
+        success: false,
+        message: "Worker is not active."
+      });
+    }
+
+    const companies = db.prepare(`
+      SELECT
+        id,
+        name,
+        status
+      FROM companies
+      WHERE status = 'Active'
+      ORDER BY name ASC
+    `).all();
+
+    const assignedSites = worker.company_id
+      ? db.prepare(`
+          SELECT
+            id,
+            name,
+            location,
+            company_id,
+            status
+          FROM sites
+          WHERE company_id = ?
+            AND status = 'Active'
+          ORDER BY name ASC
+        `).all(worker.company_id)
+      : [];
+
+    const openAttendance = db.prepare(`
+      SELECT
+        a.id,
+        a.attendance_date,
+        a.check_in,
+        a.company_id,
+        a.site_id,
+        c.name AS company_name,
+        s.name AS site_name,
+        s.location AS site_location
+      FROM attendance a
+      LEFT JOIN companies c ON c.id = a.company_id
+      LEFT JOIN sites s ON s.id = a.site_id
+      WHERE a.worker_id = ?
+        AND a.check_out IS NULL
+      ORDER BY a.id DESC
+      LIMIT 1
+    `).get(worker.id);
+
+    return res.json({
+      success: true,
+      worker,
+      companies,
+      assigned_sites: assignedSites,
+      currently_checked_in: !!openAttendance,
+      open_attendance: openAttendance || null
+    });
+
+  } catch (err) {
+    console.error("Mobile worker lookup error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to find worker."
+    });
+  }
+});
+
+
+/* ---------------------------------------------------------
+   MOBILE: ACTIVE COMPANIES
+   --------------------------------------------------------- */
+app.get("/api/mobile/companies", mobileAuth, (req, res) => {
+  try {
+    const companies = db.prepare(`
+      SELECT
+        id,
+        name,
+        contact_person,
+        contact_number,
+        status
+      FROM companies
+      WHERE status = 'Active'
+      ORDER BY name ASC
+    `).all();
+
+    return res.json({
+      success: true,
+      companies
+    });
+
+  } catch (err) {
+    console.error("Mobile companies error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load companies."
+    });
+  }
+});
+
+
+/* ---------------------------------------------------------
+   MOBILE: SITES BY COMPANY
+   --------------------------------------------------------- */
+app.get("/api/mobile/sites", mobileAuth, (req, res) => {
+  try {
+    const companyId = Number(req.query.company_id);
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: "Company is required."
+      });
+    }
+
+    const sites = db.prepare(`
+      SELECT
+        id,
+        name,
+        location,
+        company_id,
+        contact_person,
+        contact_number,
+        status
+      FROM sites
+      WHERE company_id = ?
+        AND status = 'Active'
+      ORDER BY name ASC
+    `).all(companyId);
+
+    return res.json({
+      success: true,
+      sites
+    });
+
+  } catch (err) {
+    console.error("Mobile sites error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load sites."
+    });
+  }
+});
+
+
+/* ---------------------------------------------------------
+   MOBILE: ADD WORKER
+   --------------------------------------------------------- */
+app.post("/api/mobile/workers", mobileAuth, (req, res) => {
+  try {
+    const {
+      worker_code,
+      name,
+      mobile,
+      designation,
+      employee_type,
+      vendor,
+      salary,
+      joining_date,
+      company_id
+    } = req.body;
+
+    const workerCode = String(worker_code || "").trim();
+    const workerName = String(name || "").trim();
+
+    if (!workerCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker Code is required."
+      });
+    }
+
+    if (!workerName) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker Name is required."
+      });
+    }
+
+    const existingWorker = db.prepare(`
+      SELECT id
+      FROM workers
+      WHERE worker_code = ?
+      LIMIT 1
+    `).get(workerCode);
+
+    if (existingWorker) {
+      return res.status(409).json({
+        success: false,
+        message: "Worker Code already exists."
+      });
+    }
+
+    let companyId = null;
+
+    if (company_id !== undefined && company_id !== null && company_id !== "") {
+      companyId = Number(company_id);
+
+      if (!Number.isInteger(companyId)) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid Company."
+        });
+      }
+
+      const company = db.prepare(`
+        SELECT id
+        FROM companies
+        WHERE id = ?
+          AND status = 'Active'
+        LIMIT 1
+      `).get(companyId);
+
+      if (!company) {
+        return res.status(400).json({
+          success: false,
+          message: "Selected Company is not active."
+        });
+      }
+    }
+
+    const result = db.prepare(`
+      INSERT INTO workers (
+        worker_code,
+        name,
+        employee_type,
+        vendor,
+        mobile,
+        designation,
+        salary,
+        status,
+        joining_date,
+        company_id
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, 'Active', ?, ?)
+    `).run(
+      workerCode,
+      workerName,
+      employee_type || "Company",
+      vendor || "",
+      mobile || "",
+      designation || "",
+      Number(salary || 0),
+      joining_date || "",
+      companyId
+    );
+
+    const worker = db.prepare(`
+      SELECT
+        w.*,
+        c.name AS company_name
+      FROM workers w
+      LEFT JOIN companies c ON c.id = w.company_id
+      WHERE w.id = ?
+    `).get(result.lastInsertRowid);
+
+    return res.json({
+      success: true,
+      message: "Worker added successfully.",
+      worker
+    });
+
+  } catch (err) {
+    console.error("Mobile add worker error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to add worker."
+    });
+  }
+});
+
+
+/* ---------------------------------------------------------
+   MOBILE: CHECK-IN
+   --------------------------------------------------------- */
+app.post("/api/mobile/attendance/checkin", mobileAuth, (req, res) => {
+  try {
+    const {
+      worker_code,
+      company_id,
+      site_id,
+      latitude,
+      longitude,
+      remarks
+    } = req.body;
+
+    const workerCode = String(worker_code || "").trim();
+    const companyId = Number(company_id);
+    const siteId = Number(site_id);
+
+    if (!workerCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker Code is required."
+      });
+    }
+
+    if (!companyId) {
+      return res.status(400).json({
+        success: false,
+        message: "Company is required."
+      });
+    }
+
+    if (!siteId) {
+      return res.status(400).json({
+        success: false,
+        message: "Site is required."
+      });
+    }
+
+    const worker = db.prepare(`
+      SELECT *
+      FROM workers
+      WHERE worker_code = ?
+        AND status = 'Active'
+      LIMIT 1
+    `).get(workerCode);
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: "Active worker not found."
+      });
+    }
+
+    const company = db.prepare(`
+      SELECT id, name
+      FROM companies
+      WHERE id = ?
+        AND status = 'Active'
+      LIMIT 1
+    `).get(companyId);
+
+    if (!company) {
+      return res.status(400).json({
+        success: false,
+        message: "Selected Company is not active."
+      });
+    }
+
+    const site = db.prepare(`
+      SELECT id, name, location, company_id
+      FROM sites
+      WHERE id = ?
+        AND status = 'Active'
+      LIMIT 1
+    `).get(siteId);
+
+    if (!site) {
+      return res.status(400).json({
+        success: false,
+        message: "Selected Site is not active."
+      });
+    }
+
+    if (Number(site.company_id) !== companyId) {
+      return res.status(400).json({
+        success: false,
+        message: "Selected Site does not belong to selected Company."
+      });
+    }
+
+    const alreadyOpen = db.prepare(`
+      SELECT id
+      FROM attendance
+      WHERE worker_id = ?
+        AND check_out IS NULL
+      LIMIT 1
+    `).get(worker.id);
+
+    if (alreadyOpen) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker is already checked in."
+      });
+    }
+
+    const now = new Date();
+
+    const attendanceDate = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Dubai"
+    }).format(now);
+
+    const checkInTime = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Dubai",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    }).format(now);
+
+    const lat =
+      latitude !== undefined &&
+      latitude !== null &&
+      latitude !== ""
+        ? Number(latitude)
+        : null;
+
+    const lng =
+      longitude !== undefined &&
+      longitude !== null &&
+      longitude !== ""
+        ? Number(longitude)
+        : null;
+
+    const result = db.prepare(`
+      INSERT INTO attendance (
+        worker_id,
+        company_id,
+        site_id,
+        attendance_date,
+        check_in,
+        check_out,
+        latitude,
+        longitude,
+        is_manual,
+        remarks,
+        created_by
+      )
+      VALUES (?, ?, ?, ?, ?, NULL, ?, ?, 0, ?, NULL)
+    `).run(
+      worker.id,
+      companyId,
+      siteId,
+      attendanceDate,
+      checkInTime,
+      lat,
+      lng,
+      remarks || "Mobile App Check-In"
+    );
+
+    return res.json({
+      success: true,
+      message: "Check-In successful.",
+      attendance_id: result.lastInsertRowid,
+      worker: {
+        id: worker.id,
+        worker_code: worker.worker_code,
+        name: worker.name
+      },
+      company: {
+        id: company.id,
+        name: company.name
+      },
+      site: {
+        id: site.id,
+        name: site.name,
+        location: site.location
+      },
+      attendance_date: attendanceDate,
+      check_in: checkInTime,
+      latitude: lat,
+      longitude: lng
+    });
+
+  } catch (err) {
+    console.error("Mobile check-in error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to complete Check-In."
+    });
+  }
+});
+
+
+/* ---------------------------------------------------------
+   MOBILE: CHECK-OUT
+   --------------------------------------------------------- */
+app.post("/api/mobile/attendance/checkout", mobileAuth, (req, res) => {
+  try {
+    const workerCode = String(req.body.worker_code || "").trim();
+
+    if (!workerCode) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker Code is required."
+      });
+    }
+
+    const worker = db.prepare(`
+      SELECT *
+      FROM workers
+      WHERE worker_code = ?
+        AND status = 'Active'
+      LIMIT 1
+    `).get(workerCode);
+
+    if (!worker) {
+      return res.status(404).json({
+        success: false,
+        message: "Active worker not found."
+      });
+    }
+
+    const openAttendance = db.prepare(`
+      SELECT
+        a.id,
+        a.company_id,
+        a.site_id,
+        a.attendance_date,
+        a.check_in,
+        c.name AS company_name,
+        s.name AS site_name,
+        s.location AS site_location
+      FROM attendance a
+      LEFT JOIN companies c ON c.id = a.company_id
+      LEFT JOIN sites s ON s.id = a.site_id
+      WHERE a.worker_id = ?
+        AND a.check_out IS NULL
+      ORDER BY a.id DESC
+      LIMIT 1
+    `).get(worker.id);
+
+    if (!openAttendance) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker is not currently checked in."
+      });
+    }
+
+    const now = new Date();
+
+    const checkOutTime = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Dubai",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: false
+    }).format(now);
+
+    db.prepare(`
+      UPDATE attendance
+      SET check_out = ?
+      WHERE id = ?
+    `).run(
+      checkOutTime,
+      openAttendance.id
+    );
+
+    return res.json({
+      success: true,
+      message: "Check-Out successful.",
+      attendance_id: openAttendance.id,
+      worker: {
+        id: worker.id,
+        worker_code: worker.worker_code,
+        name: worker.name
+      },
+      company: {
+        id: openAttendance.company_id,
+        name: openAttendance.company_name
+      },
+      site: {
+        id: openAttendance.site_id,
+        name: openAttendance.site_name,
+        location: openAttendance.site_location
+      },
+      attendance_date: openAttendance.attendance_date,
+      check_in: openAttendance.check_in,
+      check_out: checkOutTime
+    });
+
+  } catch (err) {
+    console.error("Mobile check-out error:", err);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to complete Check-Out."
+    });
+  }
+});
 
 app.get(
   "/",

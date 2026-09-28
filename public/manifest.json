@@ -1,0 +1,11 @@
+{
+  "name": "AL SABIHA Mobile Attendance",
+  "short_name": "AL SABIHA",
+  "description": "AL SABIHA Worker QR Attendance",
+  "start_url": "/mobile.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#061526",
+  "theme_color": "#061526",
+  "icons": []
+}
