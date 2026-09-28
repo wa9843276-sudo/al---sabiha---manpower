@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AL SABIHA | Login</title>
+  <link rel="icon" href="/logo.svg">
+  <style>
+    :root{
+      --navy:#061526;
+      --navy2:#0d1117;
+      --gold:#ffd369;
+      --gold2:#f4c95d;
+      --blue:#00aaff;
+      --blue2:#007bff;
+      --white:#fff;
+      --muted:#9aa8b7;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{min-height:100%;margin:0}
+
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:30px 16px;
+      font-family:Inter,"Segoe UI",Arial,sans-serif;
+      color:var(--white);
+      overflow:hidden;
+      background:
+        linear-gradient(rgba(2,12,23,.78),rgba(2,12,23,.88)),
+        url("/dashboard-dubai.jpg") center/cover fixed no-repeat;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        radial-gradient(circle at 50% 25%,rgba(255,211,105,.10),transparent 30%),
+        linear-gradient(120deg,rgba(0,170,255,.05),transparent 45%,rgba(255,211,105,.05));
+    }
+
+    .login-wrap{
+      width:min(430px,100%);
+      position:relative;
+      z-index:2;
+      animation:fadeIn .9s ease both;
+    }
+
+    .brand{
+      display:flex;
+      justify-content:center;
+      margin-bottom:18px;
+    }
+
+    .brand img{
+      width:220px;
+      max-width:82%;
+      padding:12px 18px;
+      border-radius:16px;
+      background:rgba(6,21,38,.78);
+      border:1px solid rgba(255,211,105,.16);
+      box-shadow:0 12px 35px rgba(0,0,0,.28);
+    }
+
+    .login-container{
+      text-align:center;
+      padding:42px 36px 34px;
+      background:
+        linear-gradient(145deg,rgba(13,17,23,.97),rgba(8,20,32,.96));
+      border:1px solid rgba(255,211,105,.55);
+      border-radius:22px;
+      width:100%;
+      color:#fff;
+      box-shadow:
+        0 25px 80px rgba(0,0,0,.52),
+        inset 0 1px 0 rgba(255,255,255,.04);
+      animation:cardIn .9s cubic-bezier(.2,.8,.2,1) both;
+      backdrop-filter:blur(12px);
+    }
+
+    .lamp{
+      width:80px;
+      height:80px;
+      margin:0 auto 22px;
+      border-radius:50%;
+      background:
+        radial-gradient(circle at 35% 30%,#fff5bd 0 8%,#ffd369 28%,#ffc107 72%);
+      box-shadow:
+        0 0 20px #ffd369,
+        0 0 55px rgba(255,211,105,.48);
+      animation:glow 2s infinite;
+    }
+
+    .login-container h1{
+      margin:0 0 7px;
+      font-family:Georgia,"Times New Roman",serif;
+      font-size:32px;
+      color:#ffd369;
+      letter-spacing:.2px;
+    }
+
+    .login-container .subtitle{
+      margin:0 0 28px;
+      color:#aeb9c5;
+      font-size:13px;
+    }
+
+    .field{
+      text-align:left;
+      margin:14px 0;
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 7px 4px;
+      color:#aeb9c5;
+      font-size:12px;
+      font-weight:600;
+    }
+
+    input{
+      width:100%;
+      padding:14px 15px;
+      margin:0;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;
+      background:#161b22;
+      color:#fff;
+      outline:none;
+      transition:.22s ease;
+    }
+
+    input::placeholder{color:#687789}
+
+    input:focus{
+      border-color:#00aaff;
+      box-shadow:0 0 0 3px rgba(0,170,255,.10),0 0 18px rgba(0,170,255,.10);
+      transform:translateY(-1px);
+    }
+
+    .login-btn{
+      width:100%;
+      padding:14px 12px;
+      margin-top:12px;
+      background:linear-gradient(45deg,#00aaff,#007bff);
+      border:none;
+      color:#fff;
+      border-radius:10px;
+      font-weight:800;
+      letter-spacing:.2px;
+      cursor:pointer;
+      transition:.22s ease;
+      box-shadow:0 8px 24px rgba(0,123,255,.20);
+    }
+
+    .login-btn:hover{
+      transform:scale(1.025);
+      box-shadow:0 0 20px rgba(0,170,255,.45);
+    }
+
+    .login-btn:active{transform:scale(.99)}
+
+    .login-btn:disabled{
+      opacity:.65;
+      cursor:wait;
+      transform:none;
+    }
+
+    .error{
+      display:none;
+      margin-top:14px;
+      padding:10px 12px;
+      border-radius:9px;
+      background:rgba(210,71,80,.12);
+      border:1px solid rgba(210,71,80,.30);
+      color:#ff9ea5;
+      font-size:12px;
+    }
+
+    .back{
+      display:inline-block;
+      margin-top:23px;
+      color:#aeb9c5;
+      font-size:12px;
+      transition:.2s ease;
+    }
+
+    .back:hover{
+      color:#ffd369;
+      transform:translateX(-2px);
+    }
+
+    .secure{
+      margin-top:20px;
+      color:#718092;
+      font-size:11px;
+      letter-spacing:.2px;
+    }
+
+    @keyframes glow{
+      0%,100%{
+        box-shadow:
+          0 0 20px #ffd369,
+          0 0 45px rgba(255,211,105,.35);
+      }
+      50%{
+        box-shadow:
+          0 0 38px #ffc107,
+          0 0 75px rgba(255,193,7,.48);
+      }
+    }
+
+    @keyframes fadeIn{
+      from{opacity:0}
+      to{opacity:1}
+    }
+
+    @keyframes cardIn{
+      from{
+        opacity:0;
+        transform:translateY(30px) scale(.97);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+    }
+
+    @media(max-width:520px){
+      body{padding:20px 12px}
+      .login-container{padding:34px 22px 28px}
+      .login-container h1{font-size:28px}
+      .lamp{width:70px;height:70px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      *{animation:none!important;transition:none!important}
+    }
+  </style>
+</head>
+<body>
+
+  <main class="login-wrap">
+
+    <div class="brand">
+      <img src="/logo.svg" alt="AL SABIHA GROUP OF COMPANIES">
+    </div>
+
+    <div class="login-container">
+
+      <div class="lamp"></div>
+
+      <h1>Welcome Back</h1>
+      <p class="subtitle">Manpower Attendance System</p>
+
+      <form id="loginForm" autocomplete="on">
+
+        <div class="field">
+          <label for="username">Username</label>
+          <input
+            id="username"
+            name="username"
+            type="text"
+            placeholder="Username"
+            autocomplete="username"
+            required
+          >
+        </div>
+
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            name="password"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+            required
+          >
+        </div>
+
+        <button class="login-btn" id="loginButton" type="submit">
+          Login &nbsp; →
+        </button>
+
+        <div class="error" id="loginError"></div>
+
+      </form>
+
+      <a class="back" href="/">← Back to Home</a>
+
+      <div class="secure">
+        Secure &nbsp; • &nbsp; Reliable &nbsp; • &nbsp; Professional
+      </div>
+
+    </div>
+
+  </main>
+
+  <script src="/app.js"></script>
+  <script>
+    const form = document.getElementById("loginForm");
+    const button = document.getElementById("loginButton");
+    const errorBox = document.getElementById("loginError");
+
+    form.addEventListener("submit", async function(e){
+      e.preventDefault();
+
+      errorBox.style.display = "none";
+      button.disabled = true;
+      button.textContent = "Signing in...";
+
+      try{
+        await api("/api/auth/login", {
+          method:"POST",
+          body:JSON.stringify({
+            username:document.getElementById("username").value.trim(),
+            password:document.getElementById("password").value
+          })
+        });
+
+        window.location.href = "/dashboard.html";
+      }catch(err){
+        errorBox.textContent = err.message || "Invalid username or password.";
+        errorBox.style.display = "block";
+        button.disabled = false;
+        button.textContent = "Login  →";
+      }
+    });
+
+    window.addEventListener("load", function(){
+      document.getElementById("username").focus();
+    });
+  </script>
+</body>
+</html>

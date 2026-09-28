@@ -1,0 +1,8 @@
+AL SABIHA Login Page Update
+
+- "Login to Continue" on the home page now opens /login.html as a NEW PAGE.
+- The old login panel has been removed from the home page.
+- New login page uses the supplied Welcome Back + glowing lamp concept.
+- Login remains connected to POST /api/auth/login.
+- Successful login redirects to /dashboard.html.
+- Failed login shows an in-page error message.
