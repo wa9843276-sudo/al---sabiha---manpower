@@ -75,6 +75,9 @@ shell(
             <th>Check In</th>
             <th>Check Out</th>
             <th>Type</th>
+            <th id="deleteHeader" style="display:none;">
+              Action
+            </th>
           </tr>
         </thead>
 
@@ -88,6 +91,48 @@ shell(
   `
 );
 
+
+// =========================================================
+// ADMIN STATUS
+// =========================================================
+
+let isAdmin = false;
+
+
+// Check logged-in user's role
+async function checkAdmin(){
+
+  try{
+
+    const response = await api("/api/auth/me");
+
+    const user = response?.user;
+
+    isAdmin =
+      user &&
+      String(user.role || "").toLowerCase() === "admin";
+
+    const header = $("#deleteHeader");
+
+    if(header){
+      header.style.display = isAdmin ? "" : "none";
+    }
+
+  }catch(error){
+
+    console.error("Admin check failed:", error);
+
+    isAdmin = false;
+
+    const header = $("#deleteHeader");
+
+    if(header){
+      header.style.display = "none";
+    }
+
+  }
+
+}
 
 // Load companies and sites
 async function init(){
@@ -135,7 +180,10 @@ function getReportQuery(){
 }
 
 
-// Generate Report
+// =========================================================
+// GENERATE REPORT
+// =========================================================
+
 async function load(){
 
   try{
@@ -167,11 +215,39 @@ async function load(){
 
           <td>${x.is_manual ? "MANUAL" : "QR"}</td>
 
+          ${
+            isAdmin
+              ? `
+                <td>
+                  <button
+                    class="btn"
+                    type="button"
+                    onclick="deleteAttendance(${Number(x.id)})"
+                    style="
+                      background:#8b1e1e;
+                      color:#fff;
+                      border:none;
+                      cursor:pointer;
+                    "
+                  >
+                    Delete
+                  </button>
+                </td>
+              `
+              : ""
+          }
+
         </tr>
 
       `).join("") ||
 
-      '<tr><td colspan="8">No records.</td></tr>';
+      `
+        <tr>
+          <td colspan="${isAdmin ? 9 : 8}">
+            No records.
+          </td>
+        </tr>
+      `;
 
   }catch(error){
 
@@ -184,7 +260,68 @@ async function load(){
 }
 
 
-// Download Excel
+// =========================================================
+// ADMIN: DELETE ATTENDANCE
+// =========================================================
+
+async function deleteAttendance(id){
+
+  if(!isAdmin){
+
+    alert("Admin access required.");
+
+    return;
+  }
+
+
+  const confirmed = confirm(
+    "Delete this attendance record?\n\n" +
+    "This action cannot be undone."
+  );
+
+
+  if(!confirmed){
+
+    return;
+  }
+
+
+  try{
+
+    const result = await api(
+      "/api/attendance/" + encodeURIComponent(id),
+      {
+        method:"DELETE"
+      }
+    );
+
+
+    alert(
+      result.message ||
+      "Attendance deleted successfully."
+    );
+
+
+    // Refresh current report
+    await load();
+
+
+  }catch(error){
+
+    alert(
+      error.message ||
+      "Unable to delete attendance."
+    );
+
+  }
+
+}
+
+
+// =========================================================
+// DOWNLOAD EXCEL
+// =========================================================
+
 async function download(){
 
   try{
@@ -241,10 +378,23 @@ async function download(){
 }
 
 
-// Initialize
-init();
-load();
-loadMe();
+// =========================================================
+// INITIALIZE
+// =========================================================
+
+async function startReports(){
+
+  await checkAdmin();
+
+  await init();
+
+  await load();
+
+  loadMe();
+
+}
+
+startReports();
 
 </script>
 
