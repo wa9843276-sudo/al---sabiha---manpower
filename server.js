@@ -3095,19 +3095,9 @@ app.post("/api/mobile/attendance/checkin", mobileAuth, (req, res) => {
       });
     }
 
-    const now = new Date();
-
-    const attendanceDate = new Intl.DateTimeFormat("en-CA", {
-      timeZone: "Asia/Dubai"
-    }).format(now);
-
-    const checkInTime = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Asia/Dubai",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    }).format(now);
+    // UAE date and time — same format as website
+    const attendanceDate = today();
+    const checkInTime = now();
 
     const lat =
       latitude !== undefined &&
@@ -3183,7 +3173,6 @@ app.post("/api/mobile/attendance/checkin", mobileAuth, (req, res) => {
   }
 });
 
-
 /* ---------------------------------------------------------
    MOBILE: CHECK-OUT
    --------------------------------------------------------- */
@@ -3227,6 +3216,7 @@ app.post("/api/mobile/attendance/checkout", mobileAuth, (req, res) => {
       LEFT JOIN companies c ON c.id = a.company_id
       LEFT JOIN sites s ON s.id = a.site_id
       WHERE a.worker_id = ?
+        AND a.check_in IS NOT NULL
         AND a.check_out IS NULL
       ORDER BY a.id DESC
       LIMIT 1
@@ -3239,20 +3229,14 @@ app.post("/api/mobile/attendance/checkout", mobileAuth, (req, res) => {
       });
     }
 
-    const now = new Date();
-
-    const checkOutTime = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Asia/Dubai",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    }).format(now);
+    // UAE date and time — same format as website
+    const checkOutTime = now();
 
     db.prepare(`
       UPDATE attendance
       SET check_out = ?
       WHERE id = ?
+        AND check_out IS NULL
     `).run(
       checkOutTime,
       openAttendance.id
@@ -3290,20 +3274,6 @@ app.post("/api/mobile/attendance/checkout", mobileAuth, (req, res) => {
     });
   }
 });
-
-app.get(
-  "/",
-  (req, res) =>
-    res.sendFile(
-      path.join(
-        __dirname,
-        "public",
-        "index.html"
-      )
-    )
-);
-
-
 /* =========================================================
    404
    ========================================================= */

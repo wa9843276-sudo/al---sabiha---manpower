@@ -9,12 +9,7 @@
   >
 
   <meta name="theme-color" content="#061526">
-
-  <meta
-    name="apple-mobile-web-app-capable"
-    content="yes"
-  >
-
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <meta
     name="apple-mobile-web-app-status-bar-style"
     content="black-translucent"
@@ -22,4306 +17,5486 @@
 
   <link rel="manifest" href="/manifest.json">
 
-  <title>AL SABIHA Mobile Attendance</title>
+  <title>AL SABIHA | Mobile Attendance</title>
 
   <script
     src="https://unpkg.com/html5-qrcode"
-    defer
-  ></script>
-
-
-<style>
-
-/* =========================================================
-   AL SABIHA MOBILE ATTENDANCE
-   PREMIUM NAVY / GOLD / CYAN
-   ========================================================= */
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
-  margin:0;
-  padding:0;
-  min-height:100%;
-  font-family:Inter,Arial,sans-serif;
-  background:
-    radial-gradient(
-      circle at 20% 10%,
-      rgba(35,180,170,.18),
-      transparent 30%
-    ),
-    radial-gradient(
-      circle at 90% 90%,
-      rgba(217,173,77,.15),
-      transparent 35%
-    ),
-    linear-gradient(
-      135deg,
-      #020a13,
-      #061526 50%,
-      #0b2944
-    );
-  color:#fff;
-}
-
-body{
-  min-height:100vh;
-  padding:18px;
-}
-
-
-/* =========================================================
-   APP
-   ========================================================= */
-
-.app{
-  width:100%;
-  max-width:560px;
-  margin:auto;
-}
-
-
-/* =========================================================
-   BRAND
-   ========================================================= */
-
-.brand{
-  text-align:center;
-  margin:8px 0 18px;
-}
-
-.brand-logo{
-  width:70px;
-  height:70px;
-  margin:auto;
-
-  border-radius:22px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:28px;
-  font-weight:900;
-
-  color:#f4d47d;
-
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.13),
-      rgba(255,255,255,.035)
-    );
-
-  border:1px solid rgba(244,212,125,.35);
-
-  box-shadow:
-    0 0 30px rgba(217,173,77,.18),
-    inset 0 0 20px rgba(255,255,255,.05);
-}
+    defer>
+  </script>
+
+  <style>
+    :root{
+      --navy:#061526;
+      --navy2:#0a2138;
+      --navy3:#123c5e;
+
+      --gold:#d9ad4d;
+      --gold2:#f4d47d;
+
+      --cyan:#38e8ff;
+      --green:#38e89a;
+      --red:#ff647c;
+      --orange:#ffb84d;
+
+      --white:#ffffff;
+      --text:#eef7ff;
+      --muted:#91a7bb;
+
+      --glass:rgba(255,255,255,.075);
+      --glass2:rgba(255,255,255,.11);
+      --border:rgba(255,255,255,.13);
+
+      --shadow:
+        0 20px 60px rgba(0,0,0,.38);
+
+      --radius:22px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html{
+      width:100%;
+      min-height:100%;
+      background:#020b14;
+      overflow-x:hidden;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      width:100%;
+      min-width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      margin:0;
+      padding:0;
+      overflow-x:hidden;
+      overscroll-behavior-x:none;
+
+      background:
+        radial-gradient(
+          circle at 15% 8%,
+          rgba(56,232,255,.12),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 88% 18%,
+          rgba(217,173,77,.12),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 50% 100%,
+          rgba(18,60,94,.30),
+          transparent 42%
+        ),
+        linear-gradient(
+          145deg,
+          #020a12,
+          #061526 50%,
+          #0b2944
+        );
+
+      color:var(--text);
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      touch-action:manipulation;
+    }
+
+    button,
+    input,
+    select,
+    textarea{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+      -webkit-user-select:none;
+      user-select:none;
+      touch-action:manipulation;
+    }
+
+    input,
+    select,
+    textarea{
+      font-size:16px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    /* =====================================================
+       APP FRAME
+       ===================================================== */
+
+    #appScreen{
+      width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      padding-bottom:
+        calc(96px + env(safe-area-inset-bottom));
+    }
+
+    /* =====================================================
+       PIN SCREEN
+       ===================================================== */
+
+    #pinScreen{
+      position:fixed;
+      inset:0;
+      z-index:99999;
+
+      width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      padding:
+        calc(24px + env(safe-area-inset-top))
+        20px
+        calc(24px + env(safe-area-inset-bottom));
+
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(56,232,255,.15),
+          transparent 32%
+        ),
+        radial-gradient(
+          circle at 50% 85%,
+          rgba(217,173,77,.12),
+          transparent 32%
+        ),
+        linear-gradient(
+          145deg,
+          #01070d,
+          #031321,
+          #061526
+        );
+    }
 
-.brand h1{
-  margin:12px 0 3px;
-  font-size:24px;
-  letter-spacing:1.5px;
-}
+    .pin-box{
+      position:relative;
+      width:100%;
+      max-width:420px;
 
-.brand p{
-  margin:0;
-  color:#aebdca;
-  font-size:13px;
-}
+      padding:32px 22px;
 
+      border-radius:30px;
 
-/* =========================================================
-   CARD
-   ========================================================= */
+      border:1px solid rgba(255,255,255,.14);
 
-.card{
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.09),
-      rgba(255,255,255,.045)
-    );
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.105),
+          rgba(255,255,255,.035)
+        );
 
-  border:1px solid rgba(255,255,255,.14);
+      backdrop-filter:blur(28px);
+      -webkit-backdrop-filter:blur(28px);
 
-  border-radius:24px;
+      box-shadow:
+        0 30px 90px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.08);
 
-  padding:20px;
+      text-align:center;
 
-  margin-bottom:15px;
+      animation:pinEnter .55s ease both;
+    }
 
-  box-shadow:
-    0 20px 50px rgba(0,0,0,.28),
-    inset 0 1px 0 rgba(255,255,255,.08);
+    @keyframes pinEnter{
+      from{
+        opacity:0;
+        transform:translateY(20px) scale(.97);
+      }
 
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-}
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+    }
 
-.hidden{
-  display:none !important;
-}
+    .brand-logo{
+      width:88px;
+      height:88px;
 
+      margin:0 auto 18px;
 
-/* =========================================================
-   HEADINGS
-   ========================================================= */
+      object-fit:contain;
 
-h2{
-  margin:0 0 15px;
-  font-size:19px;
-}
+      padding:12px;
 
-.section-title{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  margin-bottom:13px;
-}
+      border-radius:25px;
 
-.section-title h2{
-  margin:0;
-}
+      background:rgba(255,255,255,.055);
 
+      border:1px solid rgba(217,173,77,.35);
 
-/* =========================================================
-   LABELS / INPUTS
-   ========================================================= */
+      box-shadow:
+        0 0 40px rgba(217,173,77,.13);
+    }
 
-label{
-  display:block;
-  margin:12px 0 7px;
+    .pin-box h1{
+      margin:0;
 
-  color:#c8d4df;
+      font-size:28px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:.7px;
+    }
 
-  font-size:13px;
-  font-weight:600;
-}
+    .pin-box p{
+      margin:9px 0 25px;
 
-input,
-select{
-  width:100%;
-  min-height:50px;
+      color:var(--muted);
 
-  padding:13px 14px;
+      font-size:13px;
+    }
 
-  border-radius:14px;
+    .pin-input{
+      width:100%;
+      height:58px;
 
-  border:1px solid rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:17px;
 
-  outline:none;
+      outline:none;
 
-  color:#fff;
+      background:rgba(0,0,0,.23);
 
-  background:rgba(0,0,0,.25);
+      color:#fff;
 
-  font-size:15px;
-}
+      text-align:center;
 
-input::placeholder{
-  color:#8495a4;
-}
+      letter-spacing:8px;
 
-select option{
-  color:#111;
-  background:#fff;
-}
+      font-size:22px;
+      font-weight:800;
+    }
 
-input:focus,
-select:focus{
-  border-color:#d9ad4d;
+    .pin-input:focus{
+      border-color:rgba(56,232,255,.60);
+
+      box-shadow:
+        0 0 0 4px rgba(56,232,255,.07),
+        0 0 30px rgba(56,232,255,.10);
+    }
 
-  box-shadow:
-    0 0 0 3px rgba(217,173,77,.12);
-}
+    .primary-btn{
+      width:100%;
+      min-height:55px;
 
+      margin-top:15px;
 
-/* =========================================================
-   BUTTONS
-   ========================================================= */
+      border:0;
+      border-radius:17px;
 
-button{
-  width:100%;
+      background:
+        linear-gradient(
+          135deg,
+          var(--gold2),
+          var(--gold)
+        );
 
-  min-height:52px;
+      color:#071321;
 
-  border:0;
+      font-size:14px;
+      font-weight:900;
 
-  border-radius:15px;
+      box-shadow:
+        0 12px 30px rgba(217,173,77,.20);
 
-  margin-top:12px;
+      transition:
+        transform .15s ease,
+        filter .15s ease,
+        box-shadow .15s ease;
+    }
 
-  padding:13px 16px;
+    .primary-btn:active{
+      transform:scale(.97);
+      filter:brightness(1.08);
+    }
 
-  font-size:15px;
-  font-weight:800;
+    .primary-btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
 
-  cursor:pointer;
+    .pin-message{
+      min-height:21px;
+      margin-top:13px;
 
-  transition:
-    transform .18s ease,
-    box-shadow .18s ease,
-    opacity .18s ease;
-}
+      color:#ff9eaf;
 
-button:active{
-  transform:scale(.98);
-}
+      font-size:12px;
+      line-height:1.5;
+    }
 
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-  transform:none;
-}
+    /* =====================================================
+       TOP BAR
+       ===================================================== */
 
-.btn-primary{
-  color:#07111d;
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:500;
 
-  background:
-    linear-gradient(
-      135deg,
-      #f4d47d,
-      #d9ad4d
-    );
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
 
-  box-shadow:
-    0 8px 25px rgba(217,173,77,.18);
-}
+      width:100%;
 
-.btn-secondary{
-  color:#fff;
+      padding:
+        calc(12px + env(safe-area-inset-top))
+        16px
+        12px;
 
-  background:
-    rgba(255,255,255,.09);
+      background:
+        linear-gradient(
+          180deg,
+          rgba(2,11,19,.94),
+          rgba(2,11,19,.76)
+        );
 
-  border:
-    1px solid rgba(255,255,255,.14);
-}
+      border-bottom:
+        1px solid rgba(255,255,255,.08);
 
-.btn-green{
-  color:#fff;
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+    }
 
-  background:
-    linear-gradient(
-      135deg,
-      #0da678,
-      #087f62
-    );
+    .topbar-brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      min-width:0;
+    }
 
-  box-shadow:
-    0 8px 25px rgba(13,166,120,.18);
-}
+    .topbar-logo{
+      width:43px;
+      height:43px;
+      flex:none;
 
-.btn-red{
-  color:#fff;
+      padding:5px;
 
-  background:
-    linear-gradient(
-      135deg,
-      #ef5350,
-      #b71c1c
-    );
+      border-radius:13px;
 
-  box-shadow:
-    0 8px 25px rgba(239,83,80,.18);
-}
+      object-fit:contain;
 
-.btn-blue{
-  color:#fff;
+      background:rgba(255,255,255,.05);
 
-  background:
-    linear-gradient(
-      135deg,
-      #248cff,
-      #1260bb
-    );
-}
+      border:1px solid rgba(217,173,77,.28);
+    }
 
+    .topbar-title{
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
 
-/* =========================================================
-   ROW
-   ========================================================= */
+    .topbar-subtitle{
+      margin-top:2px;
 
-.row{
-  display:grid;
+      color:#7990a5;
 
-  grid-template-columns:1fr 1fr;
+      font-size:9px;
+      font-weight:700;
 
-  gap:10px;
-}
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+    }
 
+    .live-dot{
+      display:flex;
+      align-items:center;
+      gap:6px;
 
-/* =========================================================
-   WORKER
-   ========================================================= */
+      flex:none;
 
-.worker-box{
-  padding:15px;
+      color:#b8ffd9;
 
-  border-radius:18px;
+      font-size:9px;
+      font-weight:900;
 
-  margin-top:15px;
+      letter-spacing:.7px;
+    }
 
-  background:rgba(0,0,0,.18);
+    .live-dot span{
+      width:8px;
+      height:8px;
 
-  border:
-    1px solid rgba(255,255,255,.10);
-}
+      border-radius:50%;
 
-.worker-name{
-  font-size:21px;
-  font-weight:900;
-  margin-bottom:5px;
-}
+      background:var(--green);
 
-.worker-code{
-  color:#d9ad4d;
-  font-size:13px;
-  font-weight:700;
-}
+      box-shadow:
+        0 0 12px var(--green);
 
-.info-grid{
-  display:grid;
+      animation:livePulse 1.5s ease infinite;
+    }
 
-  grid-template-columns:1fr 1fr;
+    @keyframes livePulse{
+      0%,100%{
+        opacity:.5;
+        transform:scale(.85);
+      }
 
-  gap:9px;
+      50%{
+        opacity:1;
+        transform:scale(1);
+      }
+    }
 
-  margin-top:13px;
-}
+    /* =====================================================
+       PAGES
+       ===================================================== */
 
-.info{
-  padding:11px;
+    .page{
+      display:none;
 
-  border-radius:13px;
+      width:100%;
 
-  background:
-    rgba(255,255,255,.055);
-}
+      padding:
+        17px
+        15px
+        24px;
+    }
 
-.info small{
-  display:block;
+    .page.active{
+      display:block;
 
-  color:#91a1af;
+      animation:pageIn .28s ease both;
+    }
 
-  font-size:11px;
+    @keyframes pageIn{
+      from{
+        opacity:0;
+        transform:translateY(8px);
+      }
 
-  margin-bottom:4px;
-}
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
 
-.info strong{
-  font-size:13px;
+    /* =====================================================
+       HOME HERO
+       ===================================================== */
 
-  word-break:break-word;
-}
+    .hero{
+      position:relative;
+      overflow:hidden;
 
+      padding:25px 21px;
 
-/* =========================================================
-   ASSIGNED COMPANY
-   ========================================================= */
+      border-radius:28px;
 
-.assigned{
-  margin-top:12px;
+      border:1px solid rgba(255,255,255,.13);
 
-  padding:13px;
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,232,255,.12),
+          rgba(255,255,255,.045) 52%,
+          rgba(217,173,77,.06)
+        );
 
-  border-radius:15px;
+      box-shadow:
+        0 20px 55px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.07);
+    }
 
-  background:
-    rgba(217,173,77,.10);
+    .hero::before{
+      content:"";
 
-  border:
-    1px solid rgba(217,173,77,.25);
-}
+      position:absolute;
 
-.assigned-title{
-  color:#d9ad4d;
+      width:190px;
+      height:190px;
 
-  font-size:11px;
+      right:-85px;
+      top:-85px;
 
-  font-weight:800;
+      border-radius:50%;
 
-  text-transform:uppercase;
+      background:rgba(56,232,255,.12);
 
-  letter-spacing:.8px;
-}
+      filter:blur(8px);
+    }
 
-.assigned-value{
-  margin-top:4px;
+    .hero::after{
+      content:"";
 
-  font-size:16px;
+      position:absolute;
 
-  font-weight:900;
-}
+      width:140px;
+      height:140px;
 
+      left:-90px;
+      bottom:-90px;
 
-/* =========================================================
-   LOCATION
-   ========================================================= */
+      border-radius:50%;
 
-.location-box{
-  margin-top:10px;
+      background:rgba(217,173,77,.08);
 
-  padding:13px;
+      filter:blur(12px);
+    }
 
-  border-radius:15px;
+    .hero > *{
+      position:relative;
+      z-index:2;
+    }
 
-  background:
-    rgba(35,180,170,.08);
+    .hero-label{
+      color:var(--gold2);
 
-  border:
-    1px solid rgba(35,180,170,.22);
-}
+      font-size:10px;
+      font-weight:900;
 
-.location-title{
-  color:#67ddd1;
+      letter-spacing:2px;
+      text-transform:uppercase;
+    }
 
-  font-size:11px;
+    .hero h1{
+      margin:10px 0 9px;
 
-  font-weight:800;
+      font-size:29px;
+      line-height:1.12;
 
-  text-transform:uppercase;
+      letter-spacing:-.5px;
+    }
 
-  letter-spacing:.8px;
-}
+    .hero p{
+      max-width:330px;
 
-.location-value{
-  margin-top:5px;
+      margin:0;
 
-  font-size:14px;
+      color:var(--muted);
 
-  font-weight:800;
+      font-size:12px;
+      line-height:1.65;
+    }
 
-  line-height:1.4;
-}
+    .hero-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
 
+      margin-top:17px;
 
-/* =========================================================
-   STATUS
-   ========================================================= */
+      padding:8px 12px;
 
-.status{
-  display:inline-flex;
+      border-radius:30px;
 
-  align-items:center;
+      border:1px solid rgba(56,232,255,.18);
 
-  gap:6px;
+      background:rgba(56,232,255,.07);
 
-  margin-top:10px;
+      color:#c9faff;
 
-  padding:7px 11px;
+      font-size:10px;
+      font-weight:800;
+    }
 
-  border-radius:30px;
+    .hero-badge::before{
+      content:"";
+      width:6px;
+      height:6px;
 
-  font-size:12px;
+      border-radius:50%;
 
-  font-weight:800;
-}
+      background:var(--cyan);
 
-.status-in{
-  color:#69f0b8;
+      box-shadow:0 0 9px var(--cyan);
+    }
 
-  background:
-    rgba(13,166,120,.13);
+    /* =====================================================
+       HOME ACTION GRID
+       ===================================================== */
 
-  border:
-    1px solid rgba(13,166,120,.25);
-}
+    .home-actions{
+      display:grid;
 
-.status-out{
-  color:#c6d0d9;
+      grid-template-columns:1fr 1fr;
 
-  background:
-    rgba(255,255,255,.07);
+      gap:12px;
 
-  border:
-    1px solid rgba(255,255,255,.10);
-}
+      margin-top:14px;
+    }
 
+    .action-card{
+      position:relative;
+      overflow:hidden;
 
-/* =========================================================
-   GPS
-   ========================================================= */
+      min-height:137px;
 
-.gps{
-  margin-top:10px;
+      padding:17px;
 
-  padding:11px 13px;
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
 
-  border-radius:13px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.085),
+          rgba(255,255,255,.035)
+        );
 
-  font-size:12px;
+      color:#fff;
 
-  color:#b9c7d2;
+      text-align:left;
 
-  background:
-    rgba(255,255,255,.045);
-}
+      box-shadow:
+        0 15px 35px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.05);
 
+      transition:
+        transform .14s ease,
+        border-color .18s ease,
+        background .18s ease;
+    }
 
-/* =========================================================
-   MESSAGE
-   ========================================================= */
+    .action-card::after{
+      content:"";
 
-.message{
-  display:none;
+      position:absolute;
 
-  padding:12px 14px;
+      width:80px;
+      height:80px;
 
-  margin-top:12px;
+      right:-35px;
+      bottom:-35px;
 
-  border-radius:13px;
+      border-radius:50%;
 
-  font-size:13px;
+      background:rgba(56,232,255,.06);
+    }
 
-  line-height:1.45;
-}
+    .action-card:active{
+      transform:scale(.965);
+      border-color:rgba(56,232,255,.30);
+      background:rgba(255,255,255,.10);
+    }
 
-.message.show{
-  display:block;
-}
+    .action-icon{
+      width:46px;
+      height:46px;
 
-.message.success{
-  color:#75efbb;
+      display:flex;
+      align-items:center;
+      justify-content:center;
 
-  background:
-    rgba(13,166,120,.12);
+      margin-bottom:14px;
 
-  border:
-    1px solid rgba(13,166,120,.22);
-}
+      border-radius:15px;
 
-.message.error{
-  color:#ffaaa7;
+      border:1px solid rgba(217,173,77,.23);
 
-  background:
-    rgba(239,83,80,.11);
+      background:
+        linear-gradient(
+          145deg,
+          rgba(217,173,77,.14),
+          rgba(56,232,255,.06)
+        );
 
-  border:
-    1px solid rgba(239,83,80,.22);
-}
+      color:var(--gold2);
 
-.message.info{
-  color:#b7d9ff;
+      font-size:21px;
 
-  background:
-    rgba(36,140,255,.10);
+      box-shadow:
+        0 8px 20px rgba(0,0,0,.18);
+    }
 
-  border:
-    1px solid rgba(36,140,255,.20);
-}
+    .action-card strong{
+      display:block;
 
+      font-size:13px;
+      font-weight:900;
+    }
 
-/* =========================================================
-   QR SCANNER
-   ========================================================= */
+    .action-card small{
+      display:block;
 
-#reader{
-  width:100%;
+      margin-top:5px;
 
-  overflow:hidden;
+      color:#8298ab;
 
-  border-radius:18px;
+      font-size:10px;
+      line-height:1.45;
+    }
 
-  margin-top:12px;
+    /* =====================================================
+       GLASS CARD
+       ===================================================== */
 
-  background:#000;
-}
+    .card{
+      width:100%;
 
-#reader video{
-  border-radius:18px;
-}
+      margin-bottom:15px;
 
-.scanner-status{
-  text-align:center;
+      padding:18px;
 
-  margin-top:8px;
+      border-radius:24px;
 
-  color:#9fb0bd;
+      border:1px solid rgba(255,255,255,.12);
 
-  font-size:12px;
-}
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.085),
+          rgba(255,255,255,.035)
+        );
 
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.055);
 
-/* =========================================================
-   PIN SCREEN
-   ========================================================= */
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
 
-.pin-screen{
-  min-height:calc(100vh - 36px);
+    .card-title{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
 
-  display:flex;
+      gap:12px;
 
-  align-items:center;
+      margin-bottom:16px;
+    }
 
-  justify-content:center;
-}
+    .card-title h2{
+      margin:0;
 
-.pin-card{
-  width:100%;
-  max-width:430px;
-}
+      font-size:18px;
+      font-weight:900;
+    }
 
-.pin-icon{
-  width:64px;
-  height:64px;
+    .card-title p{
+      margin:4px 0 0;
 
-  border-radius:20px;
+      color:#8095a8;
 
-  margin:0 auto 15px;
+      font-size:10px;
+    }
 
-  display:flex;
+    .section-label{
+      display:block;
 
-  align-items:center;
-  justify-content:center;
+      margin:13px 0 7px;
 
-  font-size:28px;
+      color:#aebfd0;
 
-  background:
-    rgba(217,173,77,.10);
+      font-size:10px;
+      font-weight:800;
 
-  border:
-    1px solid rgba(217,173,77,.28);
-}
+      letter-spacing:.5px;
+    }
 
+    input,
+    select{
+      width:100%;
+      height:51px;
 
-/* =========================================================
-   BADGE
-   ========================================================= */
+      border:1px solid rgba(255,255,255,.11);
+      border-radius:15px;
 
-.small-badge{
-  padding:6px 9px;
+      outline:none;
 
-  border-radius:20px;
+      background:
+        rgba(0,0,0,.22);
 
-  color:#d9ad4d;
+      color:#fff;
 
-  background:
-    rgba(217,173,77,.10);
+      padding:0 14px;
 
-  border:
-    1px solid rgba(217,173,77,.20);
+      font-size:14px;
 
-  font-size:10px;
+      transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+    }
 
-  font-weight:800;
-}
+    input::placeholder{
+      color:#62788d;
+    }
 
+    input:focus,
+    select:focus{
+      border-color:rgba(56,232,255,.52);
 
-/* =========================================================
-   FOOTER
-   ========================================================= */
+      background:rgba(0,0,0,.28);
 
-.footer{
-  text-align:center;
+      box-shadow:
+        0 0 0 4px rgba(56,232,255,.055),
+        0 0 25px rgba(56,232,255,.06);
+    }
 
-  padding:8px 0 18px;
+    select option{
+      color:#111;
+    }
 
-  color:#657887;
+    /* =====================================================
+       BUTTONS
+       ===================================================== */
 
-  font-size:11px;
-}
+    .two-buttons{
+      display:grid;
 
+      grid-template-columns:1fr 1fr;
 
-/* =========================================================
-   PREMIUM MOBILE HOME
-   ========================================================= */
+      gap:10px;
 
-.mobile-home-screen{
-  position:relative;
+      margin-top:13px;
+    }
 
-  min-height:calc(100vh - 20px);
+    .btn{
+      position:relative;
+      overflow:hidden;
 
-  padding:24px 18px 90px;
+      min-height:51px;
 
-  overflow:hidden;
+      border-radius:15px;
 
-  background:
-    radial-gradient(
-      circle at 15% 15%,
-      rgba(0,220,255,.12),
-      transparent 28%
-    ),
-    radial-gradient(
-      circle at 90% 35%,
-      rgba(217,173,77,.13),
-      transparent 30%
-    ),
-    linear-gradient(
-      145deg,
-      #020811,
-      #061526 48%,
-      #092b46
-    );
+      border:1px solid rgba(255,255,255,.11);
 
-  border-radius:28px;
-}
+      font-size:12px;
+      font-weight:900;
 
+      transition:
+        transform .12s ease,
+        filter .12s ease,
+        opacity .15s ease,
+        box-shadow .15s ease;
+    }
 
-/* =========================================================
-   HOME GLOW
-   ========================================================= */
+    .btn:active{
+      transform:scale(.965);
+      filter:brightness(1.12);
+    }
 
-.home-glow{
-  position:absolute;
+    .btn:disabled{
+      opacity:.38;
+      cursor:not-allowed;
+      transform:none;
+    }
 
-  border-radius:50%;
+    .btn-gold{
+      background:
+        linear-gradient(
+          135deg,
+          var(--gold2),
+          var(--gold)
+        );
 
-  pointer-events:none;
+      color:#061526;
 
-  filter:blur(2px);
+      border:0;
 
-  opacity:.55;
+      box-shadow:
+        0 10px 25px rgba(217,173,77,.15);
+    }
 
-  animation:
-    homeFloat 7s ease-in-out infinite;
-}
+    .btn-cyan{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,232,255,.12),
+          rgba(56,232,255,.045)
+        );
 
-.glow-one{
-  width:180px;
-  height:180px;
+      color:#c5faff;
 
-  top:-70px;
-  right:-55px;
+      border-color:
+        rgba(56,232,255,.23);
+    }
 
-  background:
-    radial-gradient(
-      circle,
-      rgba(0,220,255,.30),
-      rgba(0,220,255,.04) 55%,
-      transparent 72%
-    );
-}
+    .btn-green{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,232,154,.14),
+          rgba(56,232,154,.05)
+        );
 
-.glow-two{
-  width:220px;
-  height:220px;
+      color:#adffd3;
 
-  bottom:40px;
-  left:-110px;
+      border-color:
+        rgba(56,232,154,.25);
+    }
 
-  background:
-    radial-gradient(
-      circle,
-      rgba(217,173,77,.25),
-      rgba(217,173,77,.03) 58%,
-      transparent 72%
-    );
+    .btn-red{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,100,124,.13),
+          rgba(255,100,124,.04)
+        );
 
-  animation-delay:-3s;
-}
+      color:#ffb6c3;
 
-@keyframes homeFloat{
+      border-color:
+        rgba(255,100,124,.23);
+    }
 
-  0%,100%{
-    transform:
-      translate3d(0,0,0)
-      scale(1);
-  }
+    .btn-orange{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,184,77,.14),
+          rgba(255,184,77,.05)
+        );
 
-  50%{
-    transform:
-      translate3d(12px,-15px,0)
-      scale(1.08);
-  }
+      color:#ffd99a;
 
-}
+      border-color:
+        rgba(255,184,77,.23);
+    }
 
+    /* =====================================================
+       BACK BUTTON
+       ===================================================== */
 
-/* =========================================================
-   HOME HEADER
-   ========================================================= */
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
 
-.home-header{
-  position:relative;
+      min-height:40px;
 
-  z-index:2;
+      margin-bottom:12px;
 
-  display:flex;
+      padding:0 12px;
 
-  align-items:center;
+      border-radius:13px;
 
-  gap:14px;
+      border:1px solid rgba(255,255,255,.09);
 
-  margin-bottom:30px;
-}
+      background:rgba(255,255,255,.045);
 
-.home-logo{
-  width:58px;
-  height:58px;
+      color:#a9bac9;
 
-  display:flex;
+      font-size:11px;
+      font-weight:800;
 
-  align-items:center;
-  justify-content:center;
+      transition:
+        transform .12s ease,
+        background .15s ease;
+    }
 
-  flex-shrink:0;
+    .back-btn:active{
+      transform:scale(.96);
+      background:rgba(255,255,255,.08);
+    }
 
-  border-radius:18px;
+    /* =====================================================
+       FIND PAGE
+       ===================================================== */
 
-  color:#f4d47d;
+    .find-tools{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
 
-  font-size:21px;
+      margin-bottom:4px;
+    }
 
-  font-weight:900;
+    .find-tools-badge{
+      padding:6px 9px;
 
-  letter-spacing:1px;
+      border-radius:20px;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.14),
-      rgba(255,255,255,.035)
-    );
+      color:#a8f7ff;
 
-  border:
-    1px solid rgba(244,212,125,.42);
+      background:rgba(56,232,255,.07);
 
-  box-shadow:
-    0 0 28px rgba(217,173,77,.22),
-    inset 0 0 20px rgba(255,255,255,.06);
-}
+      border:1px solid rgba(56,232,255,.14);
 
-.home-brand{
-  color:#fff;
+      font-size:9px;
+      font-weight:800;
+    }
 
-  font-size:21px;
+    /* =====================================================
+       QR SCANNER
+       ===================================================== */
 
-  font-weight:900;
+    #scannerBox{
+      position:relative;
 
-  letter-spacing:2px;
-}
+      width:100%;
 
-.home-subtitle{
-  margin-top:3px;
+      margin-top:15px;
 
-  color:#8faabd;
+      padding:10px;
 
-  font-size:12px;
+      border-radius:23px;
 
-  letter-spacing:.8px;
-}
+      overflow:hidden;
 
+      border:1px solid rgba(56,232,255,.20);
 
-/* =========================================================
-   HOME WELCOME
-   ========================================================= */
+      background:
+        linear-gradient(
+          145deg,
+          rgba(56,232,255,.06),
+          rgba(0,0,0,.25)
+        );
 
-.home-welcome{
-  position:relative;
+      box-shadow:
+        0 20px 50px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.05);
+    }
 
-  z-index:2;
+    #reader{
+      position:relative;
 
-  margin-bottom:26px;
-}
+      width:100% !important;
 
-.home-welcome span{
-  display:inline-block;
+      min-height:260px;
 
-  margin-bottom:8px;
+      overflow:hidden;
 
-  color:#49e8ff;
+      border:0 !important;
 
-  font-size:11px;
+      border-radius:18px;
 
-  font-weight:800;
+      background:#02080f;
+    }
 
-  letter-spacing:2px;
-}
+    #reader video{
+      width:100% !important;
+      height:auto !important;
 
-.home-welcome h1{
-  margin:0;
+      display:block;
 
-  color:#fff;
+      border-radius:18px;
+    }
 
-  font-size:31px;
+    #reader img{
+      display:none !important;
+    }
 
-  line-height:1.12;
+    /* Scanning frame */
+    #scannerBox::before{
+      content:"";
 
-  font-weight:900;
+      position:absolute;
 
-  letter-spacing:-.7px;
+      z-index:10;
 
-  text-shadow:
-    0 0 20px rgba(0,220,255,.10);
-}
+      left:50%;
+      top:50%;
 
-.home-welcome p{
-  margin:10px 0 0;
+      width:min(72vw,220px);
+      height:min(72vw,220px);
 
-  max-width:330px;
+      transform:translate(-50%,-50%);
 
-  color:#9eb1c0;
+      pointer-events:none;
 
-  font-size:13px;
+      border:2px solid rgba(56,232,255,.85);
 
-  line-height:1.6;
-}
+      border-radius:20px;
 
+      box-shadow:
+        0 0 0 1px rgba(56,232,255,.12),
+        0 0 25px rgba(56,232,255,.20),
+        inset 0 0 25px rgba(56,232,255,.08);
+    }
 
-/* =========================================================
-   HOME ACTIONS
-   ========================================================= */
+    /* Moving scan line */
+    #scannerBox::after{
+      content:"";
 
-.home-actions{
-  position:relative;
+      position:absolute;
 
-  z-index:2;
+      z-index:11;
 
-  display:flex;
+      left:16%;
+      right:16%;
 
-  flex-direction:column;
+      top:50%;
 
-  gap:14px;
-}
+      height:2px;
 
-.home-action-card{
-  width:100%;
+      pointer-events:none;
 
-  min-height:88px;
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #38e8ff,
+          transparent
+        );
 
-  display:flex;
+      box-shadow:
+        0 0 10px rgba(56,232,255,.90),
+        0 0 25px rgba(56,232,255,.45);
 
-  align-items:center;
+      animation:
+        scannerLine 2s ease-in-out infinite;
+    }
 
-  padding:15px 16px;
+    @keyframes scannerLine{
+      0%,100%{
+        transform:translateY(-105px);
+        opacity:.35;
+      }
 
-  border:
-    1px solid rgba(255,255,255,.10);
+      50%{
+        transform:translateY(105px);
+        opacity:1;
+      }
+    }
 
-  border-radius:22px;
+    .scanner-status{
+      position:relative;
+      z-index:20;
 
-  color:#fff;
+      padding:11px 5px 3px;
 
-  text-align:left;
+      text-align:center;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(255,255,255,.11),
-      rgba(255,255,255,.035)
-    );
+      color:#c5faff;
 
-  box-shadow:
-    0 14px 35px rgba(0,0,0,.22),
-    inset 0 1px 0 rgba(255,255,255,.08);
+      font-size:11px;
+      font-weight:800;
 
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
+      letter-spacing:.2px;
+    }
 
-  cursor:pointer;
+    .scanner-status::before{
+      content:"";
 
-  transition:
-    transform .22s ease,
-    border-color .22s ease,
-    box-shadow .22s ease;
-}
+      display:inline-block;
 
-.home-action-card:active{
-  transform:scale(.97);
-}
+      width:7px;
+      height:7px;
 
-.home-action-card:hover{
-  transform:translateY(-2px);
+      margin-right:7px;
 
-  border-color:
-    rgba(73,232,255,.30);
+      border-radius:50%;
 
-  box-shadow:
-    0 18px 40px rgba(0,0,0,.28),
-    0 0 24px rgba(0,220,255,.08),
-    inset 0 1px 0 rgba(255,255,255,.10);
-}
+      background:var(--cyan);
 
+      box-shadow:
+        0 0 10px var(--cyan);
 
-/* =========================================================
-   ACTION ICON
-   ========================================================= */
+      animation:scannerDot 1.2s ease infinite;
+    }
 
-.action-icon{
-  width:52px;
-  height:52px;
+    @keyframes scannerDot{
+      0%,100%{
+        opacity:.35;
+      }
 
-  display:flex;
+      50%{
+        opacity:1;
+      }
+    }
 
-  align-items:center;
-  justify-content:center;
+    .scanner-help{
+      position:relative;
+      z-index:20;
 
-  flex-shrink:0;
+      padding:4px 5px 8px;
 
-  border-radius:17px;
+      color:#70879b;
 
-  font-size:27px;
+      text-align:center;
 
-  font-weight:700;
+      font-size:9px;
+    }
 
-  background:
-    rgba(255,255,255,.06);
+    /* Hide html5-qrcode default UI text/buttons */
+    #reader__dashboard{
+      background:rgba(0,0,0,.18) !important;
+      color:#fff !important;
+      padding:8px !important;
+    }
 
-  border:
-    1px solid rgba(255,255,255,.10);
-}
+    #reader__dashboard_section_csr button{
+      min-height:40px !important;
 
-.find-icon{
-  color:#49e8ff;
+      border-radius:12px !important;
 
-  box-shadow:
-    0 0 20px rgba(0,220,255,.13);
-}
+      border:1px solid rgba(56,232,255,.20) !important;
 
-.qr-icon{
-  color:#f4d47d;
+      background:rgba(56,232,255,.08) !important;
 
-  box-shadow:
-    0 0 20px rgba(217,173,77,.13);
-}
+      color:#c5faff !important;
 
-.add-icon{
-  color:#7dffda;
+      font-weight:800 !important;
+    }
 
-  font-size:31px;
+    /* =====================================================
+       WORKER DETAILS
+       ===================================================== */
 
-  box-shadow:
-    0 0 20px rgba(0,255,200,.10);
-}
+    .worker-header{
+      display:flex;
+      align-items:center;
 
+      gap:13px;
 
-/* =========================================================
-   ACTION TEXT
-   ========================================================= */
+      margin-bottom:17px;
+    }
 
-.action-content{
-  min-width:0;
+    .worker-avatar{
+      width:58px;
+      height:58px;
 
-  flex:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
 
-  margin-left:14px;
-}
+      flex:none;
 
-.action-content strong{
-  display:block;
+      border-radius:18px;
 
-  color:#fff;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(217,173,77,.25),
+          rgba(56,232,255,.10)
+        );
 
-  font-size:16px;
+      border:1px solid rgba(217,173,77,.27);
 
-  font-weight:800;
+      color:var(--gold2);
 
-  letter-spacing:.2px;
-}
+      font-size:21px;
+      font-weight:900;
 
-.action-content span{
-  display:block;
+      box-shadow:
+        0 10px 25px rgba(0,0,0,.18);
+    }
 
-  margin-top:5px;
+    .worker-name{
+      font-size:18px;
+      font-weight:900;
+    }
 
-  color:#91a6b6;
+    .worker-code{
+      margin-top:3px;
 
-  font-size:12px;
-}
+      color:#8298aa;
 
+      font-size:11px;
+    }
 
-/* =========================================================
-   ACTION ARROW
-   ========================================================= */
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
 
-.action-arrow{
-  width:30px;
-  height:30px;
+      margin-top:7px;
 
-  display:flex;
+      padding:6px 9px;
 
-  align-items:center;
-  justify-content:center;
+      border-radius:20px;
 
-  flex-shrink:0;
+      font-size:9px;
+      font-weight:900;
+    }
 
-  color:#75eaff;
+    .status-active{
+      background:rgba(56,232,154,.09);
 
-  font-size:25px;
+      color:#a2ffd0;
 
-  line-height:1;
+      border:1px solid rgba(56,232,154,.19);
+    }
 
-  border-radius:50%;
+    .status-checked{
+      background:rgba(56,232,255,.09);
 
-  background:
-    rgba(0,220,255,.06);
-}
+      color:#a8f7ff;
 
+      border:1px solid rgba(56,232,255,.19);
+    }
 
-/* =========================================================
-   SECURITY
-   ========================================================= */
+    .info-grid{
+      display:grid;
 
-.home-security{
-  position:relative;
+      grid-template-columns:1fr 1fr;
 
-  z-index:2;
+      gap:9px;
 
-  display:flex;
+      margin-bottom:14px;
+    }
 
-  align-items:center;
+    .info-item{
+      min-width:0;
 
-  justify-content:center;
+      padding:12px;
 
-  gap:8px;
+      border-radius:15px;
 
-  margin-top:28px;
+      background:rgba(0,0,0,.17);
 
-  color:#71899b;
+      border:1px solid rgba(255,255,255,.06);
+    }
 
-  font-size:11px;
+    .info-item span{
+      display:block;
 
-  letter-spacing:.5px;
-}
+      color:#6e8498;
 
-.security-dot{
-  width:7px;
-  height:7px;
+      font-size:8px;
+      font-weight:800;
 
-  border-radius:50%;
+      text-transform:uppercase;
 
-  background:#42e6c1;
+      letter-spacing:.8px;
+    }
 
-  box-shadow:
-    0 0 10px rgba(66,230,193,.8);
+    .info-item strong{
+      display:block;
 
-  animation:
-    securityPulse 1.8s ease-in-out infinite;
-}
+      margin-top:5px;
 
-@keyframes securityPulse{
+      font-size:11px;
+      font-weight:800;
 
-  0%,100%{
-    opacity:.45;
-    transform:scale(.85);
-  }
+      word-break:break-word;
+    }
 
-  50%{
-    opacity:1;
-    transform:scale(1.15);
-  }
+    .assignment-box{
+      margin-bottom:14px;
 
-}
+      padding:13px;
 
+      border-radius:18px;
 
-/* =========================================================
-   MOBILE BACK BUTTON
-   ========================================================= */
+      background:
+        linear-gradient(
+          135deg,
+          rgba(217,173,77,.07),
+          rgba(56,232,255,.04)
+        );
 
-.mobile-back-btn{
-  width:100%;
+      border:1px solid rgba(217,173,77,.13);
+    }
 
-  min-height:48px;
+    .assignment-row{
+      display:flex;
 
-  margin:0 0 14px;
+      justify-content:space-between;
 
-  padding:12px 15px;
+      gap:12px;
 
-  border:
-    1px solid rgba(73,232,255,.25);
+      padding:7px 0;
+    }
 
-  border-radius:15px;
+    .assignment-row:not(:last-child){
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
 
-  color:#b9f6ff;
+    .assignment-row span{
+      color:#8398aa;
 
-  background:
-    rgba(0,220,255,.07);
+      font-size:10px;
+    }
 
-  font-size:14px;
+    .assignment-row strong{
+      max-width:58%;
 
-  font-weight:700;
+      color:#e9f5ff;
 
-  cursor:pointer;
+      text-align:right;
 
-  box-shadow:
-    0 6px 20px rgba(0,0,0,.16),
-    inset 0 1px 0 rgba(255,255,255,.06);
-}
+      font-size:11px;
 
-.mobile-back-btn:active{
-  transform:scale(.97);
-}
+      word-break:break-word;
+    }
 
+    /* =====================================================
+       GPS
+       ===================================================== */
 
-/* =========================================================
-   BOTTOM NAVIGATION
-   ========================================================= */
+    .gps-box{
+      display:flex;
+      align-items:center;
 
-.mobile-bottom-nav{
-  position:fixed;
+      gap:9px;
 
-  left:50%;
+      margin-top:12px;
 
-  bottom:
-    calc(
-      10px +
-      env(safe-area-inset-bottom)
-    );
+      padding:11px 13px;
 
-  transform:translateX(-50%);
+      border-radius:14px;
 
-  z-index:9999;
+      background:rgba(255,255,255,.035);
 
-  width:min(
-    520px,
-    calc(100% - 20px)
-  );
+      border:1px solid rgba(255,255,255,.06);
 
-  min-height:68px;
+      color:#8399ab;
 
-  display:flex;
+      font-size:10px;
+      font-weight:700;
+    }
 
-  align-items:center;
+    .gps-dot{
+      width:8px;
+      height:8px;
 
-  justify-content:space-around;
+      flex:none;
 
-  gap:5px;
+      border-radius:50%;
 
-  padding:7px;
+      background:#72879a;
+    }
 
-  border:
-    1px solid rgba(255,255,255,.13);
+    .gps-dot.ok{
+      background:var(--green);
 
-  border-radius:22px;
+      box-shadow:
+        0 0 11px var(--green);
+    }
 
-  background:
-    rgba(5,20,35,.90);
+    .gps-dot.error{
+      background:var(--red);
 
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
+      box-shadow:
+        0 0 9px rgba(255,100,124,.45);
+    }
 
-  box-shadow:
-    0 14px 40px rgba(0,0,0,.42),
-    0 0 28px rgba(0,220,255,.08);
-}
+    /* =====================================================
+       MESSAGES
+       ===================================================== */
 
-.mobile-nav-btn{
-  flex:1;
+    .message{
+      min-height:21px;
 
-  min-width:0;
+      margin-top:11px;
 
-  height:54px;
+      padding:0 3px;
 
-  margin:0;
+      font-size:11px;
 
-  padding:5px 3px;
+      line-height:1.5;
+    }
 
-  border:0;
+    .message.success{
+      color:#9dffcb;
+    }
 
-  border-radius:16px;
+    .message.error{
+      color:#ff9eaf;
+    }
 
-  color:#91a6b6;
+    .message.info{
+      color:#a8f7ff;
+    }
 
-  background:transparent;
+    /* =====================================================
+       ADD WORKER
+       ===================================================== */
 
-  font-size:11px;
+    .form-note{
+      margin-top:11px;
 
-  font-weight:800;
+      color:#70869a;
 
-  cursor:pointer;
+      font-size:9px;
 
-  display:flex;
+      line-height:1.55;
+    }
 
-  flex-direction:column;
+    /* =====================================================
+       BOTTOM NAV
+       ===================================================== */
 
-  align-items:center;
+    .bottom-nav{
+      position:fixed;
 
-  justify-content:center;
+      left:10px;
+      right:10px;
 
-  gap:2px;
-}
+      bottom:
+        calc(9px + env(safe-area-inset-bottom));
 
-.mobile-nav-btn.active{
-  color:#f4d47d;
+      z-index:900;
 
-  background:
-    linear-gradient(
-      145deg,
-      rgba(217,173,77,.16),
-      rgba(217,173,77,.05)
-    );
+      display:grid;
 
-  box-shadow:
-    inset 0 0 18px rgba(217,173,77,.08),
-    0 0 15px rgba(217,173,77,.06);
-}
+      grid-template-columns:repeat(4,1fr);
 
-.mobile-nav-icon{
-  display:block;
+      padding:7px;
 
-  width:25px;
-  height:25px;
+      border-radius:23px;
 
-  line-height:25px;
+      background:
+        rgba(3,14,25,.90);
 
-  font-size:21px;
+      border:1px solid rgba(255,255,255,.12);
 
-  font-weight:800;
+      backdrop-filter:blur(25px);
+      -webkit-backdrop-filter:blur(25px);
 
-  text-align:center;
-}
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
 
+    .nav-btn{
+      min-height:56px;
 
-/* =========================================================
-   APP BOTTOM SPACE
-   ========================================================= */
+      border:0;
 
-#appScreen{
-  padding-bottom:
-    calc(
-      90px +
-      env(safe-area-inset-bottom)
-    );
-}
+      border-radius:17px;
 
+      background:transparent;
 
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
+      color:#71879a;
 
-@media(max-width:480px){
+      font-size:9px;
+      font-weight:800;
 
-  body{
-    padding:12px;
-  }
+      transition:
+        transform .12s ease,
+        color .15s ease,
+        background .15s ease;
+    }
 
-  .mobile-home-screen{
-    min-height:100vh;
+    .nav-btn:active{
+      transform:scale(.93);
+    }
 
-    border-radius:0;
+    .nav-btn.active{
+      color:var(--gold2);
 
-    margin:-12px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(217,173,77,.13),
+          rgba(217,173,77,.045)
+        );
 
-    padding:
-      24px 17px
-      calc(
-        90px +
-        env(safe-area-inset-bottom)
-      );
-  }
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05);
+    }
 
-  .home-welcome h1{
-    font-size:28px;
-  }
+    .nav-icon{
+      display:block;
 
-  .home-action-card{
-    min-height:84px;
-  }
+      margin-bottom:5px;
 
-  .mobile-bottom-nav{
-    width:
-      calc(100% - 18px);
+      font-size:20px;
 
-    min-height:64px;
+      line-height:1;
+    }
 
-    border-radius:20px;
-  }
+    /* =====================================================
+       PROCESSING
+       ===================================================== */
 
-  .mobile-nav-btn{
-    height:50px;
+    button.is-processing{
+      pointer-events:none;
+      opacity:.72;
+    }
 
-    font-size:10px;
-  }
+    button.is-processing::after{
+      content:"";
 
-  .mobile-nav-icon{
-    font-size:20px;
-  }
+      position:absolute;
 
-  .mobile-back-btn{
-    min-height:46px;
+      width:15px;
+      height:15px;
 
-    font-size:13px;
-  }
+      right:13px;
+      top:50%;
 
-}
+      margin-top:-8px;
 
-@media(max-width:420px){
+      border:2px solid rgba(255,255,255,.28);
 
-  .card{
-    padding:16px;
+      border-top-color:#fff;
 
-    border-radius:20px;
-  }
+      border-radius:50%;
 
-  .row{
-    grid-template-columns:1fr;
-  }
+      animation:
+        buttonSpin .7s linear infinite;
+    }
 
-}
+    @keyframes buttonSpin{
+      to{
+        transform:rotate(360deg);
+      }
+    }
 
-</style>
+    /* =====================================================
+       SUCCESS ANIMATION
+       ===================================================== */
 
+    button.action-success{
+      animation:
+        actionSuccess .4s ease;
+    }
+
+    @keyframes actionSuccess{
+      0%{
+        transform:scale(1);
+      }
+
+      45%{
+        transform:scale(1.035);
+      }
+
+      100%{
+        transform:scale(1);
+      }
+    }
+
+    /* =====================================================
+       SMALL PHONES
+       ===================================================== */
+
+    @media(max-width:370px){
+
+      .page{
+        padding-left:12px;
+        padding-right:12px;
+      }
+
+      .hero{
+        padding:22px 18px;
+      }
+
+      .hero h1{
+        font-size:26px;
+      }
+
+      .home-actions{
+        gap:9px;
+      }
+
+      .action-card{
+        min-height:128px;
+        padding:14px;
+      }
+
+      .action-icon{
+        width:42px;
+        height:42px;
+        margin-bottom:11px;
+      }
+
+      .two-buttons{
+        gap:7px;
+      }
+
+      .card{
+        padding:15px;
+      }
+
+    }
+
+    /* =====================================================
+       TABLET / LARGE PHONE
+       ===================================================== */
+
+    @media(min-width:600px){
+
+      #appScreen{
+        max-width:600px;
+        margin:0 auto;
+      }
+
+      .topbar{
+        max-width:600px;
+        margin:0 auto;
+      }
+
+      .bottom-nav{
+        max-width:580px;
+        left:50%;
+        right:auto;
+
+        width:calc(100% - 30px);
+
+        transform:translateX(-50%);
+      }
+
+    }
+
+  </style>
 </head>
-
 
 <body>
 
+  <!-- =====================================================
+       PIN SCREEN
+       ===================================================== -->
 
-<!-- =======================================================
-     PIN SCREEN
-     ======================================================= -->
+  <section id="pinScreen">
 
-<div id="pinScreen" class="pin-screen">
+    <div class="pin-box">
 
-  <div class="app">
+      <img
+        src="/logo.svg"
+        class="brand-logo"
+        alt="AL SABIHA"
+        onerror="this.style.display='none'"
+      >
 
-    <div class="brand">
-
-      <div class="brand-logo">
-        AS
-      </div>
-
-      <h1>
-        AL SABIHA
-      </h1>
+      <h1>AL SABIHA</h1>
 
       <p>
-        Mobile Attendance
+        Mobile Manpower Attendance
       </p>
-
-    </div>
-
-
-    <div class="card pin-card">
-
-      <div class="pin-icon">
-        🔐
-      </div>
-
-      <h2 style="text-align:center;">
-        Mobile Access
-      </h2>
-
-      <p
-        style="
-          text-align:center;
-          color:#9eafbd;
-          font-size:13px;
-        "
-      >
-        Enter your authorized mobile PIN
-      </p>
-
-      <label for="pinInput">
-        Mobile PIN
-      </label>
 
       <input
         id="pinInput"
+        class="pin-input"
         type="password"
         inputmode="numeric"
         autocomplete="off"
-        placeholder="Enter PIN"
+        maxlength="20"
+        placeholder="••••"
       >
 
       <button
         id="continueBtn"
-        class="btn-primary"
+        class="primary-btn"
+        type="button"
       >
         Continue
       </button>
 
       <div
         id="pinMessage"
-        class="message"
-      ></div>
-
-    </div>
-
-  </div>
-
-</div>
-
-
-<!-- =======================================================
-     APP SCREEN
-     ======================================================= -->
-
-<div
-  id="appScreen"
-  class="hidden"
->
-
-
-  <!-- =====================================================
-       BOTTOM NAVIGATION
-       ===================================================== -->
-
-  <div
-    id="mobileBottomNav"
-    class="mobile-bottom-nav"
-  >
-
-    <button
-      type="button"
-      id="mobileNavHome"
-      class="mobile-nav-btn active"
-    >
-      <span class="mobile-nav-icon">⌂</span>
-      <span>Home</span>
-    </button>
-
-
-    <button
-      type="button"
-      id="mobileNavFind"
-      class="mobile-nav-btn"
-    >
-      <span class="mobile-nav-icon">⌕</span>
-      <span>Find</span>
-    </button>
-
-
-    <button
-      type="button"
-      id="mobileNavScan"
-      class="mobile-nav-btn"
-    >
-      <span class="mobile-nav-icon">▣</span>
-      <span>Scan</span>
-    </button>
-
-
-    <button
-      type="button"
-      id="mobileNavAdd"
-      class="mobile-nav-btn"
-    >
-      <span class="mobile-nav-icon">+</span>
-      <span>Add</span>
-    </button>
-
-  </div>
-
-
-  <!-- =====================================================
-       PREMIUM HOME
-       ===================================================== -->
-
-  <div
-    id="mobileHome"
-    class="mobile-home-screen"
-  >
-
-    <div class="home-glow glow-one"></div>
-
-    <div class="home-glow glow-two"></div>
-
-
-    <div class="home-header">
-
-      <div class="home-logo">
-        AS
-      </div>
-
-      <div>
-
-        <div class="home-brand">
-          AL SABIHA
-        </div>
-
-        <div class="home-subtitle">
-          Mobile Attendance
-        </div>
-
+        class="pin-message">
       </div>
 
     </div>
 
-
-    <div class="home-welcome">
-
-      <span>
-        WELCOME
-      </span>
-
-      <h1>
-        Worker Attendance
-      </h1>
-
-      <p>
-        Manage worker attendance quickly and securely.
-      </p>
-
-    </div>
+  </section>
 
 
-    <div class="home-actions">
+  <!-- =====================================================
+       APP SCREEN
+       ===================================================== -->
 
+  <main id="appScreen" class="hidden">
 
-      <!-- FIND -->
+    <!-- TOP BAR -->
 
-      <button
-        type="button"
-        class="home-action-card"
-        id="homeFindWorkerBtn"
-      >
+    <header class="topbar">
 
-        <div class="action-icon find-icon">
-          ⌕
+      <div class="topbar-brand">
+
+        <img
+          src="/logo.svg"
+          class="topbar-logo"
+          alt="AL SABIHA"
+          onerror="this.style.display='none'"
+        >
+
+        <div>
+
+          <div class="topbar-title">
+            AL SABIHA
+          </div>
+
+          <div class="topbar-subtitle">
+            Manpower Attendance
+          </div>
+
         </div>
 
-        <div class="action-content">
+      </div>
+
+      <div class="live-dot">
+        <span></span>
+        LIVE
+      </div>
+
+    </header>
+
+
+    <!-- ===================================================
+         HOME
+         =================================================== -->
+
+    <section
+      id="homePage"
+      class="page active">
+
+      <div class="hero">
+
+        <div class="hero-label">
+          Attendance System
+        </div>
+
+        <h1>
+          Right People.<br>
+          Right Place.<br>
+          Right Time.
+        </h1>
+
+        <p>
+          Manage worker attendance quickly and securely
+          from your mobile device.
+        </p>
+
+        <div class="hero-badge">
+          UAE • 24-Hour Attendance
+        </div>
+
+      </div>
+
+
+      <div class="home-actions">
+
+        <button
+          id="homeFindBtn"
+          class="action-card"
+          type="button">
+
+          <div class="action-icon">
+            🔎
+          </div>
 
           <strong>
             Find Worker
           </strong>
 
-          <span>
-            Search by worker code
-          </span>
+          <small>
+            Search worker by code
+          </small>
 
-        </div>
-
-        <div class="action-arrow">
-          ›
-        </div>
-
-      </button>
+        </button>
 
 
-      <!-- SCAN -->
+        <button
+          id="homeScanQRBtn"
+          class="action-card"
+          type="button">
 
-      <button
-        type="button"
-        class="home-action-card"
-        id="homeScanQRBtn"
-      >
-
-        <div class="action-icon qr-icon">
-          ▣
-        </div>
-
-        <div class="action-content">
+          <div class="action-icon">
+            ▣
+          </div>
 
           <strong>
             Scan QR
           </strong>
 
-          <span>
+          <small>
             Scan worker QR code
-          </span>
+          </small>
 
-        </div>
-
-        <div class="action-arrow">
-          ›
-        </div>
-
-      </button>
+        </button>
 
 
-      <!-- ADD -->
+        <button
+          id="homeAddWorkerBtn"
+          class="action-card"
+          type="button">
 
-      <button
-        type="button"
-        class="home-action-card"
-        id="homeAddWorkerBtn"
-      >
-
-        <div class="action-icon add-icon">
-          +
-        </div>
-
-        <div class="action-content">
+          <div class="action-icon">
+            ＋
+          </div>
 
           <strong>
             Add Worker
           </strong>
 
-          <span>
+          <small>
             Register a new worker
-          </span>
+          </small>
 
-        </div>
-
-        <div class="action-arrow">
-          ›
-        </div>
-
-      </button>
-
-
-    </div>
-
-
-    <div class="home-security">
-
-      <span class="security-dot"></span>
-
-      Secure Attendance System
-
-    </div>
-
-  </div>
-
-
-  <!-- =====================================================
-       APP CONTENT
-       ===================================================== -->
-
-  <div class="app">
-
-
-    <!-- ===================================================
-         BRAND
-         =================================================== -->
-
-    <div class="brand">
-
-      <div class="brand-logo">
-        AS
-      </div>
-
-      <h1>
-        AL SABIHA
-      </h1>
-
-      <p>
-        Worker Mobile Attendance
-      </p>
-
-    </div>
-
-
-    <!-- ===================================================
-         FIND WORKER SCREEN
-         =================================================== -->
-
-    <div
-      id="findWorkerCard"
-      class="card"
-    >
-
-      <button
-        type="button"
-        class="mobile-back-btn"
-        id="backFromFindBtn"
-      >
-        ← Back to Home
-      </button>
-
-
-      <div class="section-title">
-
-        <h2>
-          Find Worker
-        </h2>
-
-        <span class="small-badge">
-          ATTENDANCE
-        </span>
-
-      </div>
-
-
-      <label for="workerCode">
-        Worker Code
-      </label>
-
-
-      <input
-        id="workerCode"
-        type="text"
-        autocomplete="off"
-        placeholder="Example: W001"
-      >
-
-
-      <div class="row">
-
-        <button
-          id="findBtn"
-          class="btn-primary"
-        >
-          🔍 Find Worker
         </button>
 
 
         <button
-          id="scanBtn"
-          class="btn-secondary"
-        >
-          📷 Scan QR
+          id="homeManualBtn"
+          class="action-card"
+          type="button">
+
+          <div class="action-icon">
+            ✓
+          </div>
+
+          <strong>
+            Attendance
+          </strong>
+
+          <small>
+            Worker check-in/out
+          </small>
+
         </button>
 
       </div>
 
-
-      <div
-        id="reader"
-        class="hidden"
-      ></div>
-
-
-      <div
-        id="scannerStatus"
-        class="scanner-status hidden"
-      >
-        Point camera at worker QR code
-      </div>
-
-
-      <div
-        id="findMessage"
-        class="message"
-      ></div>
-
-    </div>
+    </section>
 
 
     <!-- ===================================================
-         WORKER DETAILS SCREEN
+         FIND WORKER
          =================================================== -->
 
-    <div
-      id="workerCard"
-      class="card hidden"
-    >
+    <section
+      id="findPage"
+      class="page">
 
       <button
-        type="button"
-        class="mobile-back-btn"
-        id="backFromWorkerBtn"
-      >
-        ← Back to Home
+        id="findBackBtn"
+        class="back-btn"
+        type="button">
+        ← Home
       </button>
 
 
-      <div class="section-title">
+      <div class="card">
 
-        <h2>
-          Worker Details
-        </h2>
+        <div class="card-title">
 
-        <span
-          id="attendanceBadge"
-          class="small-badge"
+          <div>
+            <h2>Find Worker</h2>
+
+            <p>
+              Search by worker code or scan QR
+            </p>
+          </div>
+
+          <div class="find-tools-badge">
+            SECURE
+          </div>
+
+        </div>
+
+
+        <label
+          class="section-label"
+          for="workerCode">
+          Worker Code
+        </label>
+
+        <input
+          id="workerCode"
+          type="text"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="Example: AS001"
         >
-          READY
-        </span>
+
+
+        <div class="two-buttons">
+
+          <button
+            id="findBtn"
+            class="btn btn-gold"
+            type="button">
+            Find Worker
+          </button>
+
+          <button
+            id="scanBtn"
+            class="btn btn-cyan"
+            type="button">
+            Scan QR
+          </button>
+
+        </div>
+
+
+        <div
+          id="findMessage"
+          class="message">
+        </div>
+
+
+        <div
+          id="scannerBox"
+          class="hidden">
+
+          <div id="reader"></div>
+
+          <div class="scanner-status">
+            Align worker QR code inside the frame
+          </div>
+
+          <div class="scanner-help">
+            Keep the QR code inside the blue frame
+          </div>
+
+        </div>
 
       </div>
 
-
-      <div class="worker-box">
-
-
-        <div
-          id="workerName"
-          class="worker-name"
-        >
-          Worker Name
-        </div>
+    </section>
 
 
-        <div
-          id="workerCodeDisplay"
-          class="worker-code"
-        >
-          W000
-        </div>
+    <!-- ===================================================
+         WORKER DETAILS
+         =================================================== -->
+
+    <section
+      id="workerPage"
+      class="page">
+
+      <button
+        id="workerBackBtn"
+        class="back-btn"
+        type="button">
+        ← Find Worker
+      </button>
 
 
-        <div
-          id="workerStatus"
-          class="status status-out"
-        >
-          ● Checked Out
+      <div class="card">
+
+        <div class="worker-header">
+
+          <div
+            id="workerAvatar"
+            class="worker-avatar">
+            W
+          </div>
+
+          <div>
+
+            <div
+              id="workerName"
+              class="worker-name">
+              Worker
+            </div>
+
+            <div
+              id="workerCodeDisplay"
+              class="worker-code">
+              -
+            </div>
+
+            <div
+              id="workerStatus"
+              class="status-pill status-active">
+              ACTIVE
+            </div>
+
+          </div>
+
         </div>
 
 
         <div class="info-grid">
 
-
-          <div class="info">
-
-            <small>
-              Designation
-            </small>
-
-            <strong id="workerDesignation">
-              —
-            </strong>
-
+          <div class="info-item">
+            <span>Designation</span>
+            <strong id="workerDesignation">-</strong>
           </div>
 
-
-          <div class="info">
-
-            <small>
-              Mobile
-            </small>
-
-            <strong id="workerMobile">
-              —
-            </strong>
-
+          <div class="info-item">
+            <span>Mobile</span>
+            <strong id="workerMobile">-</strong>
           </div>
 
-
-          <div class="info">
-
-            <small>
-              Employee Type
-            </small>
-
-            <strong id="workerType">
-              —
-            </strong>
-
+          <div class="info-item">
+            <span>Employee Type</span>
+            <strong id="workerType">-</strong>
           </div>
 
-
-          <div class="info">
-
-            <small>
-              Status
-            </small>
-
-            <strong id="workerActiveStatus">
-              —
-            </strong>
-
+          <div class="info-item">
+            <span>Worker Status</span>
+            <strong id="workerStatusText">-</strong>
           </div>
-
 
         </div>
 
 
-        <!-- COMPANY -->
+        <div class="assignment-box">
 
-        <div class="assigned">
+          <div class="assignment-row">
 
-          <div class="assigned-title">
-            Assigned Company
+            <span>
+              Assigned Company
+            </span>
+
+            <strong id="assignedCompanyText">
+              -
+            </strong>
+
           </div>
+
+
+          <div class="assignment-row">
+
+            <span>
+              Assigned Site
+            </span>
+
+            <strong id="assignedSiteText">
+              -
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <label
+          class="section-label"
+          for="companySelect">
+          Company
+        </label>
+
+        <select id="companySelect">
+          <option value="">
+            Select Company
+          </option>
+        </select>
+
+
+        <label
+          class="section-label"
+          for="siteSelect">
+          Site / Location
+        </label>
+
+        <select id="siteSelect">
+          <option value="">
+            Select Site
+          </option>
+        </select>
+
+
+        <div class="gps-box">
 
           <div
-            id="assignedCompanyText"
-            class="assigned-value"
-          >
-            Loading...
+            id="gpsDot"
+            class="gps-dot">
           </div>
+
+          <span id="gpsStatus">
+            Checking GPS...
+          </span>
 
         </div>
 
 
-        <!-- SITE -->
+        <div class="two-buttons">
 
-        <div class="location-box">
+          <button
+            id="checkInBtn"
+            class="btn btn-green"
+            type="button">
+            Check-In
+          </button>
 
-          <div class="location-title">
-            Assigned Site / Location
-          </div>
-
-          <div
-            id="assignedSiteText"
-            class="location-value"
-          >
-            Loading...
-          </div>
+          <button
+            id="checkOutBtn"
+            class="btn btn-red"
+            type="button">
+            Check-Out
+          </button>
 
         </div>
 
 
-      </div>
-
-
-      <!-- COMPANY SELECT -->
-
-      <label for="companySelect">
-        Company
-      </label>
-
-      <select id="companySelect">
-
-        <option value="">
-          Loading company...
-        </option>
-
-      </select>
-
-
-      <!-- SITE SELECT -->
-
-      <label for="siteSelect">
-        Site / Location
-      </label>
-
-      <select id="siteSelect">
-
-        <option value="">
-          Select company first
-        </option>
-
-      </select>
-
-
-      <!-- GPS -->
-
-      <div
-        id="gpsStatus"
-        class="gps"
-      >
-        📍 GPS location not captured yet
-      </div>
-
-
-      <!-- ATTENDANCE -->
-
-      <div class="row">
-
-        <button
-          id="checkInBtn"
-          class="btn-green"
-        >
-          🟢 Check-In
-        </button>
+        <div
+          id="attendanceMessage"
+          class="message">
+        </div>
 
 
         <button
-          id="checkOutBtn"
-          class="btn-red"
-        >
-          🔴 Check-Out
+          id="resetBtn"
+          class="btn btn-cyan"
+          type="button"
+          style="width:100%;margin-top:10px;">
+          Find Another Worker
         </button>
 
       </div>
 
-
-      <div
-        id="attendanceMessage"
-        class="message"
-      ></div>
-
-
-      <button
-        id="resetBtn"
-        class="btn-secondary"
-      >
-        ↻ Reset Worker
-      </button>
-
-
-    </div>
+    </section>
 
 
     <!-- ===================================================
-         ADD WORKER SCREEN
+         ADD WORKER
          =================================================== -->
 
-    <div
-      id="addWorkerCard"
-      class="card"
-    >
+    <section
+      id="addPage"
+      class="page">
 
       <button
-        type="button"
-        class="mobile-back-btn"
-        id="backFromAddBtn"
-      >
-        ← Back to Home
+        id="addBackBtn"
+        class="back-btn"
+        type="button">
+        ← Home
       </button>
 
 
-      <div class="section-title">
+      <div class="card">
 
-        <h2>
+        <div class="card-title">
+
+          <div>
+
+            <h2>Add Worker</h2>
+
+            <p>
+              Register a new manpower worker
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <label
+          class="section-label"
+          for="newWorkerCode">
+          Worker Code
+        </label>
+
+        <input
+          id="newWorkerCode"
+          type="text"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="Example: AS001"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerName">
+          Worker Name
+        </label>
+
+        <input
+          id="newWorkerName"
+          type="text"
+          autocomplete="name"
+          placeholder="Full name"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerDesignation">
+          Designation
+        </label>
+
+        <input
+          id="newWorkerDesignation"
+          type="text"
+          placeholder="Welder / Helper / Grinder"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerMobile">
+          Mobile
+        </label>
+
+        <input
+          id="newWorkerMobile"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="05XXXXXXXX"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerCompany">
+          Company
+        </label>
+
+        <select id="newWorkerCompany">
+
+          <option value="">
+            Select Company
+          </option>
+
+        </select>
+
+
+        <button
+          id="addWorkerBtn"
+          class="btn btn-gold"
+          type="button"
+          style="width:100%;margin-top:15px;">
           Add Worker
-        </h2>
+        </button>
 
-        <span class="small-badge">
-          NEW
-        </span>
+
+        <div
+          id="addWorkerMessage"
+          class="message">
+        </div>
+
+
+        <div class="form-note">
+          Worker will be saved to the same attendance database
+          used by the main AL SABIHA website.
+        </div>
 
       </div>
 
-
-      <label for="newWorkerCode">
-        Worker Code
-      </label>
-
-      <input
-        id="newWorkerCode"
-        type="text"
-        autocomplete="off"
-        placeholder="Example: W100"
-      >
+    </section>
 
 
-      <label for="newWorkerName">
-        Worker Name
-      </label>
+    <!-- ===================================================
+         BOTTOM NAV
+         =================================================== -->
 
-      <input
-        id="newWorkerName"
-        type="text"
-        autocomplete="off"
-        placeholder="Full name"
-      >
-
-
-      <label for="newWorkerDesignation">
-        Designation
-      </label>
-
-      <input
-        id="newWorkerDesignation"
-        type="text"
-        autocomplete="off"
-        placeholder="Welder / Helper / Grinder"
-      >
-
-
-      <label for="newWorkerMobile">
-        Mobile
-      </label>
-
-      <input
-        id="newWorkerMobile"
-        type="tel"
-        autocomplete="off"
-        placeholder="Mobile number"
-      >
-
-
-      <label for="newWorkerCompany">
-        Company
-      </label>
-
-      <select id="newWorkerCompany">
-
-        <option value="">
-          No Company Assigned
-        </option>
-
-      </select>
-
+    <nav class="bottom-nav">
 
       <button
-        id="addWorkerBtn"
-        class="btn-blue"
-      >
-        👤 Add Worker
+        id="mobileNavHome"
+        class="nav-btn active"
+        type="button">
+
+        <span class="nav-icon">⌂</span>
+
+        Home
+
       </button>
 
 
-      <div
-        id="addWorkerMessage"
-        class="message"
-      ></div>
+      <button
+        id="mobileNavFind"
+        class="nav-btn"
+        type="button">
+
+        <span class="nav-icon">⌕</span>
+
+        Find
+
+      </button>
 
 
-    </div>
+      <button
+        id="mobileNavScan"
+        class="nav-btn"
+        type="button">
+
+        <span class="nav-icon">▣</span>
+
+        Scan
+
+      </button>
 
 
-    <!-- FOOTER -->
+      <button
+        id="mobileNavAdd"
+        class="nav-btn"
+        type="button">
 
-    <div class="footer">
+        <span class="nav-icon">＋</span>
 
-      AL SABIHA Group of Companies
+        Add
 
-      <br>
+      </button>
 
-      Secure Mobile Attendance System
+    </nav>
 
-    </div>
-
-
-  </div>
-
-</div>
+  </main>
 
 
-<script>
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
 
-"use strict";
+  <script>
 
+    /* =====================================================
+       GLOBAL VARIABLES
+       ===================================================== */
 
-/* =========================================================
-   AL SABIHA MOBILE ATTENDANCE
-   ========================================================= */
-
-
-/* =========================================================
-   GLOBAL VARIABLES
-   ========================================================= */
-
-const $ = id =>
-  document.getElementById(id);
-
-let MOBILE_PIN = "";
-
-let currentWorker = null;
-
-let currentAttendanceOpen = false;
-
-let isSubmittingAttendance = false;
-
-let scanner = null;
-
-let scannerRunning = false;
-
-let currentLatitude = null;
-
-let currentLongitude = null;
-
-let audioContext = null;
-
-let masterGain = null;
+    const $ = selector =>
+      document.querySelector(selector);
 
 
-/* =========================================================
-   API
-   ========================================================= */
+    let MOBILE_PIN = "";
 
-async function api(
-  url,
-  options = {}
-){
+    let currentWorker = null;
 
-  const opts = {
-    ...options,
+    let currentAttendanceOpen = false;
 
-    headers:{
-      ...(options.headers || {}),
+    let currentGPS = {
+      latitude:null,
+      longitude:null
+    };
 
-      "x-mobile-pin":
-        MOBILE_PIN
+    let scanner = null;
+
+    let scannerRunning = false;
+
+    let isSubmittingAttendance = false;
+
+    let isAddingWorker = false;
+
+    let audioContext = null;
+
+    let audioUnlocked = false;
+
+
+    /* =====================================================
+       PROFESSIONAL SOUND SYSTEM
+       ===================================================== */
+
+    function getAudioContext(){
+
+      try{
+
+        const AudioContext =
+          window.AudioContext ||
+          window.webkitAudioContext;
+
+        if(!AudioContext){
+          return null;
+        }
+
+        if(!audioContext){
+
+          audioContext =
+            new AudioContext();
+
+        }
+
+        if(
+          audioContext.state ===
+          "suspended"
+        ){
+
+          audioContext
+            .resume()
+            .catch(() => {});
+
+        }
+
+        return audioContext;
+
+      }catch(error){
+
+        return null;
+
+      }
+
     }
-  };
 
 
-  if(
-    opts.body &&
-    typeof opts.body !== "string"
-  ){
+    function unlockAudio(){
 
-    opts.headers["Content-Type"] =
-      "application/json";
+      const context =
+        getAudioContext();
 
-    opts.body =
-      JSON.stringify(
-        opts.body
+      if(!context){
+        return;
+      }
+
+      try{
+
+        if(
+          context.state ===
+          "suspended"
+        ){
+
+          context.resume();
+
+        }
+
+        audioUnlocked = true;
+
+      }catch(error){}
+
+    }
+
+
+    function playTone(
+      frequency = 700,
+      duration = 90,
+      volume = 0.16,
+      type = "sine",
+      delay = 0
+    ){
+
+      try{
+
+        const context =
+          getAudioContext();
+
+        if(!context){
+          return;
+        }
+
+        const start =
+          context.currentTime +
+          delay;
+
+        const oscillator =
+          context.createOscillator();
+
+        const gain =
+          context.createGain();
+
+
+        oscillator.type =
+          type;
+
+
+        oscillator.frequency.setValueAtTime(
+          frequency,
+          start
+        );
+
+
+        gain.gain.setValueAtTime(
+          0.0001,
+          start
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          volume,
+          start + .012
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          start + duration / 1000
+        );
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+          context.destination
+        );
+
+
+        oscillator.start(start);
+
+        oscillator.stop(
+          start +
+          duration / 1000 +
+          .03
+        );
+
+      }catch(error){}
+
+    }
+
+
+    /* Normal button */
+    function soundButton(){
+
+      playTone(
+        620,
+        65,
+        .13,
+        "sine"
       );
 
-  }
+    }
 
 
-  const response =
-    await fetch(
+    /* Find Worker */
+    function soundFindWorker(){
+
+      playTone(
+        700,
+        70,
+        .15,
+        "sine"
+      );
+
+      playTone(
+        920,
+        80,
+        .12,
+        "sine",
+        .07
+      );
+
+    }
+
+
+    /* QR Scanner OPEN */
+    function soundScanStart(){
+
+      playTone(
+        520,
+        75,
+        .15,
+        "sine"
+      );
+
+      playTone(
+        780,
+        90,
+        .14,
+        "sine",
+        .08
+      );
+
+    }
+
+
+    /* QR SUCCESS — DONE */
+    function soundScanDone(){
+
+      playTone(
+        880,
+        85,
+        .18,
+        "sine"
+      );
+
+      playTone(
+        1180,
+        110,
+        .20,
+        "sine",
+        .10
+      );
+
+      playTone(
+        1480,
+        145,
+        .16,
+        "sine",
+        .22
+      );
+
+    }
+
+
+    /* CHECK-IN */
+    function soundCheckIn(){
+
+      playTone(
+        660,
+        100,
+        .18,
+        "sine"
+      );
+
+      playTone(
+        880,
+        120,
+        .20,
+        "sine",
+        .11
+      );
+
+      playTone(
+        1100,
+        150,
+        .18,
+        "sine",
+        .24
+      );
+
+    }
+
+
+    /* CHECK-OUT */
+    function soundCheckOut(){
+
+      playTone(
+        1100,
+        100,
+        .18,
+        "sine"
+      );
+
+      playTone(
+        850,
+        120,
+        .18,
+        "sine",
+        .11
+      );
+
+      playTone(
+        650,
+        150,
+        .16,
+        "sine",
+        .24
+      );
+
+    }
+
+
+    /* ADD WORKER */
+    function soundAddWorker(){
+
+      playTone(
+        600,
+        80,
+        .16,
+        "sine"
+      );
+
+      playTone(
+        800,
+        90,
+        .17,
+        "sine",
+        .09
+      );
+
+      playTone(
+        1000,
+        130,
+        .18,
+        "sine",
+        .19
+      );
+
+    }
+
+
+    /* SUCCESS */
+    function soundSuccess(){
+
+      playTone(
+        760,
+        90,
+        .17,
+        "sine"
+      );
+
+      playTone(
+        1000,
+        130,
+        .18,
+        "sine",
+        .10
+      );
+
+    }
+
+
+    /* BACK */
+    function soundBack(){
+
+      playTone(
+        480,
+        70,
+        .12,
+        "sine"
+      );
+
+    }
+
+
+    /* ERROR */
+    function soundError(){
+
+      playTone(
+        280,
+        120,
+        .20,
+        "sawtooth"
+      );
+
+      playTone(
+        190,
+        170,
+        .16,
+        "sawtooth",
+        .13
+      );
+
+    }
+
+
+    /* GPS */
+    function soundGPS(){
+
+      playTone(
+        760,
+        70,
+        .12,
+        "sine"
+      );
+
+      playTone(
+        980,
+        90,
+        .13,
+        "sine",
+        .08
+      );
+
+    }
+
+
+    /*
+      First touch unlocks mobile audio.
+    */
+
+    document.addEventListener(
+      "pointerdown",
+      function(){
+
+        unlockAudio();
+
+      },
+      {
+        once:true,
+        passive:true
+      }
+    );
+
+
+    /* =====================================================
+       DOM REFERENCES
+       ===================================================== */
+
+    const pinScreen =
+      $("#pinScreen");
+
+    const appScreen =
+      $("#appScreen");
+
+    const pinInput =
+      $("#pinInput");
+
+    const continueBtn =
+      $("#continueBtn");
+
+    const pinMessage =
+      $("#pinMessage");
+
+
+    /* =====================================================
+       SAFE TEXT
+       ===================================================== */
+
+    function esc(value){
+
+      return String(value ?? "")
+        .replace(
+          /[&<>"']/g,
+          char =>
+            ({
+              "&":"&amp;",
+              "<":"&lt;",
+              ">":"&gt;",
+              '"':"&quot;",
+              "'":"&#039;"
+            })[char]
+        );
+
+    }
+
+
+    /* =====================================================
+       MESSAGE
+       ===================================================== */
+
+    function showMessage(
+      element,
+      message,
+      type = "info"
+    ){
+
+      if(!element){
+        return;
+      }
+
+      element.textContent =
+        message;
+
+      element.className =
+        "message " + type;
+
+    }
+
+
+    function clearMessage(element){
+
+      if(!element){
+        return;
+      }
+
+      element.textContent = "";
+
+      element.className =
+        "message";
+
+    }
+
+
+    /* =====================================================
+       TIME
+       ===================================================== */
+
+    function formatTime24(value){
+
+      if(
+        value === null ||
+        value === undefined ||
+        value === ""
+      ){
+
+        return "current time";
+
+      }
+
+
+      const valueString =
+        String(value).trim();
+
+
+      if(
+        valueString.includes("T") &&
+        (
+          valueString.includes("Z") ||
+          /[+-]\d{2}:\d{2}$/.test(
+            valueString
+          )
+        )
+      ){
+
+        const date =
+          new Date(valueString);
+
+
+        if(
+          !Number.isNaN(
+            date.getTime()
+          )
+        ){
+
+          return new Intl.DateTimeFormat(
+            "en-GB",
+            {
+              timeZone:"Asia/Dubai",
+              hour:"2-digit",
+              minute:"2-digit",
+              hourCycle:"h23"
+            }
+          ).format(date);
+
+        }
+
+      }
+
+
+      let match =
+        valueString.match(
+          /(?:T|\s)(\d{2}):(\d{2})(?::\d{2})?/
+        );
+
+
+      if(match){
+
+        return `${match[1]}:${match[2]}`;
+
+      }
+
+
+      match =
+        valueString.match(
+          /^(\d{2}):(\d{2})(?::\d{2})?$/
+        );
+
+
+      if(match){
+
+        return `${match[1]}:${match[2]}`;
+
+      }
+
+
+      match =
+        valueString.match(
+          /^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)$/i
+        );
+
+
+      if(match){
+
+        let hour =
+          Number(match[1]);
+
+        const minute =
+          match[2];
+
+        const ampm =
+          match[4].toUpperCase();
+
+
+        if(
+          ampm === "PM" &&
+          hour !== 12
+        ){
+
+          hour += 12;
+
+        }
+
+
+        if(
+          ampm === "AM" &&
+          hour === 12
+        ){
+
+          hour = 0;
+
+        }
+
+
+        return (
+          String(hour).padStart(2,"0") +
+          ":" +
+          minute
+        );
+
+      }
+
+
+      return valueString;
+
+    }
+
+
+    /* =====================================================
+       API
+       ===================================================== */
+
+    async function api(
       url,
-      opts
-    );
-
-
-  let data = {};
-
-
-  try{
-
-    data =
-      await response.json();
-
-  }catch(e){}
-
-
-  if(!response.ok){
-
-    throw new Error(
-      data?.error ||
-      data?.message ||
-      `Request failed (${response.status})`
-    );
-
-  }
-
-
-  return data;
-
-}
-
-
-/* =========================================================
-   MESSAGES
-   ========================================================= */
-
-function showMessage(
-  element,
-  text,
-  type = "info"
-){
-
-  if(!element) return;
-
-  element.textContent =
-    text;
-
-  element.className =
-    `message show ${type}`;
-
-}
-
-
-function hideMessage(
-  element
-){
-
-  if(!element) return;
-
-  element.textContent = "";
-
-  element.className =
-    "message";
-
-}
-
-
-/* =========================================================
-   AUDIO
-   ========================================================= */
-
-function initAudio(){
-
-  try{
-
-    const AudioCtx =
-      window.AudioContext ||
-      window.webkitAudioContext;
-
-
-    if(!AudioCtx){
-      return;
-    }
-
-
-    if(!audioContext){
-
-      audioContext =
-        new AudioCtx();
-
-
-      masterGain =
-        audioContext.createGain();
-
-
-      masterGain.gain.value =
-        0.85;
-
-
-      masterGain.connect(
-        audioContext.destination
-      );
-
-    }
-
-
-    if(
-      audioContext.state ===
-      "suspended"
+      options = {}
     ){
 
-      audioContext.resume();
-
-    }
-
-  }catch(error){
-
-    console.log(
-      "Audio unavailable",
-      error
-    );
-
-  }
-
-}
-
-
-function tone(
-  frequency,
-  duration,
-  delay = 0,
-  volume = 0.75,
-  type = "sine"
-){
-
-  try{
-
-    initAudio();
-
-
-    if(
-      !audioContext ||
-      !masterGain
-    ){
-
-      return;
-
-    }
-
-
-    const start =
-      audioContext.currentTime +
-      delay;
-
-
-    const oscillator =
-      audioContext.createOscillator();
-
-
-    const gain =
-      audioContext.createGain();
-
-
-    oscillator.type =
-      type;
-
-
-    oscillator.frequency.setValueAtTime(
-      frequency,
-      start
-    );
-
-
-    gain.gain.setValueAtTime(
-      0.0001,
-      start
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      volume,
-      start + 0.015
-    );
-
-
-    gain.gain.exponentialRampToValueAtTime(
-      0.0001,
-      start + duration
-    );
-
-
-    oscillator.connect(gain);
-
-    gain.connect(masterGain);
-
-    oscillator.start(start);
-
-    oscillator.stop(
-      start + duration + 0.04
-    );
-
-  }catch(error){
-
-    console.log(
-      "Tone error",
-      error
-    );
-
-  }
-
-}
-
-
-function soundContinue(){
-
-  tone(
-    520,
-    0.10,
-    0,
-    0.65,
-    "sine"
-  );
-
-  tone(
-    760,
-    0.16,
-    0.11,
-    0.80,
-    "sine"
-  );
-
-}
-
-
-function soundFind(){
-
-  tone(
-    700,
-    0.08,
-    0,
-    0.75,
-    "triangle"
-  );
-
-  tone(
-    980,
-    0.13,
-    0.09,
-    0.90,
-    "triangle"
-  );
-
-}
-
-
-function soundScan(){
-
-  tone(
-    430,
-    0.08,
-    0,
-    0.75,
-    "square"
-  );
-
-  tone(
-    620,
-    0.10,
-    0.09,
-    0.75,
-    "square"
-  );
-
-  tone(
-    820,
-    0.14,
-    0.19,
-    0.85,
-    "square"
-  );
-
-}
-
-
-function soundCheckIn(){
-
-  tone(
-    620,
-    0.10,
-    0,
-    0.85,
-    "sine"
-  );
-
-  tone(
-    780,
-    0.12,
-    0.11,
-    0.90,
-    "sine"
-  );
-
-  tone(
-    1040,
-    0.20,
-    0.24,
-    1.00,
-    "sine"
-  );
-
-}
-
-
-function soundCheckOut(){
-
-  tone(
-    1040,
-    0.10,
-    0,
-    0.90,
-    "sine"
-  );
-
-  tone(
-    780,
-    0.12,
-    0.11,
-    0.85,
-    "sine"
-  );
-
-  tone(
-    620,
-    0.20,
-    0.24,
-    1.00,
-    "sine"
-  );
-
-}
-
-
-function soundAddWorker(){
-
-  tone(
-    500,
-    0.09,
-    0,
-    0.80,
-    "triangle"
-  );
-
-  tone(
-    700,
-    0.10,
-    0.10,
-    0.85,
-    "triangle"
-  );
-
-  tone(
-    900,
-    0.18,
-    0.22,
-    0.95,
-    "triangle"
-  );
-
-}
-
-
-function soundReset(){
-
-  tone(
-    760,
-    0.08,
-    0,
-    0.60,
-    "sine"
-  );
-
-  tone(
-    520,
-    0.14,
-    0.10,
-    0.70,
-    "sine"
-  );
-
-}
-
-
-function soundError(){
-
-  tone(
-    280,
-    0.13,
-    0,
-    0.85,
-    "sawtooth"
-  );
-
-  tone(
-    210,
-    0.18,
-    0.15,
-    0.85,
-    "sawtooth"
-  );
-
-}
-
-
-/* =========================================================
-   LOAD COMPANIES
-   ========================================================= */
-
-async function loadCompanies(){
-
-  try{
-
-    const data =
-      await api(
-        "/api/mobile/companies"
-      );
-
-
-    const companies =
-      data.companies || [];
-
-
-    const companySelect =
-      $("companySelect");
-
-
-    const newWorkerCompany =
-      $("newWorkerCompany");
-
-
-    companySelect.innerHTML =
-      `<option value="">
-        Select Company
-      </option>`;
-
-
-    newWorkerCompany.innerHTML =
-      `<option value="">
-        No Company Assigned
-      </option>`;
-
-
-    companies.forEach(
-      company => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-
-        option.value =
-          String(company.id);
-
-
-        option.textContent =
-          company.name;
-
-
-        companySelect.appendChild(
-          option
-        );
-
-
-        const option2 =
-          document.createElement(
-            "option"
-          );
-
-
-        option2.value =
-          String(company.id);
-
-
-        option2.textContent =
-          company.name;
-
-
-        newWorkerCompany.appendChild(
-          option2
-        );
-
-      }
-    );
-
-
-  }catch(error){
-
-    soundError();
-
-
-    showMessage(
-      $("findMessage"),
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   LOAD SITES
-   ========================================================= */
-
-async function loadSites(
-  companyId
-){
-
-  const siteSelect =
-    $("siteSelect");
-
-
-  siteSelect.innerHTML =
-    `<option value="">
-      Loading Site / Location...
-    </option>`;
-
-
-  if(!companyId){
-
-    siteSelect.innerHTML =
-      `<option value="">
-        Select company first
-      </option>`;
-
-
-    $("assignedSiteText")
-      .textContent =
-      "No site selected";
-
-
-    return [];
-
-  }
-
-
-  try{
-
-    const data =
-      await api(
-        `/api/mobile/sites?company_id=${encodeURIComponent(companyId)}`
-      );
-
-
-    const sites =
-      data.sites || [];
-
-
-    siteSelect.innerHTML =
-      `<option value="">
-        Select Site / Location
-      </option>`;
-
-
-    if(!sites.length){
-
-      siteSelect.innerHTML =
-        `<option value="">
-          No active site available
-        </option>`;
-
-
-      $("assignedSiteText")
-        .textContent =
-        "No active site available";
-
-
-      return [];
-
-    }
-
-
-    sites.forEach(
-      site => {
-
-        const option =
-          document.createElement(
-            "option"
-          );
-
-
-        option.value =
-          String(site.id);
-
-
-        option.textContent =
-          site.location
-            ? `${site.name} — ${site.location}`
-            : site.name;
-
-
-        option.dataset.siteName =
-          site.name || "";
-
-
-        option.dataset.location =
-          site.location || "";
-
-
-        siteSelect.appendChild(
-          option
-        );
-
-      }
-    );
-
-
-    return sites;
-
-
-  }catch(error){
-
-    siteSelect.innerHTML =
-      `<option value="">
-        Failed to load sites
-      </option>`;
-
-
-    $("assignedSiteText")
-      .textContent =
-      "Unable to load site";
-
-
-    soundError();
-
-
-    showMessage(
-      $("attendanceMessage"),
-      error.message,
-      "error"
-    );
-
-
-    return [];
-
-  }
-
-}
-
-
-/* =========================================================
-   AUTOMATIC SITE
-   ========================================================= */
-
-function selectAutomaticSite(
-  sites,
-  data
-){
-
-  const siteSelect =
-    $("siteSelect");
-
-
-  if(
-    !sites ||
-    !sites.length
-  ){
-
-    $("assignedSiteText")
-      .textContent =
-      "No site assigned";
-
-    return;
-
-  }
-
-
-  const assignedSites =
-    data.assigned_company_sites ||
-    [];
-
-
-  let targetSite = null;
-
-
-  /* FIRST: SITE ID */
-
-  if(assignedSites.length){
-
-    targetSite =
-      assignedSites.find(
-        assigned => {
-
-          return sites.some(
-            site =>
-              String(site.id) ===
-              String(assigned.id)
-          );
-
+      const opts = {
+        ...options,
+
+        headers:{
+          ...(options.headers || {}),
+          "x-mobile-pin":MOBILE_PIN
         }
-      );
-
-  }
-
-
-  /* SECOND: ONLY ONE SITE */
-
-  if(
-    !targetSite &&
-    sites.length === 1
-  ){
-
-    targetSite =
-      sites[0];
-
-  }
-
-
-  /* THIRD: NAME MATCH */
-
-  if(
-    !targetSite &&
-    assignedSites.length
-  ){
-
-    targetSite =
-      sites.find(
-        site => {
-
-          return assignedSites.some(
-            assigned => {
-
-              const a =
-                String(
-                  assigned.name || ""
-                )
-                .trim()
-                .toLowerCase();
-
-
-              const b =
-                String(
-                  site.name || ""
-                )
-                .trim()
-                .toLowerCase();
-
-
-              return (
-                a &&
-                b &&
-                a === b
-              );
-
-            }
-          );
-
-        }
-      );
-
-  }
-
-
-  /* SELECT */
-
-  if(targetSite){
-
-    siteSelect.value =
-      String(targetSite.id);
-
-
-    const location =
-      targetSite.location ||
-      "";
-
-
-    $("assignedSiteText")
-      .textContent =
-      location
-        ? `${targetSite.name} — ${location}`
-        : targetSite.name;
-
-  }else{
-
-    $("assignedSiteText")
-      .textContent =
-      `${sites.length} site(s) available — select Site / Location`;
-
-  }
-
-}
-
-
-/* =========================================================
-   ATTENDANCE BUTTONS
-   ========================================================= */
-
-function updateAttendanceButtons(){
-
-  const checkIn =
-    $("checkInBtn");
-
-
-  const checkOut =
-    $("checkOutBtn");
-
-
-  const status =
-    $("workerStatus");
-
-
-  const badge =
-    $("attendanceBadge");
-
-
-  if(currentAttendanceOpen){
-
-    checkIn.disabled = true;
-
-    checkOut.disabled = false;
-
-
-    status.className =
-      "status status-in";
-
-
-    status.textContent =
-      "● Currently Checked In";
-
-
-    badge.textContent =
-      "CHECKED IN";
-
-  }else{
-
-    checkIn.disabled = false;
-
-    checkOut.disabled = true;
-
-
-    status.className =
-      "status status-out";
-
-
-    status.textContent =
-      "● Checked Out";
-
-
-    badge.textContent =
-      "READY";
-
-  }
-
-}
-
-
-/* =========================================================
-   GPS
-   ========================================================= */
-
-function getGPS(){
-
-  const gps =
-    $("gpsStatus");
-
-
-  if(!navigator.geolocation){
-
-    gps.textContent =
-      "📍 GPS is not supported.";
-
-    return;
-
-  }
-
-
-  gps.textContent =
-    "📍 Getting GPS location...";
-
-
-  navigator.geolocation.getCurrentPosition(
-
-    position => {
-
-      currentLatitude =
-        position.coords.latitude;
-
-
-      currentLongitude =
-        position.coords.longitude;
-
-
-      gps.textContent =
-        `📍 GPS captured: ${currentLatitude.toFixed(6)}, ${currentLongitude.toFixed(6)}`;
-
-    },
-
-
-    error => {
-
-      currentLatitude = null;
-
-      currentLongitude = null;
-
-
-      gps.textContent =
-        "📍 GPS permission/location unavailable.";
-
-    },
-
-
-    {
-      enableHighAccuracy:true,
-
-      timeout:15000,
-
-      maximumAge:30000
-    }
-
-  );
-
-}
-
-
-/* =========================================================
-   DISPLAY WORKER
-   ========================================================= */
-
-async function displayWorker(
-  data
-){
-
-  const worker =
-    data.worker;
-
-
-  currentWorker =
-    worker;
-
-
-  currentAttendanceOpen =
-    !!data.currently_checked_in ||
-    !!data.open_attendance;
-
-
-  $("workerCard")
-    .classList.remove(
-      "hidden"
-    );
-
-
-  openWorkerDetailsScreen();
-
-
-  $("workerName").textContent =
-    worker.name || "—";
-
-
-  $("workerCodeDisplay").textContent =
-    worker.worker_code || "—";
-
-
-  $("workerDesignation").textContent =
-    worker.designation || "—";
-
-
-  $("workerMobile").textContent =
-    worker.mobile || "—";
-
-
-  $("workerType").textContent =
-    worker.employee_type || "—";
-
-
-  $("workerActiveStatus").textContent =
-    worker.status || "—";
-
-
-  updateAttendanceButtons();
-
-
-  /* COMPANY */
-
-  const companyId =
-    worker.company_id ||
-    data.assigned_company?.id ||
-    null;
-
-
-  if(companyId){
-
-    $("companySelect").value =
-      String(companyId);
-
-
-    const selected =
-      $("companySelect")
-        .selectedOptions[0];
-
-
-    if(
-      selected &&
-      selected.value
-    ){
-
-      $("assignedCompanyText")
-        .textContent =
-        selected.textContent;
-
-    }else if(
-      data.assigned_company
-    ){
-
-      $("assignedCompanyText")
-        .textContent =
-        data.assigned_company.name ||
-        "Assigned Company";
-
-    }
-
-
-    /* SITE */
-
-    const sites =
-      await loadSites(
-        companyId
-      );
-
-
-    selectAutomaticSite(
-      sites,
-      data
-    );
-
-
-  }else{
-
-    $("companySelect").value =
-      "";
-
-
-    $("assignedCompanyText")
-      .textContent =
-      "No company assigned";
-
-
-    $("siteSelect").innerHTML =
-      `<option value="">
-        Select Company first
-      </option>`;
-
-
-    $("assignedSiteText")
-      .textContent =
-      "No company assigned";
-
-  }
-
-
-  getGPS();
-
-}
-
-
-/* =========================================================
-   FIND WORKER
-   ========================================================= */
-
-async function findWorker(
-  codeOverride = null
-){
-
-  const code =
-    String(
-      codeOverride ??
-      $("workerCode").value
-    ).trim();
-
-
-  if(!code){
-
-    soundError();
-
-
-    showMessage(
-      $("findMessage"),
-      "Please enter Worker Code.",
-      "error"
-    );
-
-
-    return;
-
-  }
-
-
-  $("findBtn").disabled =
-    true;
-
-
-  showMessage(
-    $("findMessage"),
-    "Finding worker...",
-    "info"
-  );
-
-
-  try{
-
-    const data =
-      await api(
-        `/api/mobile/worker?worker_code=${encodeURIComponent(code)}`
-      );
-
-
-    await displayWorker(
-      data
-    );
-
-
-    showMessage(
-      $("findMessage"),
-      "✓ Worker found successfully.",
-      "success"
-    );
-
-
-  }catch(error){
-
-    currentWorker =
-      null;
-
-
-    $("workerCard")
-      .classList.add(
-        "hidden"
-      );
-
-
-    soundError();
-
-
-    showMessage(
-      $("findMessage"),
-      error.message ||
-      "Worker not found.",
-      "error"
-    );
-
-
-  }finally{
-
-    $("findBtn").disabled =
-      false;
-
-  }
-
-}
-
-
-/* =========================================================
-   COMPANY CHANGE
-   ========================================================= */
-
-$("companySelect")
-  .addEventListener(
-    "change",
-    async () => {
-
-      initAudio();
-
-
-      const companyId =
-        $("companySelect").value;
-
-
-      const selected =
-        $("companySelect")
-          .selectedOptions[0];
+      };
 
 
       if(
-        selected &&
-        selected.value
+        !opts.method ||
+        String(opts.method).toUpperCase() === "GET"
       ){
 
-        $("assignedCompanyText")
-          .textContent =
-          selected.textContent;
+        opts.cache = "no-store";
 
       }
-
-
-      await loadSites(
-        companyId
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   SITE CHANGE
-   ========================================================= */
-
-$("siteSelect")
-  .addEventListener(
-    "change",
-    () => {
-
-      initAudio();
-
-
-      const option =
-        $("siteSelect")
-          .selectedOptions[0];
 
 
       if(
-        !option ||
-        !option.value
+        opts.body &&
+        typeof opts.body !== "string"
       ){
 
-        $("assignedSiteText")
-          .textContent =
-          "No site selected";
+        opts.headers["Content-Type"] =
+          "application/json";
 
-
-        return;
-
-      }
-
-
-      const location =
-        option.dataset.location ||
-        "";
-
-
-      $("assignedSiteText")
-        .textContent =
-        location
-          ? `${option.dataset.siteName} — ${location}`
-          : option.dataset.siteName;
-
-    }
-  );
-
-
-/* =========================================================
-   FIND BUTTON
-   ========================================================= */
-
-$("findBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      initAudio();
-
-      soundFind();
-
-      findWorker();
-
-    }
-  );
-
-
-/* =========================================================
-   WORKER ENTER
-   ========================================================= */
-
-$("workerCode")
-  .addEventListener(
-    "keydown",
-    event => {
-
-      if(
-        event.key ===
-        "Enter"
-      ){
-
-        initAudio();
-
-        soundFind();
-
-        findWorker();
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   CHECK IN
-   ========================================================= */
-
-$("checkInBtn")
-  .addEventListener(
-    "click",
-    async () => {
-
-      initAudio();
-
-
-      if(isSubmittingAttendance){
-        return;
-      }
-
-
-      if(!currentWorker){
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          "Please find a worker first.",
-          "error"
-        );
-
-
-        return;
+        opts.body =
+          JSON.stringify(opts.body);
 
       }
 
 
-      const companyId =
-        $("companySelect").value;
-
-
-      const siteId =
-        $("siteSelect").value;
-
-
-      if(!companyId){
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          "Company is required.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-      if(!siteId){
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          "Site / Location is required.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-      isSubmittingAttendance =
-        true;
-
-
-      $("checkInBtn").disabled =
-        true;
-
-
-      $("checkOutBtn").disabled =
-        true;
-
-
-      showMessage(
-        $("attendanceMessage"),
-        "Checking in... Please wait.",
-        "info"
-      );
+      let response;
 
 
       try{
 
-        const data =
-          await api(
-            "/api/mobile/attendance/checkin",
-            {
-              method:"POST",
-
-              body:{
-                worker_code:
-                  currentWorker.worker_code,
-
-                company_id:
-                  Number(companyId),
-
-                site_id:
-                  Number(siteId),
-
-                latitude:
-                  currentLatitude,
-
-                longitude:
-                  currentLongitude
-              }
-            }
-          );
-
-
-        currentAttendanceOpen =
-          true;
-
-
-        updateAttendanceButtons();
-
-
-        soundCheckIn();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          `✓ Check-In successful at ${data.check_in || "current time"}.`,
-          "success"
-        );
-
+        response =
+          await fetch(url,opts);
 
       }catch(error){
 
-        /*
-          Keep worker checked-in state
-          when backend rejects duplicate.
-        */
-
-        currentAttendanceOpen =
-          true;
-
-
-        updateAttendanceButtons();
-
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          error.message ||
-          "Check-In failed.",
-          "error"
+        throw new Error(
+          "Network error. Please check your internet connection."
         );
 
-
-      }finally{
-
-        isSubmittingAttendance =
-          false;
-
-
-        updateAttendanceButtons();
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   CHECK OUT
-   ========================================================= */
-
-$("checkOutBtn")
-  .addEventListener(
-    "click",
-    async () => {
-
-      initAudio();
-
-
-      if(isSubmittingAttendance){
-        return;
       }
 
 
-      if(!currentWorker){
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          "Please find a worker first.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-      if(!currentAttendanceOpen){
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          "Worker is not currently checked in.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-      isSubmittingAttendance =
-        true;
-
-
-      $("checkInBtn").disabled =
-        true;
-
-
-      $("checkOutBtn").disabled =
-        true;
-
-
-      showMessage(
-        $("attendanceMessage"),
-        "Checking out... Please wait.",
-        "info"
-      );
+      let data = {};
 
 
       try{
 
-        const data =
-          await api(
-            "/api/mobile/attendance/checkout",
-            {
-              method:"POST",
-
-              body:{
-                worker_code:
-                  currentWorker.worker_code
-              }
-            }
-          );
-
-
-        currentAttendanceOpen =
-          false;
-
-
-        updateAttendanceButtons();
-
-
-        soundCheckOut();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          `✓ Check-Out successful at ${data.check_out || "current time"}.`,
-          "success"
-        );
-
+        data =
+          await response.json();
 
       }catch(error){
 
-        currentAttendanceOpen =
-          true;
-
-
-        updateAttendanceButtons();
-
-
-        soundError();
-
-
-        showMessage(
-          $("attendanceMessage"),
-          error.message ||
-          "Check-Out failed.",
-          "error"
-        );
-
-
-      }finally{
-
-        isSubmittingAttendance =
-          false;
-
-
-        updateAttendanceButtons();
+        data = {};
 
       }
 
+
+      if(
+        !response.ok ||
+        data?.success === false
+      ){
+
+        throw new Error(
+          data?.error ||
+          data?.message ||
+          `Request failed (${response.status})`
+        );
+
+      }
+
+
+      return data;
+
     }
-  );
 
 
-/* =========================================================
-   RESET
-   ========================================================= */
+    /* =====================================================
+       LOGIN
+       ===================================================== */
 
-$("resetBtn")
-  .addEventListener(
-    "click",
-    () => {
+    async function loginMobile(){
 
-      initAudio();
+      unlockAudio();
 
-      soundReset();
-
-
-      currentWorker =
-        null;
+      const pin =
+        String(
+          pinInput.value || ""
+        ).trim();
 
 
-      currentAttendanceOpen =
-        false;
+      if(!pin){
+
+        soundError();
+
+        pinMessage.textContent =
+          "Please enter mobile PIN.";
+
+        return;
+
+      }
 
 
-      isSubmittingAttendance =
-        false;
+      continueBtn.disabled = true;
+
+      pinMessage.textContent =
+        "Checking...";
 
 
-      currentLatitude =
-        null;
+      try{
+
+        MOBILE_PIN = pin;
 
 
-      currentLongitude =
-        null;
+        await api(
+          "/api/mobile/companies"
+        );
 
 
-      $("workerCode").value =
-        "";
+        localStorage.setItem(
+          "al_sabiha_mobile_pin",
+          pin
+        );
 
 
-      $("workerCard")
-        .classList.add(
+        pinScreen.style.display =
+          "none";
+
+        appScreen.classList.remove(
           "hidden"
         );
 
 
-      $("companySelect").value =
-        "";
+        pinMessage.textContent = "";
 
 
-      $("siteSelect").innerHTML =
-        `<option value="">
-          Select company first
-        </option>`;
+        soundSuccess();
 
 
-      $("assignedCompanyText")
-        .textContent =
-        "No worker selected";
+        await loadCompanies();
 
 
-      $("assignedSiteText")
-        .textContent =
-        "No worker selected";
+      }catch(error){
 
+        MOBILE_PIN = "";
 
-      $("gpsStatus")
-        .textContent =
-        "📍 GPS location not captured yet";
+        soundError();
 
+        pinMessage.textContent =
+          error.message ||
+          "Invalid PIN.";
 
-      hideMessage(
-        $("findMessage")
-      );
+      }finally{
 
+        continueBtn.disabled =
+          false;
 
-      hideMessage(
-        $("attendanceMessage")
-      );
-
-
-      updateAttendanceButtons();
-
-
-      openFindWorkerScreen();
+      }
 
     }
-  );
 
 
-/* =========================================================
-   QR SCANNER
-   ========================================================= */
-
-$("scanBtn")
-  .addEventListener(
-    "click",
-    async () => {
-
-      initAudio();
+    continueBtn.addEventListener(
+      "click",
+      loginMobile
+    );
 
 
-      if(scannerRunning){
+    pinInput.addEventListener(
+      "keydown",
+      function(event){
 
-        soundScan();
+        if(event.key === "Enter"){
 
-        await stopScanner();
+          event.preventDefault();
+
+          loginMobile();
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       RESTORE PIN
+       ===================================================== */
+
+    async function restoreSavedPin(){
+
+      const savedPin =
+        localStorage.getItem(
+          "al_sabiha_mobile_pin"
+        );
+
+
+      if(!savedPin){
 
         return;
 
       }
 
 
-      soundScan();
-
-      await startScanner();
-
-    }
-  );
-
-
-async function startScanner(){
-
-  if(
-    typeof Html5Qrcode ===
-    "undefined"
-  ){
-
-    soundError();
-
-
-    showMessage(
-      $("findMessage"),
-      "QR scanner is still loading. Please try again.",
-      "error"
-    );
-
-
-    return;
-
-  }
-
-
-  $("reader")
-    .classList.remove(
-      "hidden"
-    );
-
-
-  $("scannerStatus")
-    .classList.remove(
-      "hidden"
-    );
-
-
-  $("scanBtn").textContent =
-    "■ Stop Scanner";
-
-
-  scanner =
-    new Html5Qrcode(
-      "reader"
-    );
-
-
-  scannerRunning =
-    true;
-
-
-  try{
-
-    await scanner.start(
-
-      {
-        facingMode:
-          "environment"
-      },
-
-      {
-        fps:10,
-
-        qrbox:{
-          width:250,
-          height:250
-        }
-      },
-
-      async decodedText => {
-
-        let code =
-          String(
-            decodedText || ""
-          ).trim();
-
-
-        try{
-
-          const url =
-            new URL(code);
-
-
-          const urlCode =
-            url.searchParams.get(
-              "worker_code"
-            );
-
-
-          if(urlCode){
-
-            code =
-              urlCode;
-
-          }
-
-        }catch(e){
-
-          /*
-            Plain worker code
-          */
-
-        }
-
-
-        $("workerCode").value =
-          code;
-
-
-        soundScan();
-
-
-        await stopScanner();
-
-
-        await findWorker(
-          code
-        );
-
-      },
-
-      errorMessage => {
-
-        /*
-          Camera continues scanning.
-        */
-
-      }
-
-    );
-
-
-  }catch(error){
-
-    scannerRunning =
-      false;
-
-
-    $("reader")
-      .classList.add(
-        "hidden"
-      );
-
-
-    $("scannerStatus")
-      .classList.add(
-        "hidden"
-      );
-
-
-    $("scanBtn").textContent =
-      "📷 Scan QR";
-
-
-    soundError();
-
-
-    showMessage(
-      $("findMessage"),
-      "Camera could not start. Please allow camera permission.",
-      "error"
-    );
-
-  }
-
-}
-
-
-async function stopScanner(){
-
-  try{
-
-    if(
-      scanner &&
-      scannerRunning
-    ){
-
-      await scanner.stop();
+      MOBILE_PIN =
+        savedPin;
 
 
       try{
 
-        await scanner.clear();
+        await api(
+          "/api/mobile/companies"
+        );
 
-      }catch(e){}
+
+        pinScreen.style.display =
+          "none";
+
+        appScreen.classList.remove(
+          "hidden"
+        );
+
+
+        await loadCompanies();
+
+
+      }catch(error){
+
+        MOBILE_PIN = "";
+
+        localStorage.removeItem(
+          "al_sabiha_mobile_pin"
+        );
+
+      }
 
     }
 
-  }catch(error){
 
-    console.log(
-      "Scanner stop error",
-      error
-    );
+    /* =====================================================
+       PAGES
+       ===================================================== */
 
-  }
+    const pages = {
 
+      home:$("#homePage"),
 
-  scanner =
-    null;
+      find:$("#findPage"),
 
+      worker:$("#workerPage"),
 
-  scannerRunning =
-    false;
+      add:$("#addPage")
 
-
-  $("reader")
-    .classList.add(
-      "hidden"
-    );
+    };
 
 
-  $("scannerStatus")
-    .classList.add(
-      "hidden"
-    );
+    function showPage(
+      pageName
+    ){
+
+      Object.values(pages)
+        .forEach(page => {
+
+          if(page){
+
+            page.classList.remove(
+              "active"
+            );
+
+          }
+
+        });
 
 
-  $("scanBtn").textContent =
-    "📷 Scan QR";
+      if(pages[pageName]){
 
-}
+        pages[pageName]
+          .classList.add(
+            "active"
+          );
+
+      }
 
 
-/* =========================================================
-   ADD WORKER
-   ========================================================= */
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
 
-$("addWorkerBtn")
-  .addEventListener(
-    "click",
-    async () => {
+    }
 
-      initAudio();
+
+    function setMobileNav(
+      activeId
+    ){
+
+      document
+        .querySelectorAll(".nav-btn")
+        .forEach(button => {
+
+          button.classList.remove(
+            "active"
+          );
+
+        });
+
+
+      const active =
+        document.getElementById(
+          activeId
+        );
+
+
+      if(active){
+
+        active.classList.add(
+          "active"
+        );
+
+      }
+
+    }
+
+
+    function openHomeScreen(
+      playSound = true
+    ){
+
+      if(playSound){
+        soundBack();
+      }
+
+      stopScanner();
+
+      showPage("home");
+
+      setMobileNav(
+        "mobileNavHome"
+      );
+
+    }
+
+
+    function openFindWorkerScreen(
+      playSound = true
+    ){
+
+      if(playSound){
+        soundFindWorker();
+      }
+
+      showPage("find");
+
+      setMobileNav(
+        "mobileNavFind"
+      );
+
+    }
+
+
+    function openWorkerDetailsScreen(){
+
+      showPage("worker");
+
+      setMobileNav(
+        "mobileNavFind"
+      );
+
+    }
+
+
+    function openAddWorkerScreen(
+      playSound = true
+    ){
+
+      if(playSound){
+        soundButton();
+      }
+
+      stopScanner();
+
+      showPage("add");
+
+      setMobileNav(
+        "mobileNavAdd"
+      );
+
+    }
+
+
+    /* =====================================================
+       HOME BUTTONS
+       ===================================================== */
+
+    $("#homeFindBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundFindWorker();
+
+          openFindWorkerScreen(
+            false
+          );
+
+          setTimeout(
+            () =>
+              $("#workerCode").focus(),
+            150
+          );
+
+        }
+      );
+
+
+    $("#homeScanQRBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          soundScanStart();
+
+          openFindWorkerScreen(
+            false
+          );
+
+          setMobileNav(
+            "mobileNavScan"
+          );
+
+          await startScanner();
+
+        }
+      );
+
+
+    $("#homeAddWorkerBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openAddWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#homeManualBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openFindWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       BOTTOM NAV
+       ===================================================== */
+
+    $("#mobileNavHome")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openHomeScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#mobileNavFind")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundFindWorker();
+
+          openFindWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#mobileNavScan")
+      .addEventListener(
+        "click",
+        async function(){
+
+          soundScanStart();
+
+          openFindWorkerScreen(
+            false
+          );
+
+          setMobileNav(
+            "mobileNavScan"
+          );
+
+          await startScanner();
+
+        }
+      );
+
+
+    $("#mobileNavAdd")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openAddWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       BACK BUTTONS
+       ===================================================== */
+
+    $("#findBackBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          openHomeScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#workerBackBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          openFindWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#addBackBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          openHomeScreen(
+            false
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       LOAD COMPANIES
+       ===================================================== */
+
+    async function loadCompanies(){
+
+      const data =
+        await api(
+          "/api/mobile/companies"
+        );
+
+
+      const companies =
+        Array.isArray(data)
+          ? data
+          : (
+              data.companies ||
+              data.data ||
+              []
+            );
+
+
+      const companySelect =
+        $("#companySelect");
+
+
+      const newWorkerCompany =
+        $("#newWorkerCompany");
+
+
+      companySelect.innerHTML =
+        `<option value="">Select Company</option>`;
+
+
+      newWorkerCompany.innerHTML =
+        `<option value="">Select Company</option>`;
+
+
+      companies.forEach(
+        company => {
+
+          if(!company){
+            return;
+          }
+
+
+          const id =
+            company.id ??
+            company.company_id;
+
+
+          const name =
+            company.name ??
+            company.company_name ??
+            company.title ??
+            "";
+
+
+          if(
+            id === null ||
+            id === undefined ||
+            !name
+          ){
+
+            return;
+
+          }
+
+
+          const option1 =
+            document.createElement(
+              "option"
+            );
+
+
+          option1.value =
+            String(id);
+
+          option1.textContent =
+            name;
+
+
+          companySelect.appendChild(
+            option1
+          );
+
+
+          const option2 =
+            document.createElement(
+              "option"
+            );
+
+
+          option2.value =
+            String(id);
+
+          option2.textContent =
+            name;
+
+
+          newWorkerCompany.appendChild(
+            option2
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       LOAD SITES
+       ===================================================== */
+
+    async function loadSites(
+      companyId,
+      preferredSiteId = null
+    ){
+
+      const siteSelect =
+        $("#siteSelect");
+
+
+      siteSelect.innerHTML =
+        `<option value="">Loading sites...</option>`;
+
+
+      if(!companyId){
+
+        siteSelect.innerHTML =
+          `<option value="">Select Site</option>`;
+
+        return [];
+
+      }
+
+
+      try{
+
+        const data =
+          await api(
+            `/api/mobile/sites?company_id=${encodeURIComponent(companyId)}`
+          );
+
+
+        const sites =
+          Array.isArray(data)
+            ? data
+            : (
+                data.sites ||
+                data.data ||
+                []
+              );
+
+
+        siteSelect.innerHTML =
+          `<option value="">Select Site</option>`;
+
+
+        sites.forEach(
+          site => {
+
+            if(!site){
+              return;
+            }
+
+
+            const id =
+              site.id ??
+              site.site_id;
+
+
+            const name =
+              site.name ??
+              site.site_name ??
+              site.title ??
+              "";
+
+
+            if(
+              id === null ||
+              id === undefined ||
+              !name
+            ){
+
+              return;
+
+            }
+
+
+            const option =
+              document.createElement(
+                "option"
+              );
+
+
+            option.value =
+              String(id);
+
+            option.textContent =
+              name;
+
+
+            siteSelect.appendChild(
+              option
+            );
+
+          }
+        );
+
+
+        if(preferredSiteId){
+
+          const wanted =
+            String(preferredSiteId);
+
+
+          const exists =
+            Array.from(
+              siteSelect.options
+            ).some(
+              option =>
+                option.value === wanted
+            );
+
+
+          if(exists){
+
+            siteSelect.value =
+              wanted;
+
+          }
+
+        }
+
+
+        return sites;
+
+
+      }catch(error){
+
+        siteSelect.innerHTML =
+          `<option value="">Unable to load sites</option>`;
+
+        throw error;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       AUTOMATIC SITE
+       ===================================================== */
+
+    function selectAutomaticSite(
+      sites,
+      data
+    ){
+
+      if(!Array.isArray(sites)){
+        return;
+      }
+
+
+      const assignedSites =
+        data?.assigned_company_sites ||
+        data?.assigned_sites ||
+        [];
+
+
+      let selectedSiteId =
+        data?.assigned_site_id ||
+        data?.site_id ||
+        currentWorker?.site_id ||
+        null;
+
+
+      if(!selectedSiteId){
+
+        if(
+          Array.isArray(assignedSites) &&
+          assignedSites.length === 1
+        ){
+
+          selectedSiteId =
+            assignedSites[0]?.id ||
+            assignedSites[0]?.site_id ||
+            null;
+
+        }
+
+      }
+
+
+      if(selectedSiteId){
+
+        const siteSelect =
+          $("#siteSelect");
+
+
+        const wanted =
+          String(selectedSiteId);
+
+
+        const exists =
+          Array.from(
+            siteSelect.options
+          ).some(
+            option =>
+              option.value === wanted
+          );
+
+
+        if(exists){
+
+          siteSelect.value =
+            wanted;
+
+        }
+
+      }
+
+    }
+
+
+    /* =====================================================
+       FIND WORKER
+       ===================================================== */
+
+    async function findWorker(
+      workerCodeOverride = null
+    ){
+
+      const inputCode =
+        workerCodeOverride !== null
+          ? workerCodeOverride
+          : $("#workerCode").value;
 
 
       const workerCode =
-        $("newWorkerCode")
-          .value
+        String(inputCode || "")
           .trim();
-
-
-      const name =
-        $("newWorkerName")
-          .value
-          .trim();
-
-
-      const designation =
-        $("newWorkerDesignation")
-          .value
-          .trim();
-
-
-      const mobile =
-        $("newWorkerMobile")
-          .value
-          .trim();
-
-
-      const companyId =
-        $("newWorkerCompany")
-          .value;
 
 
       if(!workerCode){
 
         soundError();
 
-
         showMessage(
-          $("addWorkerMessage"),
-          "Worker Code is required.",
+          $("#findMessage"),
+          "Please enter worker code.",
           "error"
         );
 
+        return;
+
+      }
+
+
+      stopScanner();
+
+
+      const findBtn =
+        $("#findBtn");
+
+
+      findBtn.disabled = true;
+
+      findBtn.classList.add(
+        "is-processing"
+      );
+
+
+      showMessage(
+        $("#findMessage"),
+        "Searching worker...",
+        "info"
+      );
+
+
+      try{
+
+        const data =
+          await api(
+            `/api/mobile/worker?worker_code=${encodeURIComponent(workerCode)}`
+          );
+
+
+        if(
+          !data ||
+          !data.worker
+        ){
+
+          throw new Error(
+            "Worker information was not returned."
+          );
+
+        }
+
+
+        await displayWorker(data);
+
+
+        clearMessage(
+          $("#findMessage")
+        );
+
+
+        showMessage(
+          $("#attendanceMessage"),
+          "✓ Worker found successfully.",
+          "success"
+        );
+
+
+      }catch(error){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          error.message ||
+          "Worker not found.",
+          "error"
+        );
+
+      }finally{
+
+        findBtn.disabled = false;
+
+        findBtn.classList.remove(
+          "is-processing"
+        );
+
+      }
+
+    }
+
+
+    $("#findBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundFindWorker();
+
+          findWorker();
+
+        }
+      );
+
+
+    $("#workerCode")
+      .addEventListener(
+        "keydown",
+        function(event){
+
+          if(event.key === "Enter"){
+
+            event.preventDefault();
+
+            soundFindWorker();
+
+            findWorker();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       DISPLAY WORKER
+       ===================================================== */
+
+    async function displayWorker(
+      data
+    ){
+
+      const worker =
+        data.worker;
+
+
+      currentWorker =
+        worker;
+
+
+      currentAttendanceOpen =
+        !!(
+          data.currently_checked_in ||
+          data.open_attendance
+        );
+
+
+      const name =
+        worker.name ||
+        worker.full_name ||
+        "Unknown Worker";
+
+
+      const workerCode =
+        worker.worker_code ||
+        worker.code ||
+        "-";
+
+
+      $("#workerName").textContent =
+        name;
+
+
+      $("#workerCodeDisplay").textContent =
+        workerCode;
+
+
+      $("#workerDesignation").textContent =
+        worker.designation ||
+        "-";
+
+
+      $("#workerMobile").textContent =
+        worker.mobile ||
+        worker.phone ||
+        "-";
+
+
+      $("#workerType").textContent =
+        worker.employee_type ||
+        worker.type ||
+        "-";
+
+
+      $("#workerStatusText").textContent =
+        worker.status ||
+        (
+          worker.active === false
+            ? "Inactive"
+            : "Active"
+        );
+
+
+      $("#workerAvatar").textContent =
+        String(name)
+          .trim()
+          .charAt(0)
+          .toUpperCase() ||
+        "W";
+
+
+      const status =
+        String(
+          worker.status ||
+          (
+            worker.active === false
+              ? "Inactive"
+              : "Active"
+          )
+        );
+
+
+      $("#workerStatus").textContent =
+        currentAttendanceOpen
+          ? "CHECKED IN"
+          : status.toUpperCase();
+
+
+      $("#workerStatus").className =
+        "status-pill " +
+        (
+          currentAttendanceOpen
+            ? "status-checked"
+            : "status-active"
+        );
+
+
+      const companyId =
+        worker.company_id ||
+        worker.companyId ||
+        data.assigned_company?.id ||
+        data.assigned_company_id ||
+        null;
+
+
+      const companyName =
+        data.assigned_company?.name ||
+        data.assigned_company?.company_name ||
+        worker.company_name ||
+        worker.company ||
+        "-";
+
+
+      if(companyId){
+
+        $("#companySelect").value =
+          String(companyId);
+
+      }
+
+
+      let sites = [];
+
+
+      if(companyId){
+
+        try{
+
+          sites =
+            await loadSites(
+              companyId,
+              worker.site_id ||
+              data.assigned_site_id ||
+              data.site_id ||
+              null
+            );
+
+        }catch(error){}
+
+      }else{
+
+        $("#siteSelect").innerHTML =
+          `<option value="">Select Site</option>`;
+
+      }
+
+
+      selectAutomaticSite(
+        sites,
+        data
+      );
+
+
+      $("#assignedCompanyText").textContent =
+        companyName;
+
+
+      let assignedSiteName =
+        data.assigned_site?.name ||
+        data.assigned_site?.site_name ||
+        worker.site_name ||
+        data.site_name ||
+        "-";
+
+
+      const selectedSiteOption =
+        $("#siteSelect").selectedOptions?.[0];
+
+
+      if(
+        selectedSiteOption &&
+        selectedSiteOption.value
+      ){
+
+        assignedSiteName =
+          selectedSiteOption.textContent;
+
+      }
+
+
+      $("#assignedSiteText").textContent =
+        assignedSiteName;
+
+
+      updateAttendanceButtons();
+
+
+      openWorkerDetailsScreen();
+
+
+      getGPS();
+
+    }
+
+
+    /* =====================================================
+       COMPANY CHANGE
+       ===================================================== */
+
+    $("#companySelect")
+      .addEventListener(
+        "change",
+        async function(){
+
+          soundButton();
+
+          const companyId =
+            this.value;
+
+
+          $("#assignedCompanyText")
+            .textContent =
+              this.options[
+                this.selectedIndex
+              ]?.textContent ||
+              "-";
+
+
+          $("#assignedSiteText")
+            .textContent =
+              "-";
+
+
+          try{
+
+            await loadSites(
+              companyId
+            );
+
+          }catch(error){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              error.message ||
+              "Unable to load sites.",
+              "error"
+            );
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       SITE CHANGE
+       ===================================================== */
+
+    $("#siteSelect")
+      .addEventListener(
+        "change",
+        function(){
+
+          soundButton();
+
+          const selected =
+            this.options[
+              this.selectedIndex
+            ];
+
+
+          $("#assignedSiteText")
+            .textContent =
+              selected?.value
+                ? selected.textContent
+                : "-";
+
+        }
+      );
+
+
+    /* =====================================================
+       GPS
+       ===================================================== */
+
+    function getGPS(){
+
+      const gpsStatus =
+        $("#gpsStatus");
+
+
+      const gpsDot =
+        $("#gpsDot");
+
+
+      gpsDot.className =
+        "gps-dot";
+
+
+      gpsStatus.textContent =
+        "Checking GPS...";
+
+
+      if(!navigator.geolocation){
+
+        gpsStatus.textContent =
+          "GPS is not supported on this device.";
+
+
+        gpsDot.classList.add(
+          "error"
+        );
+
+
+        currentGPS = {
+          latitude:null,
+          longitude:null
+        };
+
+
+        soundError();
+
+        return;
+
+      }
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+          currentGPS = {
+
+            latitude:
+              position.coords.latitude,
+
+            longitude:
+              position.coords.longitude
+
+          };
+
+
+          gpsDot.className =
+            "gps-dot ok";
+
+
+          gpsStatus.textContent =
+            "GPS location detected";
+
+
+          soundGPS();
+
+        },
+
+        function(error){
+
+          currentGPS = {
+
+            latitude:null,
+            longitude:null
+
+          };
+
+
+          gpsDot.className =
+            "gps-dot error";
+
+
+          if(
+            error.code ===
+            error.PERMISSION_DENIED
+          ){
+
+            gpsStatus.textContent =
+              "GPS permission denied.";
+
+          }else{
+
+            gpsStatus.textContent =
+              "Unable to get GPS location.";
+
+          }
+
+        },
+
+        {
+          enableHighAccuracy:true,
+          timeout:10000,
+          maximumAge:30000
+        }
+
+      );
+
+    }
+
+
+    /* =====================================================
+       ATTENDANCE BUTTON STATE
+       ===================================================== */
+
+    function updateAttendanceButtons(){
+
+      const checkIn =
+        $("#checkInBtn");
+
+
+      const checkOut =
+        $("#checkOutBtn");
+
+
+      if(
+        !checkIn ||
+        !checkOut
+      ){
+
+        return;
+
+      }
+
+
+      if(currentAttendanceOpen){
+
+        checkIn.disabled = true;
+
+        checkOut.disabled =
+          isSubmittingAttendance;
+
+
+        checkIn.textContent =
+          "Already Checked In";
+
+
+        checkOut.textContent =
+          "Check-Out";
+
+
+      }else{
+
+        checkIn.disabled =
+          isSubmittingAttendance;
+
+
+        checkOut.disabled = true;
+
+
+        checkIn.textContent =
+          "Check-In";
+
+
+        checkOut.textContent =
+          "Not Checked In";
+
+      }
+
+    }
+
+
+    /* =====================================================
+       REFRESH ATTENDANCE
+       ===================================================== */
+
+    async function refreshWorkerAttendanceState(){
+
+      if(
+        !currentWorker ||
+        !currentWorker.worker_code
+      ){
+
+        return null;
+
+      }
+
+
+      const data =
+        await api(
+          `/api/mobile/worker?worker_code=${encodeURIComponent(currentWorker.worker_code)}`
+        );
+
+
+      if(data.worker){
+
+        currentWorker =
+          data.worker;
+
+      }
+
+
+      currentAttendanceOpen =
+        !!(
+          data.currently_checked_in ||
+          data.open_attendance
+        );
+
+
+      updateAttendanceButtons();
+
+
+      return data;
+
+    }
+
+
+    /* =====================================================
+       CHECK-IN
+       ===================================================== */
+
+    $("#checkInBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          if(
+            !currentWorker ||
+            !currentWorker.worker_code
+          ){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please find a worker first.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          if(currentAttendanceOpen){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "This worker is already checked in.",
+              "error"
+            );
+
+            updateAttendanceButtons();
+
+            return;
+
+          }
+
+
+          const companyId =
+            $("#companySelect").value;
+
+
+          const siteId =
+            $("#siteSelect").value;
+
+
+          if(!companyId){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please select company.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          if(!siteId){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please select site / location.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          isSubmittingAttendance =
+            true;
+
+
+          updateAttendanceButtons();
+
+
+          showMessage(
+            $("#attendanceMessage"),
+            "Checking in...",
+            "info"
+          );
+
+
+          try{
+
+            const data =
+              await api(
+                "/api/mobile/attendance/checkin",
+                {
+                  method:"POST",
+
+                  body:{
+                    worker_code:
+                      currentWorker.worker_code,
+
+                    company_id:
+                      Number(companyId),
+
+                    site_id:
+                      Number(siteId),
+
+                    latitude:
+                      currentGPS.latitude,
+
+                    longitude:
+                      currentGPS.longitude
+                  }
+                }
+              );
+
+
+            currentAttendanceOpen =
+              true;
+
+
+            updateAttendanceButtons();
+
+
+            const checkInTime =
+              formatTime24(
+                data.check_in ||
+                data.checkIn ||
+                data.attendance?.check_in
+              );
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              `✓ Check-In successful at ${checkInTime}.`,
+              "success"
+            );
+
+
+            $("#checkInBtn")
+              .classList.add(
+                "action-success"
+              );
+
+
+            setTimeout(
+              () =>
+                $("#checkInBtn")
+                  .classList.remove(
+                    "action-success"
+                  ),
+              500
+            );
+
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(error){
+
+              currentAttendanceOpen =
+                true;
+
+              updateAttendanceButtons();
+
+            }
+
+
+            soundCheckIn();
+
+
+          }catch(error){
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(refreshError){}
+
+
+            updateAttendanceButtons();
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              error.message ||
+              "Check-In failed.",
+              "error"
+            );
+
+
+            soundError();
+
+
+          }finally{
+
+            isSubmittingAttendance =
+              false;
+
+
+            updateAttendanceButtons();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       CHECK-OUT
+       ===================================================== */
+
+    $("#checkOutBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          if(
+            !currentWorker ||
+            !currentWorker.worker_code
+          ){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please find a worker first.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          if(!currentAttendanceOpen){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "This worker is not currently checked in.",
+              "error"
+            );
+
+            updateAttendanceButtons();
+
+            return;
+
+          }
+
+
+          isSubmittingAttendance =
+            true;
+
+
+          updateAttendanceButtons();
+
+
+          showMessage(
+            $("#attendanceMessage"),
+            "Checking out...",
+            "info"
+          );
+
+
+          try{
+
+            const data =
+              await api(
+                "/api/mobile/attendance/checkout",
+                {
+                  method:"POST",
+
+                  body:{
+                    worker_code:
+                      currentWorker.worker_code,
+
+                    latitude:
+                      currentGPS.latitude,
+
+                    longitude:
+                      currentGPS.longitude
+                  }
+                }
+              );
+
+
+            currentAttendanceOpen =
+              false;
+
+
+            updateAttendanceButtons();
+
+
+            const checkOutTime =
+              formatTime24(
+                data.check_out ||
+                data.checkOut ||
+                data.attendance?.check_out
+              );
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              `✓ Check-Out successful at ${checkOutTime}.`,
+              "success"
+            );
+
+
+            $("#checkOutBtn")
+              .classList.add(
+                "action-success"
+              );
+
+
+            setTimeout(
+              () =>
+                $("#checkOutBtn")
+                  .classList.remove(
+                    "action-success"
+                  ),
+              500
+            );
+
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(error){
+
+              currentAttendanceOpen =
+                false;
+
+              updateAttendanceButtons();
+
+            }
+
+
+            soundCheckOut();
+
+
+          }catch(error){
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(refreshError){}
+
+
+            updateAttendanceButtons();
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              error.message ||
+              "Check-Out failed.",
+              "error"
+            );
+
+
+            soundError();
+
+
+          }finally{
+
+            isSubmittingAttendance =
+              false;
+
+
+            updateAttendanceButtons();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       RESET WORKER
+       ===================================================== */
+
+    $("#resetBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          currentWorker = null;
+
+          currentAttendanceOpen =
+            false;
+
+          currentGPS = {
+            latitude:null,
+            longitude:null
+          };
+
+
+          $("#workerCode").value =
+            "";
+
+
+          $("#companySelect").value =
+            "";
+
+
+          $("#siteSelect").innerHTML =
+            `<option value="">Select Site</option>`;
+
+
+          $("#assignedCompanyText")
+            .textContent =
+              "-";
+
+
+          $("#assignedSiteText")
+            .textContent =
+              "-";
+
+
+          $("#workerName")
+            .textContent =
+              "Worker";
+
+
+          $("#workerCodeDisplay")
+            .textContent =
+              "-";
+
+
+          $("#workerDesignation")
+            .textContent =
+              "-";
+
+
+          $("#workerMobile")
+            .textContent =
+              "-";
+
+
+          $("#workerType")
+            .textContent =
+              "-";
+
+
+          $("#workerStatusText")
+            .textContent =
+              "-";
+
+
+          $("#attendanceMessage")
+            .textContent =
+              "";
+
+
+          updateAttendanceButtons();
+
+
+          openFindWorkerScreen(
+            false
+          );
+
+
+          setTimeout(
+            () =>
+              $("#workerCode").focus(),
+            150
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       QR SCANNER
+       ===================================================== */
+
+    async function startScanner(){
+
+      const scannerBox =
+        $("#scannerBox");
+
+
+      scannerBox.classList.remove(
+        "hidden"
+      );
+
+
+      if(scannerRunning){
+
+        return;
+
+      }
+
+
+      if(
+        typeof Html5Qrcode ===
+        "undefined"
+      ){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          "QR scanner is still loading. Please try again.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      try{
+
+        if(scanner){
+
+          try{
+
+            await scanner.clear();
+
+          }catch(error){}
+
+        }
+
+
+        scanner =
+          new Html5Qrcode(
+            "reader"
+          );
+
+
+        scannerRunning =
+          true;
+
+
+        await scanner.start(
+
+          {
+            facingMode:"environment"
+          },
+
+          {
+            fps:10,
+
+            qrbox:function(
+              viewfinderWidth,
+              viewfinderHeight
+            ){
+
+              const minEdge =
+                Math.min(
+                  viewfinderWidth,
+                  viewfinderHeight
+                );
+
+
+              const size =
+                Math.floor(
+                  minEdge * .68
+                );
+
+
+              return {
+                width:size,
+                height:size
+              };
+
+            },
+
+            aspectRatio:1
+
+          },
+
+          function(decodedText){
+
+            handleQRCode(
+              decodedText
+            );
+
+          },
+
+          function(errorMessage){
+
+            /* Normal scan frames ignored */
+
+          }
+
+        );
+
+
+      }catch(error){
+
+        scannerRunning =
+          false;
+
+
+        soundError();
+
+
+        showMessage(
+          $("#findMessage"),
+          "Unable to start camera. Please allow camera permission.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    async function stopScanner(){
+
+      if(!scanner){
+
+        scannerRunning =
+          false;
+
+        return;
+
+      }
+
+
+      try{
+
+        if(scannerRunning){
+
+          await scanner.stop();
+
+        }
+
+      }catch(error){}
+
+
+      try{
+
+        await scanner.clear();
+
+      }catch(error){}
+
+
+      scannerRunning =
+        false;
+
+      scanner =
+        null;
+
+    }
+
+
+    /* =====================================================
+       QR RESULT
+       ===================================================== */
+
+    async function handleQRCode(
+      decodedText
+    ){
+
+      const value =
+        String(
+          decodedText || ""
+        ).trim();
+
+
+      if(!value){
+
+        soundError();
+
+        return;
+
+      }
+
+
+      await stopScanner();
+
+
+      $("#scannerBox")
+        .classList.add(
+          "hidden"
+        );
+
+
+      let workerCode =
+        value;
+
+
+      try{
+
+        if(
+          value.startsWith(
+            "http://"
+          ) ||
+          value.startsWith(
+            "https://"
+          )
+        ){
+
+          const url =
+            new URL(value);
+
+
+          workerCode =
+            url.searchParams.get(
+              "worker_code"
+            ) ||
+            url.searchParams.get(
+              "code"
+            ) ||
+            url.searchParams.get(
+              "worker"
+            ) ||
+            value;
+
+        }
+
+      }catch(error){
+
+        workerCode =
+          value;
+
+      }
+
+
+      workerCode =
+        String(workerCode)
+          .replace(
+            /^worker[_-]?code[:=]/i,
+            ""
+          )
+          .trim();
+
+
+      if(!workerCode){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          "QR code does not contain a worker code.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      $("#workerCode").value =
+        workerCode;
+
+
+      /* QR SUCCESS DONE SOUND */
+      soundScanDone();
+
+
+      await findWorker(
+        workerCode
+      );
+
+    }
+
+
+    $("#scanBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          soundScanStart();
+
+          await startScanner();
+
+        }
+      );
+
+
+    /* =====================================================
+       ADD WORKER
+       ===================================================== */
+
+    async function addWorker(){
+
+      if(isAddingWorker){
+
+        return;
+
+      }
+
+
+      const workerCode =
+        String(
+          $("#newWorkerCode").value ||
+          ""
+        ).trim();
+
+
+      const name =
+        String(
+          $("#newWorkerName").value ||
+          ""
+        ).trim();
+
+
+      const designation =
+        String(
+          $("#newWorkerDesignation").value ||
+          ""
+        ).trim();
+
+
+      const mobile =
+        String(
+          $("#newWorkerMobile").value ||
+          ""
+        ).trim();
+
+
+      const companyId =
+        $("#newWorkerCompany").value;
+
+
+      if(!workerCode){
+
+        soundError();
+
+        showMessage(
+          $("#addWorkerMessage"),
+          "Please enter worker code.",
+          "error"
+        );
 
         return;
 
@@ -4332,25 +5507,51 @@ $("addWorkerBtn")
 
         soundError();
 
-
         showMessage(
-          $("addWorkerMessage"),
-          "Worker Name is required.",
+          $("#addWorkerMessage"),
+          "Please enter worker name.",
           "error"
         );
-
 
         return;
 
       }
 
 
-      $("addWorkerBtn").disabled =
+      if(!companyId){
+
+        soundError();
+
+        showMessage(
+          $("#addWorkerMessage"),
+          "Please select company.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      isAddingWorker =
         true;
 
 
+      const addButton =
+        $("#addWorkerBtn");
+
+
+      addButton.disabled =
+        true;
+
+
+      addButton.classList.add(
+        "is-processing"
+      );
+
+
       showMessage(
-        $("addWorkerMessage"),
+        $("#addWorkerMessage"),
         "Adding worker...",
         "info"
       );
@@ -4358,698 +5559,167 @@ $("addWorkerBtn")
 
       try{
 
-        await api(
-          "/api/mobile/workers",
-          {
-            method:"POST",
+        const data =
+          await api(
+            "/api/mobile/workers",
+            {
+              method:"POST",
 
-            body:{
-              worker_code:
-                workerCode,
+              body:{
+                worker_code:
+                  workerCode,
 
-              name:
-                name,
+                name:
+                  name,
 
-              designation:
-                designation,
+                designation:
+                  designation,
 
-              mobile:
-                mobile,
+                mobile:
+                  mobile,
 
-              company_id:
-                companyId
-                  ? Number(companyId)
-                  : null
+                company_id:
+                  Number(companyId)
+              }
             }
-          }
-        );
-
-
-        soundAddWorker();
+          );
 
 
         showMessage(
-          $("addWorkerMessage"),
-          "✓ Worker added successfully.",
+          $("#addWorkerMessage"),
+          `✓ ${data.message || "Worker added successfully."}`,
           "success"
         );
 
 
-        $("newWorkerCode").value =
-          "";
-
-
-        $("newWorkerName").value =
-          "";
-
-
-        $("newWorkerDesignation").value =
-          "";
-
-
-        $("newWorkerMobile").value =
-          "";
-
-
-        $("newWorkerCompany").value =
-          "";
-
-
-      }catch(error){
-
-        soundError();
-
-
-        showMessage(
-          $("addWorkerMessage"),
-          error.message ||
-          "Could not add worker.",
-          "error"
-        );
-
-
-      }finally{
-
-        $("addWorkerBtn").disabled =
-          false;
-
-      }
-
-    }
-  );
-
-
-/* =========================================================
-   PIN LOGIN
-   ========================================================= */
-
-$("continueBtn")
-  .addEventListener(
-    "click",
-    async () => {
-
-      initAudio();
-
-
-      const pin =
-        $("pinInput")
-          .value
-          .trim();
-
-
-      if(!pin){
-
-        soundError();
-
-
-        showMessage(
-          $("pinMessage"),
-          "Please enter mobile PIN.",
-          "error"
-        );
-
-
-        return;
-
-      }
-
-
-      MOBILE_PIN =
-        pin;
-
-
-      $("continueBtn").disabled =
-        true;
-
-
-      showMessage(
-        $("pinMessage"),
-        "Connecting...",
-        "info"
-      );
-
-
-      try{
-
-        await api(
-          "/api/mobile/companies"
-        );
-
-
-        soundContinue();
-
-
-        $("pinScreen")
+        addButton
           .classList.add(
-            "hidden"
+            "action-success"
           );
 
 
-        $("appScreen")
-          .classList.remove(
-            "hidden"
-          );
-
-
-        await loadCompanies();
-
-
-        openHomeScreen();
-
-
-        hideMessage(
-          $("pinMessage")
+        setTimeout(
+          () =>
+            addButton
+              .classList.remove(
+                "action-success"
+              ),
+          500
         );
+
+
+        /* SUCCESS SOUND ONLY */
+        soundAddWorker();
+
+
+        $("#newWorkerCode").value =
+          "";
+
+        $("#newWorkerName").value =
+          "";
+
+        $("#newWorkerDesignation").value =
+          "";
+
+        $("#newWorkerMobile").value =
+          "";
+
+        $("#newWorkerCompany").value =
+          "";
+
+
+        try{
+
+          await loadCompanies();
+
+        }catch(error){}
 
 
       }catch(error){
 
-        MOBILE_PIN =
-          "";
-
-
         soundError();
 
-
         showMessage(
-          $("pinMessage"),
+          $("#addWorkerMessage"),
           error.message ||
-          "Invalid PIN or server connection failed.",
+          "Unable to add worker.",
           "error"
         );
 
-
       }finally{
 
-        $("continueBtn").disabled =
+        isAddingWorker =
           false;
 
-      }
 
-    }
-  );
-
-
-/* =========================================================
-   PIN ENTER
-   ========================================================= */
-
-$("pinInput")
-  .addEventListener(
-    "keydown",
-    event => {
-
-      if(
-        event.key ===
-        "Enter"
-      ){
-
-        $("continueBtn")
-          .click();
-
-      }
-
-    }
-  );
+        addButton.disabled =
+          false;
 
 
-/* =========================================================
-   MOBILE NAVIGATION
-   ========================================================= */
-
-const mobileHome =
-  $("mobileHome");
-
-
-const findScreen =
-  $("findWorkerCard");
-
-
-const workerScreen =
-  $("workerCard");
-
-
-const addScreen =
-  $("addWorkerCard");
-
-
-const appCards =
-  [
-    findScreen,
-    workerScreen,
-    addScreen
-  ].filter(Boolean);
-
-
-/* =========================================================
-   HIDE SCREENS
-   ========================================================= */
-
-function hideMobileScreens(){
-
-  appCards.forEach(
-    card => {
-
-      card.style.display =
-        "none";
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   ACTIVE NAV BUTTON
-   ========================================================= */
-
-function setMobileNav(
-  activeId
-){
-
-  document
-    .querySelectorAll(
-      ".mobile-nav-btn"
-    )
-    .forEach(
-      button => {
-
-        button.classList.remove(
-          "active"
+        addButton.classList.remove(
+          "is-processing"
         );
 
       }
-    );
-
-
-  const active =
-    $(activeId);
-
-
-  if(active){
-
-    active.classList.add(
-      "active"
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   HOME
-   ========================================================= */
-
-function openHomeScreen(){
-
-  hideMobileScreens();
-
-
-  if(mobileHome){
-
-    mobileHome.style.display =
-      "block";
-
-  }
-
-
-  setMobileNav(
-    "mobileNavHome"
-  );
-
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-/* =========================================================
-   FIND
-   ========================================================= */
-
-function openFindWorkerScreen(){
-
-  hideMobileScreens();
-
-
-  if(mobileHome){
-
-    mobileHome.style.display =
-      "none";
-
-  }
-
-
-  if(findScreen){
-
-    findScreen.style.display =
-      "block";
-
-  }
-
-
-  setMobileNav(
-    "mobileNavFind"
-  );
-
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-/* =========================================================
-   WORKER DETAILS
-   ========================================================= */
-
-function openWorkerDetailsScreen(){
-
-  hideMobileScreens();
-
-
-  if(mobileHome){
-
-    mobileHome.style.display =
-      "none";
-
-  }
-
-
-  if(workerScreen){
-
-    workerScreen.style.display =
-      "block";
-
-  }
-
-
-  setMobileNav(
-    "mobileNavFind"
-  );
-
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-/* =========================================================
-   ADD WORKER
-   ========================================================= */
-
-function openAddWorkerScreen(){
-
-  hideMobileScreens();
-
-
-  if(mobileHome){
-
-    mobileHome.style.display =
-      "none";
-
-  }
-
-
-  if(addScreen){
-
-    addScreen.style.display =
-      "block";
-
-  }
-
-
-  setMobileNav(
-    "mobileNavAdd"
-  );
-
-
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
-
-}
-
-
-/* =========================================================
-   HOME FIND BUTTON
-   ========================================================= */
-
-$("homeFindWorkerBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      openFindWorkerScreen();
-
-      setTimeout(
-        () => {
-
-          $("workerCode")
-            .focus();
-
-        },
-        250
-      );
 
     }
-  );
 
 
-/* =========================================================
-   HOME SCAN BUTTON
-   ========================================================= */
+    $("#addWorkerBtn")
+      .addEventListener(
+        "click",
+        function(){
 
-$("homeScanQRBtn")
-  .addEventListener(
-    "click",
-    () => {
+          soundButton();
 
-      openFindWorkerScreen();
+          addWorker();
 
-
-      setMobileNav(
-        "mobileNavScan"
+        }
       );
 
 
-      setTimeout(
-        () => {
+    /* =====================================================
+       VISIBILITY
+       ===================================================== */
 
-          if(
-            !scannerRunning
-          ){
+    document.addEventListener(
+      "visibilitychange",
+      async function(){
 
-            $("scanBtn")
-              .click();
+        if(
+          document.visibilityState ===
+          "visible" &&
+          currentWorker
+        ){
 
-          }
+          try{
 
-        },
-        400
-      );
+            await refreshWorkerAttendanceState();
 
-    }
-  );
+          }catch(error){}
 
-
-/* =========================================================
-   HOME ADD BUTTON
-   ========================================================= */
-
-$("homeAddWorkerBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      openAddWorkerScreen();
-
-    }
-  );
-
-
-/* =========================================================
-   BOTTOM HOME
-   ========================================================= */
-
-$("mobileNavHome")
-  .addEventListener(
-    "click",
-    () => {
-
-      openHomeScreen();
-
-    }
-  );
-
-
-/* =========================================================
-   BOTTOM FIND
-   ========================================================= */
-
-$("mobileNavFind")
-  .addEventListener(
-    "click",
-    () => {
-
-      openFindWorkerScreen();
-
-    }
-  );
-
-
-/* =========================================================
-   BOTTOM SCAN
-   ========================================================= */
-
-$("mobileNavScan")
-  .addEventListener(
-    "click",
-    () => {
-
-      openFindWorkerScreen();
-
-
-      setMobileNav(
-        "mobileNavScan"
-      );
-
-
-      setTimeout(
-        () => {
-
-          if(
-            !scannerRunning
-          ){
-
-            $("scanBtn")
-              .click();
-
-          }
-
-        },
-        400
-      );
-
-    }
-  );
-
-
-/* =========================================================
-   BOTTOM ADD
-   ========================================================= */
-
-$("mobileNavAdd")
-  .addEventListener(
-    "click",
-    () => {
-
-      openAddWorkerScreen();
-
-    }
-  );
-
-
-/* =========================================================
-   BACK FROM FIND
-   ========================================================= */
-
-$("backFromFindBtn")
-  .addEventListener(
-    "click",
-    async () => {
-
-      if(scannerRunning){
-
-        await stopScanner();
+        }
 
       }
+    );
 
 
-      openHomeScreen();
+    /* =====================================================
+       STARTUP
+       ===================================================== */
 
-    }
-  );
+    document.addEventListener(
+      "DOMContentLoaded",
+      function(){
 
+        updateAttendanceButtons();
 
-/* =========================================================
-   BACK FROM WORKER
-   ========================================================= */
+        restoreSavedPin();
 
-$("backFromWorkerBtn")
-  .addEventListener(
-    "click",
-    () => {
+      }
+    );
 
-      openHomeScreen();
-
-    }
-  );
-
-
-/* =========================================================
-   BACK FROM ADD
-   ========================================================= */
-
-$("backFromAddBtn")
-  .addEventListener(
-    "click",
-    () => {
-
-      openHomeScreen();
-
-    }
-  );
-
-
-/* =========================================================
-   INITIAL SCREEN
-   ========================================================= */
-
-openHomeScreen();
-
-
-/* =========================================================
-   AUDIO TOUCH
-   ========================================================= */
-
-document.addEventListener(
-  "touchstart",
-  () => {
-
-    initAudio();
-
-  },
-  {
-    once:true,
-    passive:true
-  }
-);
-
-
-document.addEventListener(
-  "click",
-  () => {
-
-    initAudio();
-
-  },
-  {
-    once:true
-  }
-);
-
-</script>
+  </script>
 
 </body>
 </html>
