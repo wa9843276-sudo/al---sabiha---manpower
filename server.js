@@ -232,9 +232,23 @@ function login(req, res, next) {
 }
 
 function admin(req, res, next) {
-  return login(req, res, next);
-}
 
+  if (!req.session.user) {
+    return res.status(401).json({
+      error: "Please login first."
+    });
+  }
+
+  if (
+    String(req.session.user.role || "").toLowerCase() !== "admin"
+  ) {
+    return res.status(403).json({
+      error: "Admin access required."
+    });
+  }
+
+  return next();
+}
 
 /* =========================================================
    AUTO CHECKOUT AFTER 12 HOURS
@@ -2449,7 +2463,93 @@ app.get(
   }
 );
 
+/* =========================================================
+   ADMIN: DELETE ATTENDANCE
+   ========================================================= */
 
+app.delete(
+  "/api/attendance/:id",
+  admin,
+  (req, res) => {
+
+    try {
+
+      const attendanceId =
+        Number(req.params.id);
+
+      if (!attendanceId) {
+
+        return res.status(400).json({
+          error:
+            "Invalid attendance ID."
+        });
+
+      }
+
+
+      const attendance =
+        db.prepare(`
+          SELECT
+            a.id,
+            a.attendance_date,
+            a.check_in,
+            a.check_out,
+            w.worker_code,
+            w.name AS worker_name
+
+          FROM attendance a
+
+          JOIN workers w
+            ON w.id=a.worker_id
+
+          WHERE a.id=?
+        `).get(attendanceId);
+
+
+      if (!attendance) {
+
+        return res.status(404).json({
+          error:
+            "Attendance record not found."
+        });
+
+      }
+
+
+      db.prepare(`
+        DELETE FROM attendance
+        WHERE id=?
+      `).run(attendanceId);
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "Attendance deleted successfully.",
+
+        attendance
+
+      });
+
+
+    } catch (error) {
+
+      console.error(
+        "Delete attendance error:",
+        error
+      );
+
+      return res.status(500).json({
+        error:
+          "Unable to delete attendance."
+      });
+
+    }
+
+  }
+);
 /* =========================================================
    EXCEL EXPORT
    ========================================================= */
