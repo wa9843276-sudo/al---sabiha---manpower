@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS workers(
  salary REAL DEFAULT 0,
  status TEXT DEFAULT 'Active',
  joining_date TEXT,
+ worker_pin TEXT,
  company_id INTEGER REFERENCES companies(id)
 );
 
@@ -102,7 +103,9 @@ const workerCols = db
   .prepare("PRAGMA table_info(workers)")
   .all()
   .map(c => c.name);
-
+if (!workerCols.includes("worker_pin")) {
+  db.exec("ALTER TABLE workers ADD COLUMN worker_pin TEXT");
+}
 if (!workerCols.includes("company_id")) {
   db.exec(
     "ALTER TABLE workers ADD COLUMN company_id INTEGER REFERENCES companies(id)"
@@ -701,7 +704,8 @@ app.post(
             salary,
             status,
             joining_date,
-            company_id
+            company_id,
+            worker_pin
           )
 
           VALUES(
@@ -717,7 +721,7 @@ app.post(
             ?
           )
         `).run(
-
+          clean(req.body.worker_pin),
           clean(req.body.worker_code),
 
           clean(req.body.name),
@@ -828,11 +832,12 @@ app.put(
           salary=?,
           status=?,
           joining_date=?,
-          company_id=?
+          company_id=?,
+          worker_pin=?
 
         WHERE id=?
       `).run(
-
+        
         clean(req.body.worker_code),
 
         clean(req.body.name),
@@ -856,7 +861,7 @@ app.put(
         clean(req.body.joining_date),
 
         companyId,
-
+        clean(req.body.worker_pin),
         workerId
       );
 
@@ -2769,6 +2774,477 @@ const mobileAuth = (req, res, next) => {
 
   next();
 };
+
+// =========================================================
+// WORKER APP AUTHENTICATION
+// Worker can login using Worker Code OR Worker Name
+// =========================================================
+
+const workerAuth = (req, res, next) => {
+  if (!req.session.worker) {
+    return res.status(401).json({
+      success: false,
+      message: "Worker login required."
+    });
+  }
+
+  next();
+};
+
+
+// WORKER APP LOGIN
+app.post("/api/worker-app/login", (req, res) => {
+  try {
+    const identifier = clean(req.body.identifier);
+    const pin = clean(req.body.pin);
+
+    if (!identifier || !pin) {
+      return res.status(400).json({
+        success: false,
+        message: "Worker Name/Code and PIN are required."
+      });
+    }
+
+    // First try Worker Code
+    let workers = db.prepare(`
+      SELECT
+        w.id,
+        w.worker_code,
+        w.name,
+        w.worker_pin,
+        w.employee_type,
+        w.vendor,
+        w.mobile,
+        w.designation,
+        w.salary,
+        w.status,
+        w.joining_date,
+        w.company_id,
+        c.name AS company_name
+      FROM workers w
+      LEFT JOIN companies c ON c.id = w.company_id
+      WHERE w.worker_code = ?
+        AND LOWER(COALESCE(w.status, 'Active')) = 'active'
+    `).all(identifier);
+
+    // If Worker Code not found, try exact Worker Name
+    if (workers.length === 0) {
+      workers = db.prepare(`
+        SELECT
+          w.id,
+          w.worker_code,
+          w.name,
+          w.worker_pin,
+          w.employee_type,
+          w.vendor,
+          w.mobile,
+          w.designation,
+          w.salary,
+          w.status,
+          w.joining_date,
+          w.company_id,
+          c.name AS company_name
+        FROM workers w
+        LEFT JOIN companies c ON c.id = w.company_id
+        WHERE LOWER(TRIM(w.name)) = LOWER(TRIM(?))
+          AND LOWER(COALESCE(w.status, 'Active')) = 'active'
+      `).all(identifier);
+    }
+
+    if (workers.length === 0) {
+      return res.status(401).json({
+        success: false,
+        message: "Worker not found or inactive."
+      });
+    }
+
+    // Same name can belong to more than one worker.
+    // In that case Worker Code must be used.
+    if (workers.length > 1) {
+      return res.status(409).json({
+        success: false,
+        multiple_workers: true,
+        message: "Multiple workers found with this name. Please login using Worker Code."
+      });
+    }
+
+    const worker = workers[0];
+
+    if (!worker.worker_pin) {
+      return res.status(403).json({
+        success: false,
+        message: "Worker PIN is not assigned. Please contact Admin."
+      });
+    }
+
+    if (String(worker.worker_pin) !== String(pin)) {
+      return res.status(401).json({
+        success: false,
+        message: "Incorrect PIN."
+      });
+    }
+
+    // Save only this worker in the session
+    req.session.worker = {
+      id: worker.id,
+      worker_code: worker.worker_code,
+      name: worker.name
+    };
+
+    return res.json({
+      success: true,
+      message: "Worker login successful.",
+      worker: {
+        id: worker.id,
+        worker_code: worker.worker_code,
+        name: worker.name,
+        employee_type: worker.employee_type,
+        vendor: worker.vendor,
+        mobile: worker.mobile,
+        designation: worker.designation,
+        salary: worker.salary,
+        status: worker.status,
+        joining_date: worker.joining_date,
+        company_id: worker.company_id,
+        company_name: worker.company_name
+      }
+    });
+
+  } catch (error) {
+    console.error("Worker App login error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Worker login failed."
+    });
+  }
+});
+
+
+// WORKER APP LOGOUT
+app.post("/api/worker-app/logout", workerAuth, (req, res) => {
+  req.session.worker = null;
+
+  return res.json({
+    success: true,
+    message: "Worker logged out successfully."
+  });
+});
+
+
+// CURRENT LOGGED-IN WORKER
+app.get("/api/worker-app/me", workerAuth, (req, res) => {
+  try {
+    const worker = db.prepare(`
+      SELECT
+        w.id,
+        w.worker_code,
+        w.name,
+        w.employee_type,
+        w.vendor,
+        w.mobile,
+        w.designation,
+        w.salary,
+        w.status,
+        w.joining_date,
+        w.company_id,
+        c.name AS company_name
+      FROM workers w
+      LEFT JOIN companies c ON c.id = w.company_id
+      WHERE w.id = ?
+    `).get(req.session.worker.id);
+
+    if (!worker) {
+      req.session.worker = null;
+
+      return res.status(404).json({
+        success: false,
+        message: "Worker account not found."
+      });
+    }
+
+    return res.json({
+      success: true,
+      worker
+    });
+
+  } catch (error) {
+    console.error("Worker App me error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load worker account."
+    });
+  }
+});
+// =========================================================
+// WORKER APP DASHBOARD
+// CURRENT WORKER PROFILE + COMPANY + SITE + OPEN ATTENDANCE
+// =========================================================
+
+app.get("/api/worker-app/dashboard", workerAuth, (req, res) => {
+  try {
+
+    const worker = db.prepare(`
+      SELECT
+        w.id,
+        w.worker_code,
+        w.name,
+        w.employee_type,
+        w.vendor,
+        w.mobile,
+        w.designation,
+        w.status,
+        w.joining_date,
+        w.company_id,
+        c.name AS company_name
+      FROM workers w
+      LEFT JOIN companies c
+        ON c.id = w.company_id
+      WHERE w.id = ?
+    `).get(req.session.worker.id);
+
+
+    if (!worker) {
+
+      req.session.worker = null;
+
+      return res.status(404).json({
+        success: false,
+        message: "Worker account not found."
+      });
+
+    }
+
+
+    // Assigned sites for this worker's company
+    const sites = worker.company_id
+      ? db.prepare(`
+          SELECT
+            id,
+            name,
+            location,
+            company_id,
+            status
+          FROM sites
+          WHERE company_id = ?
+            AND LOWER(COALESCE(status,'Active')) = 'active'
+          ORDER BY name
+        `).all(worker.company_id)
+      : [];
+
+
+    // Current open attendance
+    const openAttendance = db.prepare(`
+      SELECT
+        a.id,
+        a.attendance_date,
+        a.check_in,
+        a.check_out,
+        a.latitude,
+        a.longitude,
+        a.is_manual,
+        a.remarks,
+        a.company_id,
+        a.site_id,
+        c.name AS company_name,
+        s.name AS site_name,
+        s.location AS site_location
+      FROM attendance a
+      LEFT JOIN companies c
+        ON c.id = a.company_id
+      LEFT JOIN sites s
+        ON s.id = a.site_id
+      WHERE a.worker_id = ?
+        AND a.check_out IS NULL
+      ORDER BY a.id DESC
+      LIMIT 1
+    `).get(worker.id);
+
+
+    // Today's attendance
+    const todayAttendance = db.prepare(`
+      SELECT
+        a.id,
+        a.attendance_date,
+        a.check_in,
+        a.check_out,
+        a.latitude,
+        a.longitude,
+        a.is_manual,
+        a.remarks,
+        c.name AS company_name,
+        s.name AS site_name,
+        s.location AS site_location
+      FROM attendance a
+      LEFT JOIN companies c
+        ON c.id = a.company_id
+      LEFT JOIN sites s
+        ON s.id = a.site_id
+      WHERE a.worker_id = ?
+        AND a.attendance_date = ?
+      ORDER BY a.id DESC
+    `).all(
+      worker.id,
+      today()
+    );
+
+
+    return res.json({
+
+      success: true,
+
+      worker: worker,
+
+      sites: sites,
+
+      openAttendance:
+        openAttendance || null,
+
+      todayAttendance:
+        todayAttendance || []
+
+    });
+
+
+  } catch (error) {
+
+    console.error(
+      "Worker dashboard error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load Worker Dashboard."
+    });
+
+  }
+});
+
+
+
+// =========================================================
+// WORKER APP ATTENDANCE HISTORY
+// IMPORTANT:
+// Reads directly from attendance table.
+// If Admin deletes attendance, it disappears here too.
+// =========================================================
+
+app.get("/api/worker-app/attendance", workerAuth, (req, res) => {
+  try {
+
+    const history = db.prepare(`
+      SELECT
+        a.id,
+        a.attendance_date,
+        a.check_in,
+        a.check_out,
+        a.latitude,
+        a.longitude,
+        a.is_manual,
+        a.remarks,
+        c.name AS company_name,
+        s.name AS site_name,
+        s.location AS site_location
+      FROM attendance a
+      LEFT JOIN companies c
+        ON c.id = a.company_id
+      LEFT JOIN sites s
+        ON s.id = a.site_id
+      WHERE a.worker_id = ?
+      ORDER BY
+        a.attendance_date DESC,
+        a.id DESC
+      LIMIT 500
+    `).all(
+      req.session.worker.id
+    );
+
+    return res.json({
+      success: true,
+      history: history
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Worker attendance history error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to load attendance history."
+    });
+
+  }
+});
+
+
+// =========================================================
+// WORKER APP QR CODE
+// IMPORTANT:
+// Worker can ONLY view his own QR.
+// Worker cannot check-in or check-out from Worker App.
+// =========================================================
+
+app.get("/api/worker-app/qrcode", workerAuth, async (req, res) => {
+  try {
+
+    const worker = db.prepare(`
+      SELECT
+        id,
+        worker_code,
+        name
+      FROM workers
+      WHERE id = ?
+      LIMIT 1
+    `).get(
+      req.session.worker.id
+    );
+
+    if (!worker) {
+
+      req.session.worker = null;
+
+      return res.status(404).json({
+        success: false,
+        message: "Worker account not found."
+      });
+
+    }
+
+    const qr = await QRCode.toDataURL(
+      String(worker.worker_code)
+    );
+
+    return res.json({
+      success: true,
+
+      worker: {
+        id: worker.id,
+        worker_code: worker.worker_code,
+        name: worker.name
+      },
+
+      qr: qr
+    });
+
+  } catch (error) {
+
+    console.error(
+      "Worker QR error:",
+      error
+    );
+
+    return res.status(500).json({
+      success: false,
+      message: "Unable to generate Worker QR code."
+    });
+
+  }
+});
 
 
 /* ---------------------------------------------------------

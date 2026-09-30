@@ -1,0 +1,1565 @@
+```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport"
+        content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+  <meta name="theme-color" content="#061526">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+
+  <title>AL SABIHA | Worker App</title>
+
+  <link rel="icon" href="/Logo.svg">
+
+  <style>
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      width:100%;
+      min-height:100%;
+      font-family:Arial,Helvetica,sans-serif;
+      background:#020b15;
+      color:#fff;
+    }
+
+    body{
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+
+    button,input{
+      font:inherit;
+    }
+
+    .app{
+      width:100%;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 15% 10%,rgba(0,255,180,.12),transparent 30%),
+        radial-gradient(circle at 90% 15%,rgba(0,190,255,.12),transparent 30%),
+        linear-gradient(160deg,#020914,#061526 55%,#020914);
+    }
+
+    .screen{
+      min-height:100vh;
+      padding-bottom:86px;
+    }
+
+    /* =========================
+       LOGIN
+       ========================= */
+
+    #loginScreen{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+
+    .login-card{
+      width:100%;
+      max-width:430px;
+      padding:30px 22px;
+      border:1px solid rgba(255,255,255,.13);
+      border-radius:28px;
+      background:rgba(8,22,37,.78);
+      backdrop-filter:blur(22px);
+      box-shadow:
+        0 25px 80px rgba(0,0,0,.5),
+        0 0 35px rgba(0,255,190,.08);
+    }
+
+    .login-logo{
+      width:78px;
+      height:78px;
+      object-fit:contain;
+      display:block;
+      margin:0 auto 18px;
+    }
+
+    .login-title{
+      text-align:center;
+      margin:0;
+      font-size:28px;
+      font-weight:800;
+      letter-spacing:.4px;
+    }
+
+    .login-subtitle{
+      text-align:center;
+      color:#9db0c0;
+      font-size:13px;
+      margin:8px 0 28px;
+    }
+
+    .field{
+      margin-bottom:16px;
+    }
+
+    .field label{
+      display:block;
+      font-size:12px;
+      color:#b8c7d4;
+      margin:0 0 7px 4px;
+    }
+
+    .field input{
+      width:100%;
+      height:52px;
+      border-radius:15px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.055);
+      color:#fff;
+      outline:none;
+      padding:0 15px;
+    }
+
+    .field input:focus{
+      border-color:rgba(0,255,190,.55);
+      box-shadow:0 0 0 3px rgba(0,255,190,.08);
+    }
+
+    .login-btn{
+      width:100%;
+      height:54px;
+      border:0;
+      border-radius:16px;
+      color:#02130f;
+      font-weight:800;
+      background:linear-gradient(135deg,#00f0a8,#63f7d1);
+      box-shadow:0 10px 30px rgba(0,255,180,.18);
+      cursor:pointer;
+    }
+
+    .login-btn:active{
+      transform:scale(.98);
+    }
+
+    .error{
+      display:none;
+      margin:0 0 14px;
+      padding:11px 13px;
+      border-radius:12px;
+      background:rgba(255,70,70,.12);
+      border:1px solid rgba(255,70,70,.2);
+      color:#ff9d9d;
+      font-size:13px;
+    }
+
+    /* =========================
+       APP HEADER
+       ========================= */
+
+    .app-header{
+      position:sticky;
+      top:0;
+      z-index:20;
+      padding:15px 16px 13px;
+      background:rgba(3,13,24,.82);
+      backdrop-filter:blur(18px);
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+
+    .header-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+    }
+
+    .brand img{
+      width:42px;
+      height:42px;
+      object-fit:contain;
+    }
+
+    .brand-title{
+      font-size:15px;
+      font-weight:800;
+    }
+
+    .brand-sub{
+      color:#8194a5;
+      font-size:11px;
+      margin-top:2px;
+    }
+
+    .logout-small{
+      width:40px;
+      height:40px;
+      border-radius:13px;
+      border:1px solid rgba(255,255,255,.1);
+      background:rgba(255,255,255,.05);
+      color:#fff;
+      font-size:18px;
+    }
+
+    /* =========================
+       CONTENT
+       ========================= */
+
+    .content{
+      padding:18px 15px 20px;
+    }
+
+    .welcome{
+      margin-bottom:18px;
+    }
+
+    .welcome-small{
+      color:#8296a8;
+      font-size:12px;
+      margin-bottom:4px;
+    }
+
+    .welcome-name{
+      font-size:25px;
+      font-weight:800;
+      line-height:1.15;
+    }
+
+    .worker-card{
+      position:relative;
+      overflow:hidden;
+      border-radius:24px;
+      padding:20px;
+      margin-bottom:15px;
+      background:
+        radial-gradient(circle at 90% 10%,rgba(0,255,190,.16),transparent 35%),
+        linear-gradient(145deg,rgba(15,39,60,.96),rgba(5,18,31,.96));
+      border:1px solid rgba(255,255,255,.1);
+      box-shadow:0 18px 45px rgba(0,0,0,.25);
+    }
+
+    .worker-card:after{
+      content:"";
+      position:absolute;
+      width:120px;
+      height:120px;
+      right:-55px;
+      bottom:-55px;
+      border-radius:50%;
+      border:1px solid rgba(0,255,190,.18);
+    }
+
+    .worker-code{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:10px;
+      background:rgba(0,255,190,.09);
+      border:1px solid rgba(0,255,190,.15);
+      color:#65f5d1;
+      font-size:11px;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .worker-name{
+      font-size:23px;
+      font-weight:800;
+      margin-bottom:15px;
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .info-box{
+      min-width:0;
+      padding:11px;
+      border-radius:14px;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .info-label{
+      color:#718597;
+      font-size:10px;
+      margin-bottom:4px;
+      text-transform:uppercase;
+      letter-spacing:.5px;
+    }
+
+    .info-value{
+      color:#edf5fa;
+      font-size:13px;
+      font-weight:700;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    /* =========================
+       QR
+       ========================= */
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      margin:21px 2px 11px;
+    }
+
+    .section-title h2{
+      margin:0;
+      font-size:17px;
+    }
+
+    .section-title span{
+      color:#708697;
+      font-size:11px;
+    }
+
+    .qr-card{
+      border-radius:22px;
+      padding:22px 18px;
+      text-align:center;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.09);
+    }
+
+    .qr-wrap{
+      width:210px;
+      height:210px;
+      margin:0 auto 14px;
+      padding:12px;
+      background:#fff;
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    #qrImage{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+    }
+
+    .qr-code-text{
+      color:#65f5d1;
+      font-weight:800;
+      font-size:14px;
+    }
+
+    .qr-help{
+      color:#778b9b;
+      font-size:11px;
+      line-height:1.5;
+      margin-top:6px;
+    }
+
+    /* =========================
+       TODAY
+       ========================= */
+
+    .today-card{
+      border-radius:22px;
+      padding:17px;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .attendance-item{
+      padding:14px 0;
+      border-bottom:1px solid rgba(255,255,255,.07);
+    }
+
+    .attendance-item:first-child{
+      padding-top:0;
+    }
+
+    .attendance-item:last-child{
+      border-bottom:0;
+      padding-bottom:0;
+    }
+
+    .att-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .att-date{
+      font-size:13px;
+      font-weight:800;
+    }
+
+    .status{
+      padding:5px 8px;
+      border-radius:8px;
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .status-present{
+      color:#68f3cb;
+      background:rgba(0,255,180,.09);
+    }
+
+    .status-open{
+      color:#ffd978;
+      background:rgba(255,205,80,.09);
+    }
+
+    .att-details{
+      margin-top:9px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+    }
+
+    .att-detail{
+      color:#8ca0b0;
+      font-size:11px;
+    }
+
+    .att-detail b{
+      color:#e8f0f5;
+      font-size:12px;
+    }
+
+    .empty{
+      padding:22px 8px;
+      text-align:center;
+      color:#718697;
+      font-size:12px;
+    }
+
+    /* =========================
+       HISTORY
+       ========================= */
+
+    .history-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .history-card{
+      padding:14px;
+      border-radius:17px;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.07);
+    }
+
+    .history-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    .history-date{
+      font-weight:800;
+      font-size:13px;
+    }
+
+    .history-company{
+      margin-top:7px;
+      color:#c5d3dc;
+      font-size:12px;
+    }
+
+    .history-site{
+      margin-top:4px;
+      color:#7f94a5;
+      font-size:11px;
+    }
+
+    .history-times{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      margin-top:11px;
+    }
+
+    .time-box{
+      padding:9px;
+      border-radius:11px;
+      background:rgba(255,255,255,.04);
+    }
+
+    .time-label{
+      color:#718596;
+      font-size:9px;
+      text-transform:uppercase;
+    }
+
+    .time-value{
+      margin-top:3px;
+      color:#eaf4f8;
+      font-size:12px;
+      font-weight:700;
+    }
+
+    /* =========================
+       PROFILE
+       ========================= */
+
+    .profile-card{
+      border-radius:22px;
+      padding:18px;
+      background:rgba(255,255,255,.045);
+      border:1px solid rgba(255,255,255,.08);
+    }
+
+    .profile-row{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 0;
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+
+    .profile-row:last-child{
+      border-bottom:0;
+    }
+
+    .profile-label{
+      color:#718697;
+      font-size:11px;
+    }
+
+    .profile-value{
+      color:#edf5f8;
+      font-size:12px;
+      font-weight:700;
+      text-align:right;
+      max-width:60%;
+      word-break:break-word;
+    }
+
+    /* =========================
+       BOTTOM NAV
+       ========================= */
+
+    .bottom-nav{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      z-index:50;
+      height:74px;
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      background:rgba(3,13,24,.92);
+      backdrop-filter:blur(20px);
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-bottom:env(safe-area-inset-bottom);
+    }
+
+    .nav-btn{
+      border:0;
+      background:transparent;
+      color:#6f8394;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      font-size:10px;
+    }
+
+    .nav-icon{
+      font-size:20px;
+      line-height:1;
+    }
+
+    .nav-btn.active{
+      color:#5ff2cd;
+    }
+
+    /* =========================
+       LOADING
+       ========================= */
+
+    .loading{
+      text-align:center;
+      color:#8295a5;
+      font-size:12px;
+      padding:25px 0;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    @media(min-width:700px){
+      body{
+        background:#020914;
+      }
+
+      .app{
+        max-width:520px;
+        margin:0 auto;
+        box-shadow:0 0 70px rgba(0,0,0,.45);
+      }
+
+      .bottom-nav{
+        max-width:520px;
+        left:50%;
+        right:auto;
+        transform:translateX(-50%);
+        width:100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="app">
+
+  <!-- =========================
+       LOGIN SCREEN
+       ========================= -->
+  <section id="loginScreen">
+
+    <div class="login-card">
+
+      <img class="login-logo" src="/Logo.svg" alt="AL SABIHA">
+
+      <h1 class="login-title">Worker App</h1>
+
+      <p class="login-subtitle">
+        Secure access to your QR & attendance
+      </p>
+
+      <div id="loginError" class="error"></div>
+
+      <div class="field">
+        <label>Worker Name / Worker Code</label>
+        <input
+          id="identifier"
+          type="text"
+          placeholder="Enter name or worker code"
+          autocomplete="username">
+      </div>
+
+      <div class="field">
+        <label>Worker PIN</label>
+        <input
+          id="pin"
+          type="password"
+          inputmode="numeric"
+          placeholder="Enter PIN"
+          autocomplete="current-password">
+      </div>
+
+      <button id="loginBtn" class="login-btn">
+        Login to Worker App
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- =========================
+       DASHBOARD
+       ========================= -->
+  <section id="appScreen" class="screen hidden">
+
+    <header class="app-header">
+
+      <div class="header-row">
+
+        <div class="brand">
+          <img src="/Logo.svg" alt="AL SABIHA">
+
+          <div>
+            <div class="brand-title">AL SABIHA</div>
+            <div class="brand-sub">Worker App</div>
+          </div>
+        </div>
+
+        <button id="logoutBtn" class="logout-small" title="Logout">
+          ↪
+        </button>
+
+      </div>
+
+    </header>
+
+
+    <main class="content">
+
+      <!-- HOME -->
+      <section id="homePage">
+
+        <div class="welcome">
+          <div class="welcome-small">Welcome back</div>
+          <div id="welcomeName" class="welcome-name">Worker</div>
+        </div>
+
+        <div class="worker-card">
+
+          <div id="workerCode" class="worker-code">
+            Worker Code
+          </div>
+
+          <div id="workerName" class="worker-name">
+            Worker Name
+          </div>
+
+          <div class="info-grid">
+
+            <div class="info-box">
+              <div class="info-label">Company</div>
+              <div id="companyName" class="info-value">—</div>
+            </div>
+
+            <div class="info-box">
+              <div class="info-label">Site</div>
+              <div id="siteName" class="info-value">—</div>
+            </div>
+
+            <div class="info-box">
+              <div class="info-label">Designation</div>
+              <div id="designation" class="info-value">—</div>
+            </div>
+
+            <div class="info-box">
+              <div class="info-label">Status</div>
+              <div id="workerStatus" class="info-value">—</div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="section-title">
+          <h2>Today's Attendance</h2>
+          <span id="todayCount">0 Record</span>
+        </div>
+
+        <div class="today-card">
+          <div id="todayAttendance">
+            <div class="loading">Loading attendance...</div>
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- QR PAGE -->
+      <section id="qrPage" class="hidden">
+
+        <div class="section-title">
+          <h2>My QR Code</h2>
+          <span>Personal QR</span>
+        </div>
+
+        <div class="qr-card">
+
+          <div class="qr-wrap">
+            <img id="qrImage" src="" alt="Worker QR Code">
+          </div>
+
+          <div id="qrCodeText" class="qr-code-text">
+            —
+          </div>
+
+          <div class="qr-help">
+            Show this QR code to the authorised AL SABIHA
+            Attendance Scanner for attendance.
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- HISTORY PAGE -->
+      <section id="historyPage" class="hidden">
+
+        <div class="section-title">
+          <h2>Attendance History</h2>
+          <span>My Records</span>
+        </div>
+
+        <div id="historyList" class="history-list">
+          <div class="loading">Loading history...</div>
+        </div>
+
+      </section>
+
+
+      <!-- PROFILE PAGE -->
+      <section id="profilePage" class="hidden">
+
+        <div class="section-title">
+          <h2>My Profile</h2>
+          <span>Worker Details</span>
+        </div>
+
+        <div class="profile-card">
+
+          <div class="profile-row">
+            <div class="profile-label">Name</div>
+            <div id="profileName" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Worker Code</div>
+            <div id="profileCode" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Company</div>
+            <div id="profileCompany" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Designation</div>
+            <div id="profileDesignation" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Mobile</div>
+            <div id="profileMobile" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Employee Type</div>
+            <div id="profileType" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Vendor</div>
+            <div id="profileVendor" class="profile-value">—</div>
+          </div>
+
+          <div class="profile-row">
+            <div class="profile-label">Joining Date</div>
+            <div id="profileJoining" class="profile-value">—</div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+
+    <!-- =========================
+         BOTTOM NAV
+         ========================= -->
+
+    <nav class="bottom-nav">
+
+      <button class="nav-btn active" data-page="homePage">
+        <span class="nav-icon">⌂</span>
+        <span>Home</span>
+      </button>
+
+      <button class="nav-btn" data-page="qrPage">
+        <span class="nav-icon">▦</span>
+        <span>My QR</span>
+      </button>
+
+      <button class="nav-btn" data-page="historyPage">
+        <span class="nav-icon">◷</span>
+        <span>Attendance</span>
+      </button>
+
+      <button class="nav-btn" data-page="profilePage">
+        <span class="nav-icon">●</span>
+        <span>Profile</span>
+      </button>
+
+    </nav>
+
+  </section>
+
+</div>
+
+
+<script>
+
+  const $ = selector => document.querySelector(selector);
+
+  let workerData = null;
+
+
+  /* =========================
+     HELPERS
+     ========================= */
+
+  function escapeHtml(value){
+
+    return String(value ?? "")
+      .replace(/[&<>"']/g, char => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      }[char]));
+
+  }
+
+
+  function showLoginError(message){
+
+    const box = $("#loginError");
+
+    box.textContent = message || "Unable to login.";
+
+    box.style.display = "block";
+
+  }
+
+
+  function hideLoginError(){
+
+    $("#loginError").style.display = "none";
+
+  }
+
+
+  async function api(url, options = {}){
+
+    const response = await fetch(url, {
+      credentials:"include",
+      ...options,
+      headers:{
+        "Content-Type":"application/json",
+        ...(options.headers || {})
+      }
+    });
+
+    let data = {};
+
+    try{
+      data = await response.json();
+    }catch(e){
+      data = {};
+    }
+
+    if(!response.ok){
+
+      const error = new Error(
+        data.message ||
+        data.error ||
+        `Request failed (${response.status})`
+      );
+
+      error.status = response.status;
+
+      throw error;
+    }
+
+    return data;
+
+  }
+
+
+  /* =========================
+     LOGIN
+     ========================= */
+
+  async function login(){
+
+    hideLoginError();
+
+    const identifier = $("#identifier").value.trim();
+    const pin = $("#pin").value.trim();
+
+    if(!identifier || !pin){
+
+      showLoginError(
+        "Worker Name/Code and PIN are required."
+      );
+
+      return;
+    }
+
+
+    const button = $("#loginBtn");
+
+    button.disabled = true;
+    button.textContent = "Logging in...";
+
+
+    try{
+
+      const data = await api(
+        "/api/worker-app/login",
+        {
+          method:"POST",
+          body:JSON.stringify({
+            identifier,
+            pin
+          })
+        }
+      );
+
+
+      if(!data.success){
+
+        throw new Error(
+          data.message || "Login failed."
+        );
+
+      }
+
+
+      workerData = data.worker;
+
+      await openWorkerApp();
+
+    }catch(error){
+
+      showLoginError(
+        error.message || "Server connection failed."
+      );
+
+    }finally{
+
+      button.disabled = false;
+      button.textContent = "Login to Worker App";
+
+    }
+
+  }
+
+
+  /* =========================
+     CHECK CURRENT SESSION
+     ========================= */
+
+  async function checkSession(){
+
+    try{
+
+      const data = await api(
+        "/api/worker-app/me"
+      );
+
+      if(data.success && data.worker){
+
+        workerData = data.worker;
+
+        await openWorkerApp();
+
+      }
+
+    }catch(error){
+
+      // Not logged in — keep login screen.
+    }
+
+  }
+
+
+  /* =========================
+     OPEN APP
+     ========================= */
+
+  async function openWorkerApp(){
+
+    $("#loginScreen").classList.add("hidden");
+    $("#appScreen").classList.remove("hidden");
+
+    fillWorkerDetails();
+
+    await Promise.all([
+      loadDashboard(),
+      loadQr(),
+      loadHistory()
+    ]);
+
+  }
+
+
+  /* =========================
+     WORKER DETAILS
+     ========================= */
+
+  function fillWorkerDetails(){
+
+    if(!workerData) return;
+
+
+    $("#welcomeName").textContent =
+      workerData.name || "Worker";
+
+    $("#workerName").textContent =
+      workerData.name || "—";
+
+    $("#workerCode").textContent =
+      workerData.worker_code || "—";
+
+    $("#companyName").textContent =
+      workerData.company_name || "Not Assigned";
+
+    $("#designation").textContent =
+      workerData.designation || "—";
+
+    $("#workerStatus").textContent =
+      workerData.status || "Active";
+
+
+    $("#profileName").textContent =
+      workerData.name || "—";
+
+    $("#profileCode").textContent =
+      workerData.worker_code || "—";
+
+    $("#profileCompany").textContent =
+      workerData.company_name || "Not Assigned";
+
+    $("#profileDesignation").textContent =
+      workerData.designation || "—";
+
+    $("#profileMobile").textContent =
+      workerData.mobile || "—";
+
+    $("#profileType").textContent =
+      workerData.employee_type || "—";
+
+    $("#profileVendor").textContent =
+      workerData.vendor || "—";
+
+    $("#profileJoining").textContent =
+      workerData.joining_date || "—";
+
+  }
+
+
+  /* =========================
+     DASHBOARD
+     ========================= */
+
+  async function loadDashboard(){
+
+    try{
+
+      const data = await api(
+        "/api/worker-app/dashboard"
+      );
+
+
+      if(data.worker){
+
+        workerData = {
+          ...workerData,
+          ...data.worker
+        };
+
+        fillWorkerDetails();
+
+      }
+
+
+      const sites = data.sites || [];
+
+      if(sites.length > 0){
+
+        $("#siteName").textContent =
+          sites[0].name || "—";
+
+      }else{
+
+        $("#siteName").textContent =
+          "Not Assigned";
+
+      }
+
+
+      renderTodayAttendance(
+        data.todayAttendance || []
+      );
+
+    }catch(error){
+
+      $("#todayAttendance").innerHTML =
+        `<div class="empty">
+          Unable to load today's attendance.
+        </div>`;
+
+    }
+
+  }
+
+
+  function renderTodayAttendance(records){
+
+    const container = $("#todayAttendance");
+
+    $("#todayCount").textContent =
+      `${records.length} Record${records.length === 1 ? "" : "s"}`;
+
+
+    if(!records.length){
+
+      container.innerHTML = `
+        <div class="empty">
+          No attendance record for today.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML = records.map(record => {
+
+      const open = !record.check_out;
+
+      return `
+        <div class="attendance-item">
+
+          <div class="att-top">
+
+            <div class="att-date">
+              ${escapeHtml(record.attendance_date || "Today")}
+            </div>
+
+            <span class="status ${open ? "status-open" : "status-present"}">
+              ${open ? "OPEN" : "PRESENT"}
+            </span>
+
+          </div>
+
+          <div class="att-details">
+
+            <div class="att-detail">
+              Check-In<br>
+              <b>${escapeHtml(record.check_in || "—")}</b>
+            </div>
+
+            <div class="att-detail">
+              Check-Out<br>
+              <b>${escapeHtml(record.check_out || "Still Open")}</b>
+            </div>
+
+            <div class="att-detail">
+              Company<br>
+              <b>${escapeHtml(record.company_name || "—")}</b>
+            </div>
+
+            <div class="att-detail">
+              Site<br>
+              <b>${escapeHtml(record.site_name || "—")}</b>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  }
+
+
+  /* =========================
+     QR
+     ========================= */
+
+  async function loadQr(){
+
+    try{
+
+      const data = await api(
+        "/api/worker-app/qrcode"
+      );
+
+
+      if(data.success && data.qr){
+
+        $("#qrImage").src = data.qr;
+
+        $("#qrCodeText").textContent =
+          data.worker?.worker_code ||
+          workerData?.worker_code ||
+          "—";
+
+      }
+
+    }catch(error){
+
+      $("#qrImage").removeAttribute("src");
+
+      $("#qrCodeText").textContent =
+        "QR unavailable";
+
+    }
+
+  }
+
+
+  /* =========================
+     HISTORY
+     ========================= */
+
+  async function loadHistory(){
+
+    try{
+
+      const data = await api(
+        "/api/worker-app/attendance"
+      );
+
+      renderHistory(
+        data.history || []
+      );
+
+    }catch(error){
+
+      $("#historyList").innerHTML =
+        `<div class="empty">
+          Unable to load attendance history.
+        </div>`;
+
+    }
+
+  }
+
+
+  function renderHistory(history){
+
+    const container = $("#historyList");
+
+
+    if(!history.length){
+
+      container.innerHTML = `
+        <div class="empty">
+          No attendance history found.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML = history.map(record => {
+
+      const open = !record.check_out;
+
+      return `
+        <div class="history-card">
+
+          <div class="history-head">
+
+            <div class="history-date">
+              ${escapeHtml(record.attendance_date || "—")}
+            </div>
+
+            <span class="status ${open ? "status-open" : "status-present"}">
+              ${open ? "OPEN" : "PRESENT"}
+            </span>
+
+          </div>
+
+          <div class="history-company">
+            ${escapeHtml(record.company_name || "Company not assigned")}
+          </div>
+
+          <div class="history-site">
+            ${escapeHtml(
+              record.site_name ||
+              record.site_location ||
+              "Site not assigned"
+            )}
+          </div>
+
+          <div class="history-times">
+
+            <div class="time-box">
+              <div class="time-label">Check-In</div>
+              <div class="time-value">
+                ${escapeHtml(record.check_in || "—")}
+              </div>
+            </div>
+
+            <div class="time-box">
+              <div class="time-label">Check-Out</div>
+              <div class="time-value">
+                ${escapeHtml(record.check_out || "Still Open")}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      `;
+
+    }).join("");
+
+  }
+
+
+  /* =========================
+     NAVIGATION
+     ========================= */
+
+  function showPage(pageId, button){
+
+    const pages = [
+      "homePage",
+      "qrPage",
+      "historyPage",
+      "profilePage"
+    ];
+
+
+    pages.forEach(id => {
+
+      const page = document.getElementById(id);
+
+      if(page){
+        page.classList.toggle(
+          "hidden",
+          id !== pageId
+        );
+      }
+
+    });
+
+
+    document
+      .querySelectorAll(".nav-btn")
+      .forEach(btn => {
+
+        btn.classList.remove("active");
+
+      });
+
+
+    if(button){
+      button.classList.add("active");
+    }
+
+  }
+
+
+  /* =========================
+     LOGOUT
+     ========================= */
+
+  async function logout(){
+
+    try{
+
+      await api(
+        "/api/worker-app/logout",
+        {
+          method:"POST"
+        }
+      );
+
+    }catch(error){
+
+      // Continue local logout even if request fails.
+
+    }
+
+
+    workerData = null;
+
+    $("#appScreen").classList.add("hidden");
+    $("#loginScreen").classList.remove("hidden");
+
+    $("#identifier").value = "";
+    $("#pin").value = "";
+
+    showPage(
+      "homePage",
+      document.querySelector(".nav-btn")
+    );
+
+  }
+
+
+  /* =========================
+     EVENTS
+     ========================= */
+
+  $("#loginBtn").addEventListener(
+    "click",
+    login
+  );
+
+
+  $("#pin").addEventListener(
+    "keydown",
+    event => {
+
+      if(event.key === "Enter"){
+        login();
+      }
+
+    }
+  );
+
+
+  $("#identifier").addEventListener(
+    "keydown",
+    event => {
+
+      if(event.key === "Enter"){
+        $("#pin").focus();
+      }
+
+    }
+  );
+
+
+  $("#logoutBtn").addEventListener(
+    "click",
+    logout
+  );
+
+
+  document
+    .querySelectorAll(".nav-btn")
+    .forEach(button => {
+
+      button.addEventListener(
+        "click",
+        () => {
+
+          showPage(
+            button.dataset.page,
+            button
+          );
+
+        }
+      );
+
+    });
+
+
+  /* =========================
+     START
+     ========================= */
+
+  checkSession();
+
+</script>
+
+</body>
+</html>

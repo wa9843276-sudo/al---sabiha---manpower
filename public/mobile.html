@@ -4361,53 +4361,57 @@
        COMPANY CHANGE
        ===================================================== */
 
-    $("#companySelect")
-      .addEventListener(
-        "change",
-        async function(){
+    $("#companySelect").addEventListener("change", async function(){
 
-          soundButton();
+  soundButton();
 
-          const companyId =
-            this.value;
+  const companyId = this.value;
 
+  $("#assignedCompanyText").textContent =
+    this.options[this.selectedIndex]?.textContent || "-";
 
-          $("#assignedCompanyText")
-            .textContent =
-              this.options[
-                this.selectedIndex
-              ]?.textContent ||
-              "-";
+  $("#assignedSiteText").textContent = "-";
 
+  try {
 
-          $("#assignedSiteText")
-            .textContent =
-              "-";
+    const sites = await loadSites(companyId);
 
+    // Agar is company ki sirf 1 location hai
+    if (Array.isArray(sites) && sites.length === 1) {
 
-          try{
+      const site = sites[0];
 
-            await loadSites(
-              companyId
-            );
+      const siteId =
+        site.id ||
+        site.site_id ||
+        "";
 
-          }catch(error){
+      if (siteId) {
 
-            soundError();
+        $("#siteSelect").value = String(siteId);
 
-            showMessage(
-              $("#attendanceMessage"),
-              error.message ||
-              "Unable to load sites.",
-              "error"
-            );
+        const selected =
+          $("#siteSelect").options[
+            $("#siteSelect").selectedIndex
+          ];
 
-          }
+        $("#assignedSiteText").textContent =
+          selected?.textContent || "-";
+      }
+    }
 
-        }
-      );
+  } catch(error) {
 
+    soundError();
 
+    showMessage(
+      $("#attendanceMessage"),
+      error.message || "Unable to load sites.",
+      "error"
+    );
+  }
+
+});
     /* =====================================================
        SITE CHANGE
        ===================================================== */

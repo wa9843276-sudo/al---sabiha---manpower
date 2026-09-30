@@ -1,0 +1,2664 @@
+﻿```html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#061526">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="manifest" href="/manifest.json">
+
+  <title>AL SABIHA Mobile Attendance</title>
+
+  <script src="https://unpkg.com/html5-qrcode" defer></script>
+
+  <style>
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html,body{
+      margin:0;
+      padding:0;
+      min-height:100%;
+      font-family:Inter,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 20% 10%,rgba(35,180,170,.18),transparent 30%),
+        radial-gradient(circle at 90% 90%,rgba(217,173,77,.15),transparent 35%),
+        linear-gradient(135deg,#020a13,#061526 50%,#0b2944);
+      color:#fff;
+    }
+
+    body{
+      min-height:100vh;
+      padding:18px;
+    }
+
+    .app{
+      width:100%;
+      max-width:560px;
+      margin:auto;
+    }
+
+    .brand{
+      text-align:center;
+      margin:8px 0 18px;
+    }
+
+    .brand-logo{
+      width:70px;
+      height:70px;
+      margin:auto;
+      border-radius:22px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      font-weight:900;
+      color:#f4d47d;
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(244,212,125,.35);
+      box-shadow:
+        0 0 30px rgba(217,173,77,.18),
+        inset 0 0 20px rgba(255,255,255,.05);
+    }
+
+    .brand h1{
+      margin:12px 0 3px;
+      font-size:24px;
+      letter-spacing:1.5px;
+    }
+
+    .brand p{
+      margin:0;
+      color:#aebdca;
+      font-size:13px;
+    }
+
+    .card{
+      background:rgba(255,255,255,.075);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:24px;
+      padding:20px;
+      margin-bottom:15px;
+      box-shadow:
+        0 20px 50px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.08);
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    h2{
+      margin:0 0 15px;
+      font-size:19px;
+    }
+
+    label{
+      display:block;
+      margin:12px 0 7px;
+      color:#c8d4df;
+      font-size:13px;
+      font-weight:600;
+    }
+
+    input,
+    select{
+      width:100%;
+      min-height:50px;
+      padding:13px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.15);
+      outline:none;
+      color:#fff;
+      background:rgba(0,0,0,.25);
+      font-size:15px;
+    }
+
+    input::placeholder{
+      color:#8495a4;
+    }
+
+    select option{
+      color:#111;
+      background:#fff;
+    }
+
+    input:focus,
+    select:focus{
+      border-color:#d9ad4d;
+      box-shadow:0 0 0 3px rgba(217,173,77,.12);
+    }
+
+    button{
+      width:100%;
+      min-height:52px;
+      border:0;
+      border-radius:15px;
+      margin-top:12px;
+      padding:13px 16px;
+      font-size:15px;
+      font-weight:800;
+      cursor:pointer;
+      transition:.2s ease;
+    }
+
+    button:active{
+      transform:scale(.98);
+    }
+
+    button:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-primary{
+      color:#07111d;
+      background:linear-gradient(135deg,#f4d47d,#d9ad4d);
+      box-shadow:0 8px 25px rgba(217,173,77,.18);
+    }
+
+    .btn-secondary{
+      color:#fff;
+      background:rgba(255,255,255,.09);
+      border:1px solid rgba(255,255,255,.14);
+    }
+
+    .btn-green{
+      color:#fff;
+      background:linear-gradient(135deg,#0da678,#087f62);
+      box-shadow:0 8px 25px rgba(13,166,120,.18);
+    }
+
+    .btn-red{
+      color:#fff;
+      background:linear-gradient(135deg,#ef5350,#b71c1c);
+      box-shadow:0 8px 25px rgba(239,83,80,.18);
+    }
+
+    .btn-blue{
+      color:#fff;
+      background:linear-gradient(135deg,#248cff,#1260bb);
+    }
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .worker-box{
+      padding:15px;
+      border-radius:18px;
+      margin-top:15px;
+      background:rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    .worker-name{
+      font-size:21px;
+      font-weight:900;
+      margin-bottom:5px;
+    }
+
+    .worker-code{
+      color:#d9ad4d;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .info-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:9px;
+      margin-top:13px;
+    }
+
+    .info{
+      padding:11px;
+      border-radius:13px;
+      background:rgba(255,255,255,.055);
+    }
+
+    .info small{
+      display:block;
+      color:#91a1af;
+      font-size:11px;
+      margin-bottom:4px;
+    }
+
+    .info strong{
+      font-size:13px;
+      word-break:break-word;
+    }
+
+    .assigned{
+      margin-top:12px;
+      padding:13px;
+      border-radius:15px;
+      background:rgba(217,173,77,.10);
+      border:1px solid rgba(217,173,77,.25);
+    }
+
+    .assigned-title{
+      color:#d9ad4d;
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .assigned-value{
+      margin-top:4px;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .location-box{
+      margin-top:10px;
+      padding:13px;
+      border-radius:15px;
+      background:rgba(35,180,170,.08);
+      border:1px solid rgba(35,180,170,.22);
+    }
+
+    .location-title{
+      color:#67ddd1;
+      font-size:11px;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:.8px;
+    }
+
+    .location-value{
+      margin-top:5px;
+      font-size:14px;
+      font-weight:800;
+      line-height:1.4;
+    }
+
+    .status{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      margin-top:10px;
+      padding:7px 11px;
+      border-radius:30px;
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .status-in{
+      color:#69f0b8;
+      background:rgba(13,166,120,.13);
+      border:1px solid rgba(13,166,120,.25);
+    }
+
+    .status-out{
+      color:#c6d0d9;
+      background:rgba(255,255,255,.07);
+      border:1px solid rgba(255,255,255,.10);
+    }
+
+    .gps{
+      margin-top:10px;
+      padding:11px 13px;
+      border-radius:13px;
+      font-size:12px;
+      color:#b9c7d2;
+      background:rgba(255,255,255,.045);
+    }
+
+    .message{
+      display:none;
+      padding:12px 14px;
+      margin-top:12px;
+      border-radius:13px;
+      font-size:13px;
+      line-height:1.45;
+    }
+
+    .message.show{
+      display:block;
+    }
+
+    .message.success{
+      color:#75efbb;
+      background:rgba(13,166,120,.12);
+      border:1px solid rgba(13,166,120,.22);
+    }
+
+    .message.error{
+      color:#ffaaa7;
+      background:rgba(239,83,80,.11);
+      border:1px solid rgba(239,83,80,.22);
+    }
+
+    .message.info{
+      color:#b7d9ff;
+      background:rgba(36,140,255,.10);
+      border:1px solid rgba(36,140,255,.20);
+    }
+
+    #reader{
+      width:100%;
+      overflow:hidden;
+      border-radius:18px;
+      margin-top:12px;
+      background:#000;
+    }
+
+    #reader video{
+      border-radius:18px;
+    }
+
+    .scanner-status{
+      text-align:center;
+      margin-top:8px;
+      color:#9fb0bd;
+      font-size:12px;
+    }
+
+    .pin-screen{
+      min-height:calc(100vh - 36px);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .pin-card{
+      width:100%;
+      max-width:430px;
+    }
+
+    .pin-icon{
+      width:64px;
+      height:64px;
+      border-radius:20px;
+      margin:0 auto 15px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:28px;
+      background:rgba(217,173,77,.10);
+      border:1px solid rgba(217,173,77,.28);
+    }
+
+    .section-title{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:13px;
+    }
+
+    .section-title h2{
+      margin:0;
+    }
+
+    .small-badge{
+      padding:6px 9px;
+      border-radius:20px;
+      color:#d9ad4d;
+      background:rgba(217,173,77,.10);
+      border:1px solid rgba(217,173,77,.20);
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .footer{
+      text-align:center;
+      padding:8px 0 18px;
+      color:#657887;
+      font-size:11px;
+    }
+
+    @media(max-width:420px){
+      body{
+        padding:12px;
+      }
+
+      .card{
+        padding:16px;
+        border-radius:20px;
+      }
+
+      .row{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="pinScreen" class="pin-screen">
+  <div class="app">
+
+    <div class="brand">
+      <div class="brand-logo">AS</div>
+      <h1>AL SABIHA</h1>
+      <p>Mobile Attendance</p>
+    </div>
+
+    <div class="card pin-card">
+
+      <div class="pin-icon">≡ƒöÉ</div>
+
+      <h2 style="text-align:center;">Mobile Access</h2>
+
+      <p style="text-align:center;color:#9eafbd;font-size:13px;">
+        Enter your authorized mobile PIN
+      </p>
+
+      <label for="pinInput">Mobile PIN</label>
+
+      <input
+        id="pinInput"
+        type="password"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="Enter PIN"
+      >
+
+      <button id="continueBtn" class="btn-primary">
+        Continue
+      </button>
+
+      <div id="pinMessage" class="message"></div>
+
+    </div>
+  </div>
+</div>
+
+
+<div id="appScreen" class="hidden">
+
+  <div class="app">
+
+    <div class="brand">
+      <div class="brand-logo">AS</div>
+      <h1>AL SABIHA</h1>
+      <p>Worker Mobile Attendance</p>
+    </div>
+
+
+    <!-- FIND WORKER -->
+    <div class="card">
+
+      <div class="section-title">
+        <h2>Find Worker</h2>
+        <span class="small-badge">ATTENDANCE</span>
+      </div>
+
+      <label for="workerCode">
+        Worker Code
+      </label>
+
+      <input
+        id="workerCode"
+        type="text"
+        autocomplete="off"
+        placeholder="Example: W001"
+      >
+
+      <div class="row">
+
+        <button id="findBtn" class="btn-primary">
+          ≡ƒöÄ Find Worker
+        </button>
+
+        <button id="scanBtn" class="btn-secondary">
+          ≡ƒô╖ Scan QR
+        </button>
+
+      </div>
+
+      <div id="reader" class="hidden"></div>
+
+      <div id="scannerStatus" class="scanner-status hidden">
+        Point camera at worker QR code
+      </div>
+
+      <div id="findMessage" class="message"></div>
+
+    </div>
+
+
+    <!-- WORKER -->
+    <div id="workerCard" class="card hidden">
+
+      <div class="section-title">
+        <h2>Worker Details</h2>
+        <span id="attendanceBadge" class="small-badge">
+          READY
+        </span>
+      </div>
+
+      <div class="worker-box">
+
+        <div id="workerName" class="worker-name">
+          Worker Name
+        </div>
+
+        <div id="workerCodeDisplay" class="worker-code">
+          W000
+        </div>
+
+        <div id="workerStatus" class="status status-out">
+          ΓùÅ Checked Out
+        </div>
+
+        <div class="info-grid">
+
+          <div class="info">
+            <small>Designation</small>
+            <strong id="workerDesignation">ΓÇö</strong>
+          </div>
+
+          <div class="info">
+            <small>Mobile</small>
+            <strong id="workerMobile">ΓÇö</strong>
+          </div>
+
+          <div class="info">
+            <small>Employee Type</small>
+            <strong id="workerType">ΓÇö</strong>
+          </div>
+
+          <div class="info">
+            <small>Status</small>
+            <strong id="workerActiveStatus">ΓÇö</strong>
+          </div>
+
+        </div>
+
+
+        <!-- AUTOMATIC COMPANY -->
+        <div class="assigned">
+
+          <div class="assigned-title">
+            Assigned Company
+          </div>
+
+          <div id="assignedCompanyText" class="assigned-value">
+            Loading...
+          </div>
+
+        </div>
+
+
+        <!-- AUTOMATIC SITE -->
+        <div class="location-box">
+
+          <div class="location-title">
+            Assigned Site / Location
+          </div>
+
+          <div id="assignedSiteText" class="location-value">
+            Loading...
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- COMPANY -->
+      <label for="companySelect">
+        Company
+      </label>
+
+      <select id="companySelect">
+        <option value="">
+          Loading company...
+        </option>
+      </select>
+
+
+      <!-- SITE -->
+      <label for="siteSelect">
+        Site / Location
+      </label>
+
+      <select id="siteSelect">
+        <option value="">
+          Select company first
+        </option>
+      </select>
+
+
+      <!-- GPS -->
+      <div id="gpsStatus" class="gps">
+        ≡ƒôì GPS location not captured yet
+      </div>
+
+
+      <!-- ACTIONS -->
+      <div class="row">
+
+        <button
+          id="checkInBtn"
+          class="btn-green"
+        >
+          ≡ƒƒó Check-In
+        </button>
+
+        <button
+          id="checkOutBtn"
+          class="btn-red"
+        >
+          ≡ƒö┤ Check-Out
+        </button>
+
+      </div>
+
+      <div id="attendanceMessage" class="message"></div>
+
+      <button id="resetBtn" class="btn-secondary">
+        Γå╗ Reset Worker
+      </button>
+
+    </div>
+
+
+    <!-- ADD WORKER -->
+    <div class="card">
+
+      <div class="section-title">
+        <h2>Add Worker</h2>
+        <span class="small-badge">NEW</span>
+      </div>
+
+      <label for="newWorkerCode">
+        Worker Code
+      </label>
+
+      <input
+        id="newWorkerCode"
+        type="text"
+        autocomplete="off"
+        placeholder="Example: W100"
+      >
+
+      <label for="newWorkerName">
+        Worker Name
+      </label>
+
+      <input
+        id="newWorkerName"
+        type="text"
+        autocomplete="off"
+        placeholder="Full name"
+      >
+
+      <label for="newWorkerDesignation">
+        Designation
+      </label>
+
+      <input
+        id="newWorkerDesignation"
+        type="text"
+        autocomplete="off"
+        placeholder="Welder / Helper / Grinder"
+      >
+
+      <label for="newWorkerMobile">
+        Mobile
+      </label>
+
+      <input
+        id="newWorkerMobile"
+        type="tel"
+        autocomplete="off"
+        placeholder="Mobile number"
+      >
+
+      <label for="newWorkerCompany">
+        Company
+      </label>
+
+      <select id="newWorkerCompany">
+        <option value="">
+          No Company Assigned
+        </option>
+      </select>
+
+      <button
+        id="addWorkerBtn"
+        class="btn-blue"
+      >
+        ≡ƒæ╖ Add Worker
+      </button>
+
+      <div id="addWorkerMessage" class="message"></div>
+
+    </div>
+
+
+    <div class="footer">
+      AL SABIHA Group of Companies<br>
+      Secure Mobile Attendance System
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+"use strict";
+
+
+/* =========================================================
+   AL SABIHA MOBILE ATTENDANCE
+   SOUND + AUTOMATIC COMPANY/SITE
+   ========================================================= */
+
+const $ = id => document.getElementById(id);
+
+let MOBILE_PIN = "";
+
+let currentWorker = null;
+
+let currentAttendanceOpen = false;
+
+let isSubmittingAttendance = false;
+
+let scanner = null;
+
+let scannerRunning = false;
+
+let currentLatitude = null;
+
+let currentLongitude = null;
+
+
+/* =========================================================
+   API
+   ========================================================= */
+
+async function api(url, options = {}) {
+
+  const opts = {
+    ...options,
+    headers:{
+      ...(options.headers || {}),
+      "x-mobile-pin":MOBILE_PIN
+    }
+  };
+
+  if(
+    opts.body &&
+    typeof opts.body !== "string"
+  ){
+    opts.headers["Content-Type"] =
+      "application/json";
+
+    opts.body =
+      JSON.stringify(opts.body);
+  }
+
+  const response =
+    await fetch(url,opts);
+
+  let data = {};
+
+  try{
+    data = await response.json();
+  }catch(e){}
+
+  if(!response.ok){
+
+    throw new Error(
+      data?.error ||
+      data?.message ||
+      `Request failed (${response.status})`
+    );
+  }
+
+  return data;
+}
+
+
+/* =========================================================
+   MESSAGES
+   ========================================================= */
+
+function showMessage(element,text,type="info"){
+
+  element.textContent = text;
+
+  element.className =
+    `message show ${type}`;
+}
+
+
+function hideMessage(element){
+
+  element.textContent = "";
+
+  element.className = "message";
+}
+
+
+/* =========================================================
+   PROFESSIONAL SOUND ENGINE
+   ========================================================= */
+
+let audioContext = null;
+
+let masterGain = null;
+
+
+function initAudio(){
+
+  try{
+
+    const AudioCtx =
+      window.AudioContext ||
+      window.webkitAudioContext;
+
+    if(!AudioCtx) return;
+
+    if(!audioContext){
+
+      audioContext =
+        new AudioCtx();
+
+      masterGain =
+        audioContext.createGain();
+
+      /*
+        Loud but controlled.
+        Browser/device media volume still applies.
+      */
+
+      masterGain.gain.value = 0.85;
+
+      masterGain.connect(
+        audioContext.destination
+      );
+    }
+
+    if(
+      audioContext.state === "suspended"
+    ){
+      audioContext.resume();
+    }
+
+  }catch(error){
+
+    console.log(
+      "Audio unavailable",
+      error
+    );
+
+  }
+
+}
+
+
+function tone(
+  frequency,
+  duration,
+  delay = 0,
+  volume = 0.75,
+  type = "sine"
+){
+
+  try{
+
+    initAudio();
+
+    if(!audioContext || !masterGain){
+      return;
+    }
+
+    const start =
+      audioContext.currentTime +
+      delay;
+
+    const oscillator =
+      audioContext.createOscillator();
+
+    const gain =
+      audioContext.createGain();
+
+    oscillator.type = type;
+
+    oscillator.frequency.setValueAtTime(
+      frequency,
+      start
+    );
+
+    gain.gain.setValueAtTime(
+      0.0001,
+      start
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      volume,
+      start + 0.015
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.0001,
+      start + duration
+    );
+
+    oscillator.connect(gain);
+
+    gain.connect(masterGain);
+
+    oscillator.start(start);
+
+    oscillator.stop(
+      start + duration + 0.04
+    );
+
+  }catch(error){
+
+    console.log(
+      "Tone error",
+      error
+    );
+
+  }
+
+}
+
+
+/*
+  Each action has a different sound.
+*/
+
+function soundContinue(){
+
+  tone(520,0.10,0,0.65,"sine");
+  tone(760,0.16,0.11,0.80,"sine");
+
+}
+
+
+function soundFind(){
+
+  tone(700,0.08,0,0.75,"triangle");
+  tone(980,0.13,0.09,0.90,"triangle");
+
+}
+
+
+function soundScan(){
+
+  tone(430,0.08,0,0.75,"square");
+  tone(620,0.10,0.09,0.75,"square");
+  tone(820,0.14,0.19,0.85,"square");
+
+}
+
+
+function soundCheckIn(){
+
+  tone(620,0.10,0,0.85,"sine");
+  tone(780,0.12,0.11,0.90,"sine");
+  tone(1040,0.20,0.24,1.00,"sine");
+
+}
+
+
+function soundCheckOut(){
+
+  tone(1040,0.10,0,0.90,"sine");
+  tone(780,0.12,0.11,0.85,"sine");
+  tone(620,0.20,0.24,1.00,"sine");
+
+}
+
+
+function soundAddWorker(){
+
+  tone(500,0.09,0,0.80,"triangle");
+  tone(700,0.10,0.10,0.85,"triangle");
+  tone(900,0.18,0.22,0.95,"triangle");
+
+}
+
+
+function soundReset(){
+
+  tone(760,0.08,0,0.60,"sine");
+  tone(520,0.14,0.10,0.70,"sine");
+
+}
+
+
+function soundError(){
+
+  tone(280,0.13,0,0.85,"sawtooth");
+  tone(210,0.18,0.15,0.85,"sawtooth");
+
+}
+
+
+/* =========================================================
+   PIN
+   ========================================================= */
+
+$("continueBtn").addEventListener(
+  "click",
+  async () => {
+
+    initAudio();
+
+    const pin =
+      $("pinInput").value.trim();
+
+    if(!pin){
+
+      soundError();
+
+      showMessage(
+        $("pinMessage"),
+        "Please enter mobile PIN.",
+        "error"
+      );
+
+      return;
+    }
+
+    MOBILE_PIN = pin;
+
+    $("continueBtn").disabled = true;
+
+    showMessage(
+      $("pinMessage"),
+      "Connecting...",
+      "info"
+    );
+
+    try{
+
+      await api(
+        "/api/mobile/companies"
+      );
+
+      soundContinue();
+
+      $("pinScreen")
+        .classList.add("hidden");
+
+      $("appScreen")
+        .classList.remove("hidden");
+
+      await loadCompanies();
+
+      hideMessage(
+        $("pinMessage")
+      );
+
+    }catch(error){
+
+      MOBILE_PIN = "";
+
+      soundError();
+
+      showMessage(
+        $("pinMessage"),
+        error.message ||
+        "Invalid PIN or server connection failed.",
+        "error"
+      );
+
+    }finally{
+
+      $("continueBtn").disabled = false;
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   PIN ENTER
+   ========================================================= */
+
+$("pinInput").addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      $("continueBtn").click();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOAD COMPANIES
+   ========================================================= */
+
+async function loadCompanies(){
+
+  try{
+
+    const data =
+      await api(
+        "/api/mobile/companies"
+      );
+
+    const companies =
+      data.companies || [];
+
+    const companySelect =
+      $("companySelect");
+
+    const newWorkerCompany =
+      $("newWorkerCompany");
+
+
+    companySelect.innerHTML =
+      `<option value="">
+        Select Company
+      </option>`;
+
+
+    newWorkerCompany.innerHTML =
+      `<option value="">
+        No Company Assigned
+      </option>`;
+
+
+    companies.forEach(company => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        String(company.id);
+
+      option.textContent =
+        company.name;
+
+      companySelect.appendChild(
+        option
+      );
+
+
+      const option2 =
+        document.createElement("option");
+
+      option2.value =
+        String(company.id);
+
+      option2.textContent =
+        company.name;
+
+      newWorkerCompany.appendChild(
+        option2
+      );
+
+    });
+
+  }catch(error){
+
+    soundError();
+
+    showMessage(
+      $("findMessage"),
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD SITES
+   ========================================================= */
+
+async function loadSites(companyId){
+
+  const siteSelect =
+    $("siteSelect");
+
+
+  siteSelect.innerHTML =
+    `<option value="">
+      Loading Site / Location...
+    </option>`;
+
+
+  if(!companyId){
+
+    siteSelect.innerHTML =
+      `<option value="">
+        Select company first
+      </option>`;
+
+    $("assignedSiteText").textContent =
+      "No site selected";
+
+    return [];
+
+  }
+
+
+  try{
+
+    const data =
+      await api(
+        `/api/mobile/sites?company_id=${encodeURIComponent(companyId)}`
+      );
+
+    const sites =
+      data.sites || [];
+
+
+    siteSelect.innerHTML =
+      `<option value="">
+        Select Site / Location
+      </option>`;
+
+
+    if(!sites.length){
+
+      siteSelect.innerHTML =
+        `<option value="">
+          No active site available
+        </option>`;
+
+      $("assignedSiteText").textContent =
+        "No active site available";
+
+      return [];
+
+    }
+
+
+    sites.forEach(site => {
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        String(site.id);
+
+      option.textContent =
+        site.location
+          ? `${site.name} ΓÇö ${site.location}`
+          : site.name;
+
+      /*
+        Store complete site information
+        for automatic matching.
+      */
+
+      option.dataset.siteName =
+        site.name || "";
+
+      option.dataset.location =
+        site.location || "";
+
+      siteSelect.appendChild(
+        option
+      );
+
+    });
+
+
+    return sites;
+
+  }catch(error){
+
+    siteSelect.innerHTML =
+      `<option value="">
+        Failed to load sites
+      </option>`;
+
+    $("assignedSiteText").textContent =
+      "Unable to load site";
+
+    soundError();
+
+    showMessage(
+      $("attendanceMessage"),
+      error.message,
+      "error"
+    );
+
+    return [];
+
+  }
+
+}
+
+
+/* =========================================================
+   COMPANY CHANGE
+   ========================================================= */
+
+$("companySelect").addEventListener(
+  "change",
+  async () => {
+
+    initAudio();
+
+    const companyId =
+      $("companySelect").value;
+
+    const selected =
+      $("companySelect")
+        .selectedOptions[0];
+
+
+    if(selected && selected.value){
+
+      $("assignedCompanyText")
+        .textContent =
+        selected.textContent;
+
+    }
+
+
+    await loadSites(companyId);
+
+  }
+);
+
+
+/* =========================================================
+   FIND BUTTON
+   ========================================================= */
+
+$("findBtn").addEventListener(
+  "click",
+  () => {
+
+    initAudio();
+
+    soundFind();
+
+    findWorker();
+
+  }
+);
+
+
+/* =========================================================
+   WORKER CODE ENTER
+   ========================================================= */
+
+$("workerCode").addEventListener(
+  "keydown",
+  event => {
+
+    if(event.key === "Enter"){
+
+      initAudio();
+
+      soundFind();
+
+      findWorker();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   FIND WORKER
+   ========================================================= */
+
+async function findWorker(
+  codeOverride = null
+){
+
+  const code =
+    String(
+      codeOverride ??
+      $("workerCode").value
+    ).trim();
+
+
+  if(!code){
+
+    soundError();
+
+    showMessage(
+      $("findMessage"),
+      "Please enter Worker Code.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  $("findBtn").disabled = true;
+
+
+  showMessage(
+    $("findMessage"),
+    "Finding worker...",
+    "info"
+  );
+
+
+  try{
+
+    const data =
+      await api(
+        `/api/mobile/worker?worker_code=${encodeURIComponent(code)}`
+      );
+
+
+    await displayWorker(data);
+
+
+    showMessage(
+      $("findMessage"),
+      "Γ£ô Worker found successfully.",
+      "success"
+    );
+
+
+  }catch(error){
+
+    currentWorker = null;
+
+    $("workerCard")
+      .classList.add("hidden");
+
+    soundError();
+
+    showMessage(
+      $("findMessage"),
+      error.message ||
+      "Worker not found.",
+      "error"
+    );
+
+  }finally{
+
+    $("findBtn").disabled = false;
+
+  }
+
+}
+
+
+/* =========================================================
+   AUTOMATIC SITE MATCH
+   ========================================================= */
+
+function selectAutomaticSite(
+  sites,
+  data
+){
+
+  const siteSelect =
+    $("siteSelect");
+
+
+  if(!sites || !sites.length){
+
+    $("assignedSiteText").textContent =
+      "No site assigned";
+
+    return;
+
+  }
+
+
+  const assignedSites =
+    data.assigned_company_sites ||
+    [];
+
+
+  let targetSite = null;
+
+
+  /*
+    FIRST:
+    Try exact assigned site ID.
+  */
+
+  if(assignedSites.length){
+
+    targetSite =
+      assignedSites.find(
+        assigned => {
+
+          return sites.some(
+            site =>
+              String(site.id) ===
+              String(assigned.id)
+          );
+
+        }
+      );
+
+  }
+
+
+  /*
+    SECOND:
+    If only one site exists,
+    automatically select it.
+  */
+
+  if(!targetSite && sites.length === 1){
+
+    targetSite = sites[0];
+
+  }
+
+
+  /*
+    THIRD:
+    Try matching site name.
+  */
+
+  if(!targetSite && assignedSites.length){
+
+    targetSite =
+      sites.find(site => {
+
+        return assignedSites.some(
+          assigned => {
+
+            const a =
+              String(
+                assigned.name || ""
+              ).trim().toLowerCase();
+
+            const b =
+              String(
+                site.name || ""
+              ).trim().toLowerCase();
+
+            return a &&
+                   b &&
+                   a === b;
+
+          }
+        );
+
+      });
+
+  }
+
+
+  /*
+    SELECT AUTOMATIC SITE
+  */
+
+  if(targetSite){
+
+    siteSelect.value =
+      String(targetSite.id);
+
+
+    const location =
+      targetSite.location || "";
+
+
+    $("assignedSiteText")
+      .textContent =
+      location
+        ? `${targetSite.name} ΓÇö ${location}`
+        : targetSite.name;
+
+
+  }else{
+
+    $("assignedSiteText")
+      .textContent =
+      sites.length +
+      " site(s) available ΓÇö select Site / Location";
+
+  }
+
+}
+
+
+/* =========================================================
+   DISPLAY WORKER
+   ========================================================= */
+
+async function displayWorker(data){
+
+  const worker =
+    data.worker;
+
+
+  currentWorker =
+    worker;
+
+
+  currentAttendanceOpen =
+    !!data.currently_checked_in ||
+    !!data.open_attendance;
+
+
+  $("workerCard")
+    .classList.remove("hidden");
+
+
+  $("workerName").textContent =
+    worker.name || "ΓÇö";
+
+
+  $("workerCodeDisplay").textContent =
+    worker.worker_code || "ΓÇö";
+
+
+  $("workerDesignation").textContent =
+    worker.designation || "ΓÇö";
+
+
+  $("workerMobile").textContent =
+    worker.mobile || "ΓÇö";
+
+
+  $("workerType").textContent =
+    worker.employee_type || "ΓÇö";
+
+
+  $("workerActiveStatus").textContent =
+    worker.status || "ΓÇö";
+
+
+  updateAttendanceButtons();
+
+
+  /* =======================================================
+     AUTOMATIC COMPANY
+     ======================================================= */
+
+  const companyId =
+    worker.company_id ||
+    data.assigned_company?.id ||
+    null;
+
+
+  if(companyId){
+
+    $("companySelect").value =
+      String(companyId);
+
+
+    const selected =
+      $("companySelect")
+        .selectedOptions[0];
+
+
+    if(selected && selected.value){
+
+      $("assignedCompanyText")
+        .textContent =
+        selected.textContent;
+
+    }else if(data.assigned_company){
+
+      $("assignedCompanyText")
+        .textContent =
+        data.assigned_company.name ||
+        "Assigned Company";
+
+    }
+
+
+    /* =====================================================
+       AUTOMATIC SITE / LOCATION
+       ===================================================== */
+
+    const sites =
+      await loadSites(companyId);
+
+
+    selectAutomaticSite(
+      sites,
+      data
+    );
+
+
+  }else{
+
+    $("companySelect").value = "";
+
+    $("assignedCompanyText")
+      .textContent =
+      "No company assigned";
+
+    $("siteSelect").innerHTML =
+      `<option value="">
+        Select Company first
+      </option>`;
+
+    $("assignedSiteText")
+      .textContent =
+      "No company assigned";
+
+  }
+
+
+  /* =======================================================
+     GPS
+     ======================================================= */
+
+  getGPS();
+
+}
+
+
+/* =========================================================
+   SITE CHANGE
+   ========================================================= */
+
+$("siteSelect").addEventListener(
+  "change",
+  () => {
+
+    initAudio();
+
+    const option =
+      $("siteSelect")
+        .selectedOptions[0];
+
+
+    if(
+      !option ||
+      !option.value
+    ){
+
+      $("assignedSiteText")
+        .textContent =
+        "No site selected";
+
+      return;
+
+    }
+
+
+    const location =
+      option.dataset.location || "";
+
+
+    $("assignedSiteText")
+      .textContent =
+      location
+        ? `${option.dataset.siteName} ΓÇö ${location}`
+        : option.dataset.siteName;
+
+  }
+);
+
+
+/* =========================================================
+   ATTENDANCE BUTTONS
+   ========================================================= */
+
+function updateAttendanceButtons(){
+
+  const checkIn =
+    $("checkInBtn");
+
+  const checkOut =
+    $("checkOutBtn");
+
+  const status =
+    $("workerStatus");
+
+  const badge =
+    $("attendanceBadge");
+
+
+  if(currentAttendanceOpen){
+
+    checkIn.disabled = true;
+
+    checkOut.disabled = false;
+
+    status.className =
+      "status status-in";
+
+    status.textContent =
+      "ΓùÅ Currently Checked In";
+
+    badge.textContent =
+      "CHECKED IN";
+
+  }else{
+
+    checkIn.disabled = false;
+
+    checkOut.disabled = true;
+
+    status.className =
+      "status status-out";
+
+    status.textContent =
+      "ΓùÅ Checked Out";
+
+    badge.textContent =
+      "READY";
+
+  }
+
+}
+
+
+/* =========================================================
+   GPS
+   ========================================================= */
+
+function getGPS(){
+
+  const gps =
+    $("gpsStatus");
+
+
+  if(!navigator.geolocation){
+
+    gps.textContent =
+      "≡ƒôì GPS is not supported.";
+
+    return;
+
+  }
+
+
+  gps.textContent =
+    "≡ƒôì Getting GPS location...";
+
+
+  navigator.geolocation.getCurrentPosition(
+
+    position => {
+
+      currentLatitude =
+        position.coords.latitude;
+
+      currentLongitude =
+        position.coords.longitude;
+
+
+      gps.textContent =
+        `≡ƒôì GPS captured: ${currentLatitude.toFixed(6)}, ${currentLongitude.toFixed(6)}`;
+
+    },
+
+    error => {
+
+      currentLatitude = null;
+
+      currentLongitude = null;
+
+      gps.textContent =
+        "≡ƒôì GPS permission/location unavailable.";
+
+    },
+
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:30000
+    }
+
+  );
+
+}
+
+
+/* =========================================================
+   CHECK IN
+   ========================================================= */
+
+$("checkInBtn").addEventListener(
+  "click",
+  async () => {
+
+    initAudio();
+
+    if(isSubmittingAttendance){
+      return;
+    }
+
+
+    if(!currentWorker){
+
+      soundError();
+
+      showMessage(
+        $("attendanceMessage"),
+        "Please find a worker first.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const companyId =
+      $("companySelect").value;
+
+    const siteId =
+      $("siteSelect").value;
+
+
+    if(!companyId){
+
+      soundError();
+
+      showMessage(
+        $("attendanceMessage"),
+        "Company is required.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!siteId){
+
+      soundError();
+
+      showMessage(
+        $("attendanceMessage"),
+        "Site / Location is required.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    isSubmittingAttendance = true;
+
+
+    $("checkInBtn").disabled = true;
+
+    $("checkOutBtn").disabled = true;
+
+
+    showMessage(
+      $("attendanceMessage"),
+      "Checking in... Please wait.",
+      "info"
+    );
+
+
+    try{
+
+      const data =
+        await api(
+          "/api/mobile/attendance/checkin",
+          {
+            method:"POST",
+
+            body:{
+              worker_code:
+                currentWorker.worker_code,
+
+              company_id:
+                Number(companyId),
+
+              site_id:
+                Number(siteId),
+
+              latitude:
+                currentLatitude,
+
+              longitude:
+                currentLongitude
+            }
+          }
+        );
+
+
+      currentAttendanceOpen =
+        true;
+
+
+      updateAttendanceButtons();
+
+
+      soundCheckIn();
+
+
+      showMessage(
+        $("attendanceMessage"),
+        `Γ£ô Check-In successful at ${data.check_in || "current time"}.`,
+        "success"
+      );
+
+
+    }catch(error){
+
+      /*
+        Do NOT blindly mark checked-out
+        if backend rejected duplicate check-in.
+      */
+
+      currentAttendanceOpen = true;
+
+      updateAttendanceButtons();
+
+      soundError();
+
+
+      showMessage(
+        $("attendanceMessage"),
+        error.message ||
+        "Check-In failed.",
+        "error"
+      );
+
+
+    }finally{
+
+      isSubmittingAttendance = false;
+
+      updateAttendanceButtons();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   CHECK OUT
+   ========================================================= */
+
+$("checkOutBtn").addEventListener(
+  "click",
+  async () => {
+
+    initAudio();
+
+    if(isSubmittingAttendance){
+      return;
+    }
+
+
+    if(!currentWorker){
+
+      soundError();
+
+      showMessage(
+        $("attendanceMessage"),
+        "Please find a worker first.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!currentAttendanceOpen){
+
+      soundError();
+
+      showMessage(
+        $("attendanceMessage"),
+        "Worker is not currently checked in.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    isSubmittingAttendance = true;
+
+
+    $("checkInBtn").disabled = true;
+
+    $("checkOutBtn").disabled = true;
+
+
+    showMessage(
+      $("attendanceMessage"),
+      "Checking out... Please wait.",
+      "info"
+    );
+
+
+    try{
+
+      const data =
+        await api(
+          "/api/mobile/attendance/checkout",
+          {
+            method:"POST",
+
+            body:{
+              worker_code:
+                currentWorker.worker_code
+            }
+          }
+        );
+
+
+      currentAttendanceOpen =
+        false;
+
+
+      updateAttendanceButtons();
+
+
+      soundCheckOut();
+
+
+      showMessage(
+        $("attendanceMessage"),
+        `Γ£ô Check-Out successful at ${data.check_out || "current time"}.`,
+        "success"
+      );
+
+
+    }catch(error){
+
+      currentAttendanceOpen =
+        true;
+
+      updateAttendanceButtons();
+
+      soundError();
+
+
+      showMessage(
+        $("attendanceMessage"),
+        error.message ||
+        "Check-Out failed.",
+        "error"
+      );
+
+
+    }finally{
+
+      isSubmittingAttendance = false;
+
+      updateAttendanceButtons();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+$("resetBtn").addEventListener(
+  "click",
+  () => {
+
+    initAudio();
+
+    soundReset();
+
+
+    currentWorker = null;
+
+    currentAttendanceOpen = false;
+
+    isSubmittingAttendance = false;
+
+    currentLatitude = null;
+
+    currentLongitude = null;
+
+
+    $("workerCode").value = "";
+
+    $("workerCard")
+      .classList.add("hidden");
+
+
+    $("companySelect").value = "";
+
+
+    $("siteSelect").innerHTML =
+      `<option value="">
+        Select company first
+      </option>`;
+
+
+    $("assignedCompanyText")
+      .textContent =
+      "No worker selected";
+
+
+    $("assignedSiteText")
+      .textContent =
+      "No worker selected";
+
+
+    $("gpsStatus").textContent =
+      "≡ƒôì GPS location not captured yet";
+
+
+    hideMessage(
+      $("findMessage")
+    );
+
+    hideMessage(
+      $("attendanceMessage")
+    );
+
+
+    updateAttendanceButtons();
+
+  }
+);
+
+
+/* =========================================================
+   QR SCANNER
+   ========================================================= */
+
+$("scanBtn").addEventListener(
+  "click",
+  async () => {
+
+    initAudio();
+
+
+    if(scannerRunning){
+
+      soundScan();
+
+      await stopScanner();
+
+      return;
+
+    }
+
+
+    soundScan();
+
+    await startScanner();
+
+  }
+);
+
+
+async function startScanner(){
+
+  if(
+    typeof Html5Qrcode ===
+    "undefined"
+  ){
+
+    soundError();
+
+    showMessage(
+      $("findMessage"),
+      "QR scanner is still loading. Please try again.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  $("reader")
+    .classList.remove("hidden");
+
+
+  $("scannerStatus")
+    .classList.remove("hidden");
+
+
+  $("scanBtn").textContent =
+    "Γ£ò Stop Scanner";
+
+
+  scanner =
+    new Html5Qrcode("reader");
+
+
+  scannerRunning = true;
+
+
+  try{
+
+    await scanner.start(
+
+      {
+        facingMode:"environment"
+      },
+
+      {
+        fps:10,
+
+        qrbox:{
+          width:250,
+          height:250
+        }
+      },
+
+      async decodedText => {
+
+        let code =
+          String(
+            decodedText || ""
+          ).trim();
+
+
+        try{
+
+          const url =
+            new URL(code);
+
+          const urlCode =
+            url.searchParams.get(
+              "worker_code"
+            );
+
+          if(urlCode){
+            code = urlCode;
+          }
+
+        }catch(e){
+          /* Plain worker code */
+        }
+
+
+        $("workerCode").value =
+          code;
+
+
+        soundScan();
+
+
+        await stopScanner();
+
+
+        await findWorker(code);
+
+      },
+
+      errorMessage => {
+        /* Camera continues scanning */
+      }
+
+    );
+
+  }catch(error){
+
+    scannerRunning = false;
+
+    $("reader")
+      .classList.add("hidden");
+
+    $("scannerStatus")
+      .classList.add("hidden");
+
+    $("scanBtn").textContent =
+      "≡ƒô╖ Scan QR";
+
+
+    soundError();
+
+
+    showMessage(
+      $("findMessage"),
+      "Camera could not start. Please allow camera permission.",
+      "error"
+    );
+
+  }
+
+}
+
+
+async function stopScanner(){
+
+  try{
+
+    if(
+      scanner &&
+      scannerRunning
+    ){
+
+      await scanner.stop();
+
+      try{
+        await scanner.clear();
+      }catch(e){}
+
+    }
+
+  }catch(error){
+
+    console.log(
+      "Scanner stop error",
+      error
+    );
+
+  }
+
+
+  scanner = null;
+
+  scannerRunning = false;
+
+
+  $("reader")
+    .classList.add("hidden");
+
+  $("scannerStatus")
+    .classList.add("hidden");
+
+  $("scanBtn").textContent =
+    "≡ƒô╖ Scan QR";
+
+}
+
+
+/* =========================================================
+   ADD WORKER
+   ========================================================= */
+
+$("addWorkerBtn").addEventListener(
+  "click",
+  async () => {
+
+    initAudio();
+
+
+    const workerCode =
+      $("newWorkerCode")
+        .value
+        .trim();
+
+    const name =
+      $("newWorkerName")
+        .value
+        .trim();
+
+    const designation =
+      $("newWorkerDesignation")
+        .value
+        .trim();
+
+    const mobile =
+      $("newWorkerMobile")
+        .value
+        .trim();
+
+    const companyId =
+      $("newWorkerCompany")
+        .value;
+
+
+    if(!workerCode){
+
+      soundError();
+
+      showMessage(
+        $("addWorkerMessage"),
+        "Worker Code is required.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    if(!name){
+
+      soundError();
+
+      showMessage(
+        $("addWorkerMessage"),
+        "Worker Name is required.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    $("addWorkerBtn").disabled = true;
+
+
+    showMessage(
+      $("addWorkerMessage"),
+      "Adding worker...",
+      "info"
+    );
+
+
+    try{
+
+      await api(
+        "/api/mobile/workers",
+        {
+          method:"POST",
+
+          body:{
+            worker_code:
+              workerCode,
+
+            name:
+              name,
+
+            designation:
+              designation,
+
+            mobile:
+              mobile,
+
+            company_id:
+              companyId
+                ? Number(companyId)
+                : null
+          }
+        }
+      );
+
+
+      soundAddWorker();
+
+
+      showMessage(
+        $("addWorkerMessage"),
+        "Γ£ô Worker added successfully.",
+        "success"
+      );
+
+
+      $("newWorkerCode").value = "";
+
+      $("newWorkerName").value = "";
+
+      $("newWorkerDesignation").value = "";
+
+      $("newWorkerMobile").value = "";
+
+      $("newWorkerCompany").value = "";
+
+
+    }catch(error){
+
+      soundError();
+
+      showMessage(
+        $("addWorkerMessage"),
+        error.message ||
+        "Could not add worker.",
+        "error"
+      );
+
+    }finally{
+
+      $("addWorkerBtn").disabled = false;
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   INITIAL AUDIO
+   ========================================================= */
+
+document.addEventListener(
+  "touchstart",
+  () => {
+    initAudio();
+  },
+  {
+    once:true,
+    passive:true
+  }
+);
+
+
+document.addEventListener(
+  "click",
+  () => {
+    initAudio();
+  },
+  {
+    once:true
+  }
+);
+
+</script>
+
+</body>
+</html>

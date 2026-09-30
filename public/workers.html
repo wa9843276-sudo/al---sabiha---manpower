@@ -1,10 +1,21 @@
 <!doctype html>
 <html>
 <head>
+
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
 <title>Workers</title>
-<link rel="stylesheet" href="/style.css">
+
+<link
+  rel="stylesheet"
+  href="/style.css"
+>
+
 </head>
 
 <body>
@@ -18,106 +29,233 @@ shell("workers","Workers",`
 <div class="panel">
 
   <div class="toolbar">
-    <h2>Add / Edit Worker</h2>
+
+    <h2>
+      Add / Edit Worker
+    </h2>
+
   </div>
+
 
   <form id="f">
 
-    <input type="hidden" id="id">
+    <input
+      type="hidden"
+      id="id"
+    >
+
 
     <div class="form-grid">
 
-      <div class="field">
-        <label>Worker Code</label>
-        <input id="code" required>
-      </div>
 
       <div class="field">
-        <label>Worker Name</label>
-        <input id="name" required>
+
+        <label>
+          Worker Code
+        </label>
+
+        <input
+          id="code"
+          required
+        >
+
       </div>
 
-      <div class="field">
-        <label>Designation</label>
-        <input id="designation">
-      </div>
 
       <div class="field">
-        <label>Employee Type</label>
+
+        <label>
+          Worker Name
+        </label>
+
+        <input
+          id="name"
+          required
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Worker PIN
+        </label>
+
+        <input
+          id="worker_pin"
+          type="password"
+          inputmode="numeric"
+          placeholder="Enter Worker PIN"
+          autocomplete="new-password"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Designation
+        </label>
+
+        <input
+          id="designation"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Employee Type
+        </label>
 
         <select id="type">
-          <option value="Company">Company</option>
-          <option value="Supplier">Supplier</option>
+
+          <option value="Company">
+            Company
+          </option>
+
+          <option value="Supplier">
+            Supplier
+          </option>
+
         </select>
 
       </div>
 
+
       <div class="field">
-        <label>Assigned Company</label>
+
+        <label>
+          Assigned Company
+        </label>
 
         <select id="company_id">
-          <option value="">Select Company</option>
+
+          <option value="">
+            Select Company
+          </option>
+
         </select>
 
       </div>
 
-      <div class="field">
-        <label>Vendor / Supplier</label>
-        <input id="vendor">
-      </div>
 
       <div class="field">
-        <label>Mobile</label>
-        <input id="mobile">
+
+        <label>
+          Vendor / Supplier
+        </label>
+
+        <input
+          id="vendor"
+        >
+
       </div>
 
-      <div class="field">
-        <label>Salary</label>
-        <input id="salary" type="number">
-      </div>
 
       <div class="field">
-        <label>Joining Date</label>
-        <input id="joining" type="date">
+
+        <label>
+          Mobile
+        </label>
+
+        <input
+          id="mobile"
+        >
+
       </div>
 
+
       <div class="field">
-        <label>Status</label>
+
+        <label>
+          Salary
+        </label>
+
+        <input
+          id="salary"
+          type="number"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Joining Date
+        </label>
+
+        <input
+          id="joining"
+          type="date"
+        >
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Status
+        </label>
 
         <select id="status">
-          <option value="Active">Active</option>
-          <option value="Inactive">Inactive</option>
+
+          <option value="Active">
+            Active
+          </option>
+
+          <option value="Inactive">
+            Inactive
+          </option>
+
         </select>
 
       </div>
+
 
     </div>
 
+
     <br>
+
 
     <button
       type="submit"
-      class="btn gold">
+      class="btn gold"
+    >
       Save Worker
     </button>
+
 
     <button
       type="button"
       class="btn ghost"
-      onclick="clearForm()">
+      onclick="clearForm()"
+    >
       Clear
     </button>
+
 
   </form>
 
 </div>
 
 
+
 <div class="panel">
 
   <div class="toolbar">
 
-    <h2>Worker Database</h2>
+    <h2>
+      Worker Database
+    </h2>
+
 
     <input
       id="search"
@@ -136,19 +274,46 @@ shell("workers","Workers",`
 
         <tr>
 
-          <th>Code</th>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Assigned Company</th>
-          <th>Vendor</th>
-          <th>Designation</th>
-          <th>Mobile</th>
-          <th>Status</th>
-          <th>Actions</th>
+          <th>
+            Code
+          </th>
+
+          <th>
+            Name
+          </th>
+
+          <th>
+            Type
+          </th>
+
+          <th>
+            Assigned Company
+          </th>
+
+          <th>
+            Vendor
+          </th>
+
+          <th>
+            Designation
+          </th>
+
+          <th>
+            Mobile
+          </th>
+
+          <th>
+            Status
+          </th>
+
+          <th>
+            Actions
+          </th>
 
         </tr>
 
       </thead>
+
 
       <tbody id="rows"></tbody>
 
@@ -161,7 +326,9 @@ shell("workers","Workers",`
 `);
 
 
+
 let data = [];
+
 
 
 /* =========================================================
@@ -175,32 +342,49 @@ async function loadCompanies(){
     const companiesData =
       await api("/api/companies");
 
+
     const companies =
       Array.isArray(companiesData)
         ? companiesData
         : [];
 
+
     const select =
       $("#company_id");
 
+
     select.innerHTML =
-      `<option value="">Select Company</option>`;
+      `<option value="">
+        Select Company
+      </option>`;
+
 
     companies
-      .filter(c => c.status === "Active")
+      .filter(
+        c => c.status === "Active"
+      )
       .forEach(c => {
 
         const option =
-          document.createElement("option");
+          document.createElement(
+            "option"
+          );
 
-        option.value = c.id;
+
+        option.value =
+          c.id;
+
 
         option.textContent =
           c.name;
 
-        select.appendChild(option);
+
+        select.appendChild(
+          option
+        );
 
       });
+
 
   }catch(error){
 
@@ -212,6 +396,7 @@ async function loadCompanies(){
   }
 
 }
+
 
 
 /* =========================================================
@@ -230,6 +415,7 @@ async function load(){
         )
       );
 
+
     const rows =
       $("#rows");
 
@@ -244,11 +430,15 @@ async function load(){
             ${esc(w.worker_code)}
           </td>
 
+
           <td>
+
             <b>
               ${esc(w.name)}
             </b>
+
           </td>
+
 
           <td>
             ${esc(
@@ -256,11 +446,13 @@ async function load(){
             )}
           </td>
 
+
           <td>
             ${esc(
               w.company_name || "—"
             )}
           </td>
+
 
           <td>
             ${esc(
@@ -268,11 +460,13 @@ async function load(){
             )}
           </td>
 
+
           <td>
             ${esc(
               w.designation || "—"
             )}
           </td>
+
 
           <td>
             ${esc(
@@ -280,33 +474,42 @@ async function load(){
             )}
           </td>
 
+
           <td>
 
             <span class="badge">
+
               ${esc(
                 w.status || "—"
               )}
+
             </span>
 
           </td>
 
+
           <td>
 
             <button
               class="btn ghost"
-              onclick="edit(${w.id})">
+              onclick="edit(${w.id})"
+            >
               Edit
             </button>
 
-            <button
-              class="btn ghost"
-              onclick="qr(${w.id})">
-              QR
-            </button>
 
             <button
               class="btn ghost"
-              onclick="archiveWorker(${w.id})">
+              onclick="qr(${w.id})"
+            >
+              QR
+            </button>
+
+
+            <button
+              class="btn ghost"
+              onclick="archiveWorker(${w.id})"
+            >
               📦 Archive
             </button>
 
@@ -319,10 +522,15 @@ async function load(){
       ||
 
       `<tr>
+
         <td colspan="9">
+
           No workers found.
+
         </td>
+
       </tr>`;
+
 
   }catch(error){
 
@@ -331,16 +539,23 @@ async function load(){
       error
     );
 
+
     $("#rows").innerHTML =
+
       `<tr>
+
         <td colspan="9">
+
           Unable to load workers.
+
         </td>
+
       </tr>`;
 
   }
 
 }
+
 
 
 /* =========================================================
@@ -351,8 +566,11 @@ window.edit = id => {
 
   const w =
     data.find(
-      x => Number(x.id) === Number(id)
+      x =>
+        Number(x.id) ===
+        Number(id)
     );
+
 
   if(!w){
 
@@ -368,32 +586,52 @@ window.edit = id => {
   $("#id").value =
     w.id;
 
+
   $("#code").value =
     w.worker_code || "";
+
 
   $("#name").value =
     w.name || "";
 
+
+  /*
+    PIN intentionally blank.
+    Admin can enter a new PIN when editing.
+  */
+
+  $("#worker_pin").value =
+    "";
+
+
   $("#designation").value =
     w.designation || "";
 
+
   $("#type").value =
-    w.employee_type || "Company";
+    w.employee_type ||
+    "Company";
+
 
   $("#company_id").value =
     w.company_id || "";
 
+
   $("#vendor").value =
     w.vendor || "";
+
 
   $("#mobile").value =
     w.mobile || "";
 
+
   $("#salary").value =
     w.salary || "";
 
+
   $("#joining").value =
     w.joining_date || "";
+
 
   $("#status").value =
     w.status || "Active";
@@ -407,6 +645,7 @@ window.edit = id => {
 };
 
 
+
 /* =========================================================
    CLEAR FORM
    ========================================================= */
@@ -415,11 +654,20 @@ window.clearForm = function(){
 
   $("#f").reset();
 
-  $("#id").value = "";
 
-  $("#company_id").value = "";
+  $("#id").value =
+    "";
+
+
+  $("#company_id").value =
+    "";
+
+
+  $("#worker_pin").value =
+    "";
 
 };
+
 
 
 /* =========================================================
@@ -431,8 +679,11 @@ window.archiveWorker = async id => {
 
   const worker =
     data.find(
-      x => Number(x.id) === Number(id)
+      x =>
+        Number(x.id) ===
+        Number(id)
     );
+
 
   const workerName =
     worker
@@ -476,9 +727,11 @@ window.archiveWorker = async id => {
   try{
 
     await api(
-      "/api/workers/" + id,
+      "/api/workers/" +
+      id,
       {
-        method: "DELETE"
+        method:
+          "DELETE"
       }
     );
 
@@ -487,8 +740,11 @@ window.archiveWorker = async id => {
 
 
     alert(
+
       "Worker archived successfully.\n\n" +
+
       "Worker record and attendance history are محفوظ."
+
     );
 
 
@@ -507,6 +763,7 @@ window.archiveWorker = async id => {
 };
 
 
+
 /* =========================================================
    WORKER QR
    ========================================================= */
@@ -521,6 +778,7 @@ window.qr = async id => {
         id +
         "/qrcode"
       );
+
 
     const w =
       d.worker;
@@ -546,7 +804,9 @@ window.qr = async id => {
 
       </head>
 
+
       <body
+
         style="
           font-family:Arial;
           text-align:center;
@@ -558,25 +818,33 @@ window.qr = async id => {
           AL SABIHA
         </h2>
 
+
         <h3>
           ${esc(w.name)}
         </h3>
+
 
         <p>
           ${esc(w.worker_code)}
         </p>
 
+
         <img
+
           src="${d.qr}"
+
           style="
             width:350px;
             max-width:90%;
           "
+
         >
+
 
         <p>
           Manpower Attendance
         </p>
+
 
       </body>
 
@@ -584,18 +852,24 @@ window.qr = async id => {
 
     `);
 
+
     x.document.close();
+
 
   }catch(error){
 
     showError(
+
       error.message ||
+
       "Unable to generate QR."
+
     );
 
   }
 
 };
+
 
 
 /* =========================================================
@@ -612,41 +886,76 @@ $("#f").onsubmit =
       $("#id").value;
 
 
+    const workerPin =
+      $("#worker_pin")
+        .value
+        .trim();
+
+
     const b = {
 
       worker_code:
-        $("#code").value.trim(),
+        $("#code")
+          .value
+          .trim(),
+
 
       name:
-        $("#name").value.trim(),
+        $("#name")
+          .value
+          .trim(),
+
+
+      worker_pin:
+        workerPin,
+
 
       designation:
-        $("#designation").value.trim(),
+        $("#designation")
+          .value
+          .trim(),
+
 
       employee_type:
-        $("#type").value,
+        $("#type")
+          .value,
+
 
       company_id:
-        $("#company_id").value
+        $("#company_id")
+          .value
           ? Number(
-              $("#company_id").value
+              $("#company_id")
+                .value
             )
           : null,
 
+
       vendor:
-        $("#vendor").value.trim(),
+        $("#vendor")
+          .value
+          .trim(),
+
 
       mobile:
-        $("#mobile").value.trim(),
+        $("#mobile")
+          .value
+          .trim(),
+
 
       salary:
-        $("#salary").value,
+        $("#salary")
+          .value,
+
 
       joining_date:
-        $("#joining").value,
+        $("#joining")
+          .value,
+
 
       status:
-        $("#status").value
+        $("#status")
+          .value
 
     };
 
@@ -656,7 +965,9 @@ $("#f").onsubmit =
       await api(
 
         id
-          ? "/api/workers/" + id
+          ? "/api/workers/" +
+            id
+
           : "/api/workers",
 
         {
@@ -665,6 +976,7 @@ $("#f").onsubmit =
             id
               ? "PUT"
               : "POST",
+
 
           body:
             JSON.stringify(b)
@@ -676,6 +988,7 @@ $("#f").onsubmit =
 
       clearForm();
 
+
       await load();
 
 
@@ -683,6 +996,7 @@ $("#f").onsubmit =
 
         id
           ? "Worker updated successfully."
+
           : "Worker added successfully."
 
       );
@@ -703,12 +1017,14 @@ $("#f").onsubmit =
   };
 
 
+
 /* =========================================================
    SEARCH
    ========================================================= */
 
 $("#search").oninput =
   load;
+
 
 
 /* =========================================================
