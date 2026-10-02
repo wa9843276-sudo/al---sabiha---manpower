@@ -718,10 +718,11 @@ app.post(
             ?,
             'Active',
             ?,
+            ?,
             ?
           )
         `).run(
-          clean(req.body.worker_pin),
+
           clean(req.body.worker_code),
 
           clean(req.body.name),
@@ -743,7 +744,10 @@ app.post(
             req.body.joining_date
           ),
 
-          companyId
+          companyId,
+
+          clean(req.body.worker_pin)
+
         );
 
       res.json({
@@ -752,6 +756,11 @@ app.post(
       });
 
     } catch (e) {
+
+      console.error(
+        "Add worker error:",
+        e
+      );
 
       res.status(400).json({
 
@@ -766,7 +775,6 @@ app.post(
 
   }
 );
-
 
 /* =========================================================
    UPDATE WORKER
@@ -2792,26 +2800,33 @@ const workerAuth = (req, res, next) => {
 };
 
 
+// =========================================================
 // WORKER APP LOGIN
+// NAME / WORKER CODE ONLY — NO PIN / PASSWORD
+// =========================================================
+
 app.post("/api/worker-app/login", (req, res) => {
   try {
-    const identifier = clean(req.body.identifier);
-    const pin = clean(req.body.pin);
 
-    if (!identifier || !pin) {
+    const identifier = clean(req.body.identifier);
+
+    if (!identifier) {
       return res.status(400).json({
         success: false,
-        message: "Worker Name/Code and PIN are required."
+        message: "Worker Name or Worker Code is required."
       });
     }
 
-    // First try Worker Code
+
+    // -----------------------------------------------------
+    // 1. FIRST TRY WORKER CODE
+    // -----------------------------------------------------
+
     let workers = db.prepare(`
       SELECT
         w.id,
         w.worker_code,
         w.name,
-        w.worker_pin,
         w.employee_type,
         w.vendor,
         w.mobile,
@@ -2822,19 +2837,24 @@ app.post("/api/worker-app/login", (req, res) => {
         w.company_id,
         c.name AS company_name
       FROM workers w
-      LEFT JOIN companies c ON c.id = w.company_id
+      LEFT JOIN companies c
+        ON c.id = w.company_id
       WHERE w.worker_code = ?
         AND LOWER(COALESCE(w.status, 'Active')) = 'active'
     `).all(identifier);
 
-    // If Worker Code not found, try exact Worker Name
+
+    // -----------------------------------------------------
+    // 2. IF CODE NOT FOUND → TRY WORKER NAME
+    // -----------------------------------------------------
+
     if (workers.length === 0) {
+
       workers = db.prepare(`
         SELECT
           w.id,
           w.worker_code,
           w.name,
-          w.worker_pin,
           w.employee_type,
           w.vendor,
           w.mobile,
@@ -2845,81 +2865,137 @@ app.post("/api/worker-app/login", (req, res) => {
           w.company_id,
           c.name AS company_name
         FROM workers w
-        LEFT JOIN companies c ON c.id = w.company_id
-        WHERE LOWER(TRIM(w.name)) = LOWER(TRIM(?))
+        LEFT JOIN companies c
+          ON c.id = w.company_id
+        WHERE LOWER(TRIM(w.name)) =
+              LOWER(TRIM(?))
           AND LOWER(COALESCE(w.status, 'Active')) = 'active'
       `).all(identifier);
+
     }
 
+
+    // -----------------------------------------------------
+    // 3. WORKER NOT FOUND
+    // -----------------------------------------------------
+
     if (workers.length === 0) {
+
       return res.status(401).json({
         success: false,
         message: "Worker not found or inactive."
       });
+
     }
 
-    // Same name can belong to more than one worker.
-    // In that case Worker Code must be used.
+
+    // -----------------------------------------------------
+    // 4. SAME NAME CHECK
+    // -----------------------------------------------------
+
     if (workers.length > 1) {
+
       return res.status(409).json({
         success: false,
         multiple_workers: true,
-        message: "Multiple workers found with this name. Please login using Worker Code."
+        message:
+          "Multiple workers found with this name. Please login using Worker Code."
       });
+
     }
+
 
     const worker = workers[0];
 
-    if (!worker.worker_pin) {
-      return res.status(403).json({
-        success: false,
-        message: "Worker PIN is not assigned. Please contact Admin."
-      });
-    }
 
-    if (String(worker.worker_pin) !== String(pin)) {
-      return res.status(401).json({
-        success: false,
-        message: "Incorrect PIN."
-      });
-    }
+    // -----------------------------------------------------
+    // 5. SAVE WORKER IN SESSION
+    // -----------------------------------------------------
 
-    // Save only this worker in the session
     req.session.worker = {
+
       id: worker.id,
-      worker_code: worker.worker_code,
-      name: worker.name
+
+      worker_code:
+        worker.worker_code,
+
+      name:
+        worker.name
+
     };
 
+
+    // -----------------------------------------------------
+    // 6. LOGIN SUCCESS
+    // -----------------------------------------------------
+
     return res.json({
+
       success: true,
-      message: "Worker login successful.",
+
+      message:
+        "Worker login successful.",
+
       worker: {
-        id: worker.id,
-        worker_code: worker.worker_code,
-        name: worker.name,
-        employee_type: worker.employee_type,
-        vendor: worker.vendor,
-        mobile: worker.mobile,
-        designation: worker.designation,
-        salary: worker.salary,
-        status: worker.status,
-        joining_date: worker.joining_date,
-        company_id: worker.company_id,
-        company_name: worker.company_name
+
+        id:
+          worker.id,
+
+        worker_code:
+          worker.worker_code,
+
+        name:
+          worker.name,
+
+        employee_type:
+          worker.employee_type,
+
+        vendor:
+          worker.vendor,
+
+        mobile:
+          worker.mobile,
+
+        designation:
+          worker.designation,
+
+        salary:
+          worker.salary,
+
+        status:
+          worker.status,
+
+        joining_date:
+          worker.joining_date,
+
+        company_id:
+          worker.company_id,
+
+        company_name:
+          worker.company_name
+
       }
+
     });
 
   } catch (error) {
-    console.error("Worker App login error:", error);
+
+    console.error(
+      "Worker App login error:",
+      error
+    );
 
     return res.status(500).json({
+
       success: false,
-      message: "Worker login failed."
+
+      message:
+        "Worker login failed."
+
     });
+
   }
 });
-
 
 // WORKER APP LOGOUT
 app.post("/api/worker-app/logout", workerAuth, (req, res) => {

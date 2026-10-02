@@ -628,51 +628,81 @@
 
 <div class="app">
 
-  <!-- =========================
-       LOGIN SCREEN
-       ========================= -->
   <section id="loginScreen">
 
-    <div class="login-card">
+  <div class="login-bg-orb orb-1"></div>
+  <div class="login-bg-orb orb-2"></div>
+  <div class="login-bg-orb orb-3"></div>
 
-      <img class="login-logo" src="/logo.svg" alt="AL SABIHA">
+  <div class="login-card">
 
-      <h1 class="login-title">Worker App</h1>
+    <div class="login-card-glow"></div>
 
-      <p class="login-subtitle">
-        Secure access to your QR & attendance
-      </p>
+    <div class="login-logo-wrap">
+      <img
+        class="login-logo"
+        src="/logo.svg"
+        alt="AL SABIHA">
+    </div>
 
-      <div id="loginError" class="error"></div>
+    <div class="login-brand">
+      AL SABIHA
+    </div>
 
-      <div class="field">
-        <label>Worker Name / Worker Code</label>
+    <h1 class="login-title">
+      Worker App
+    </h1>
+
+    <p class="login-subtitle">
+      Your Work. Your Attendance. Your Identity.
+    </p>
+
+    <div id="loginError" class="error"></div>
+
+    <div class="field">
+
+      <label>
+        Worker Name / Worker Code
+      </label>
+
+      <div class="input-3d">
+
+        <span class="input-icon">◈</span>
+
         <input
           id="identifier"
           type="text"
-          placeholder="Enter name or worker code"
+          placeholder="Enter Worker Name or Code"
           autocomplete="username">
-      </div>
 
-      <div class="field">
-        <label>Worker PIN</label>
-        <input
-          id="pin"
-          type="password"
-          inputmode="numeric"
-          placeholder="Enter PIN"
-          autocomplete="current-password">
       </div>
-
-      <button id="loginBtn" class="login-btn">
-        Login to Worker App
-      </button>
 
     </div>
 
-  </section>
+    <button
+      id="loginBtn"
+      class="login-btn">
 
+      <span class="login-btn-icon">➜</span>
 
+      <span>
+        Login to Worker App
+      </span>
+
+    </button>
+
+    <div class="login-security">
+      <span>●</span>
+      Secure Worker Access
+    </div>
+
+    <div class="login-footer">
+      AL SABIHA GROUP OF COMPANIES
+    </div>
+
+  </div>
+
+</section>
   <!-- =========================
        DASHBOARD
        ========================= -->
@@ -980,69 +1010,83 @@
 
   async function login(){
 
-    hideLoginError();
+  hideLoginError();
 
-    const identifier = $("#identifier").value.trim();
-    const pin = $("#pin").value.trim();
-
-    if(!identifier || !pin){
-
-      showLoginError(
-        "Worker Name/Code and PIN are required."
-      );
-
-      return;
-    }
+  const identifier =
+    $("#identifier").value.trim();
 
 
-    const button = $("#loginBtn");
+  if(!identifier){
 
-    button.disabled = true;
-    button.textContent = "Logging in...";
+    showLoginError(
+      "Worker Name or Worker Code is required."
+    );
 
-
-    try{
-
-      const data = await api(
-        "/api/worker-app/login",
-        {
-          method:"POST",
-          body:JSON.stringify({
-            identifier,
-            pin
-          })
-        }
-      );
+    return;
+  }
 
 
-      if(!data.success){
+  const button =
+    $("#loginBtn");
 
-        throw new Error(
-          data.message || "Login failed."
-        );
 
+  button.disabled = true;
+
+  button.innerHTML =
+    `<span class="login-btn-icon">◌</span>
+     <span>Connecting...</span>`;
+
+
+  try{
+
+    const data = await api(
+      "/api/worker-app/login",
+      {
+        method:"POST",
+
+        body:JSON.stringify({
+          identifier
+        })
       }
+    );
 
 
-      workerData = data.worker;
+    if(!data.success){
 
-      await openWorkerApp();
-
-    }catch(error){
-
-      showLoginError(
-        error.message || "Server connection failed."
+      throw new Error(
+        data.message ||
+        "Login failed."
       );
 
-    }finally{
-
-      button.disabled = false;
-      button.textContent = "Login to Worker App";
-
     }
+
+
+    workerData =
+      data.worker;
+
+
+    await openWorkerApp();
+
+
+  }catch(error){
+
+    showLoginError(
+      error.message ||
+      "Server connection failed."
+    );
+
+
+  }finally{
+
+    button.disabled = false;
+
+    button.innerHTML =
+      `<span class="login-btn-icon">➜</span>
+       <span>Login to Worker App</span>`;
 
   }
 
+}
 
   /* =========================
      CHECK CURRENT SESSION
@@ -1504,7 +1548,7 @@
   );
 
 
-  $("#pin").addEventListener(
+  $("#identifier").addEventListener(
     "keydown",
     event => {
 
