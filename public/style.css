@@ -2138,3 +2138,871 @@ body.login-transition{
     animation:none !important;
   }
 }
+/* =========================================================
+   AL SABIHA WORKER APP
+   3D FIGMA / PREMIUM GLASS UI
+   ========================================================= */
+
+#loginScreen{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  min-height:100vh;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(0,220,180,.16),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(0,140,255,.18),
+      transparent 35%
+    ),
+    linear-gradient(
+      135deg,
+      #020b14 0%,
+      #041a2b 48%,
+      #020a12 100%
+    );
+}
+
+
+/* =========================================================
+   3D BACKGROUND LIGHTS
+   ========================================================= */
+
+.login-bg-orb{
+  position:absolute;
+
+  border-radius:50%;
+
+  pointer-events:none;
+
+  filter:blur(3px);
+
+  opacity:.75;
+
+  animation:
+    workerOrbFloat
+    8s ease-in-out
+    infinite alternate;
+}
+
+.orb-1{
+  width:320px;
+  height:320px;
+
+  left:-120px;
+  top:-90px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0,255,190,.22),
+      transparent 68%
+    );
+}
+
+.orb-2{
+  width:420px;
+  height:420px;
+
+  right:-180px;
+  bottom:-170px;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0,145,255,.24),
+      transparent 68%
+    );
+
+  animation-delay:-3s;
+}
+
+.orb-3{
+  width:180px;
+  height:180px;
+
+  right:18%;
+  top:12%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(245,212,119,.12),
+      transparent 68%
+    );
+
+  animation-delay:-5s;
+}
+
+@keyframes workerOrbFloat{
+
+  from{
+    transform:
+      translate3d(0,0,0)
+      scale(1);
+  }
+
+  to{
+    transform:
+      translate3d(25px,-18px,0)
+      scale(1.08);
+  }
+}
+
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
+
+#loginScreen .login-card{
+
+  position:relative;
+
+  width:min(
+    430px,
+    calc(100% - 32px)
+  );
+
+  padding:34px 30px 25px;
+
+  border-radius:28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.13),
+      rgba(255,255,255,.045)
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.18);
+
+  box-shadow:
+    0 35px 90px
+    rgba(0,0,0,.55),
+    inset 0 1px 1px
+    rgba(255,255,255,.15);
+
+  backdrop-filter:
+    blur(24px);
+
+  -webkit-backdrop-filter:
+    blur(24px);
+
+  transform:
+    perspective(1000px)
+    rotateX(0deg);
+
+  overflow:hidden;
+
+  animation:
+    workerCardFloat
+    6s ease-in-out
+    infinite;
+}
+
+
+@keyframes workerCardFloat{
+
+  0%,
+  100%{
+    transform:
+      perspective(1000px)
+      translateY(0)
+      rotateX(0deg);
+  }
+
+  50%{
+    transform:
+      perspective(1000px)
+      translateY(-6px)
+      rotateX(.5deg);
+  }
+}
+
+
+/* =========================================================
+   CARD TOP GLOW
+   ========================================================= */
+
+#loginScreen .login-card::before{
+
+  content:"";
+
+  position:absolute;
+
+  left:10%;
+  right:10%;
+  top:-90px;
+
+  height:170px;
+
+  background:
+    radial-gradient(
+      ellipse,
+      rgba(0,255,190,.18),
+      transparent 68%
+    );
+
+  pointer-events:none;
+}
+
+
+#loginScreen .login-card::after{
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  border-radius:28px;
+
+  padding:1px;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.25),
+      transparent 35%,
+      rgba(0,255,190,.18),
+      transparent 75%,
+      rgba(245,212,119,.20)
+    );
+
+  -webkit-mask:
+    linear-gradient(#000 0 0)
+    content-box,
+    linear-gradient(#000 0 0);
+
+  -webkit-mask-composite:
+    xor;
+
+  mask-composite:exclude;
+
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   CARD GLOW
+   ========================================================= */
+
+.login-card-glow{
+
+  position:absolute;
+
+  width:150px;
+  height:150px;
+
+  right:-70px;
+  top:-70px;
+
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0,255,190,.25),
+      transparent 70%
+    );
+
+  filter:blur(12px);
+
+  pointer-events:none;
+}
+
+
+/* =========================================================
+   LOGO
+   ========================================================= */
+
+#loginScreen .login-logo-wrap{
+
+  width:100px;
+  height:100px;
+
+  margin:
+    0 auto 13px;
+
+  padding:15px;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  border-radius:28px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.18),
+      rgba(255,255,255,.045)
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.20);
+
+  box-shadow:
+    0 15px 35px
+    rgba(0,0,0,.30),
+    inset 0 1px 1px
+    rgba(255,255,255,.20);
+
+  transform:
+    perspective(600px)
+    rotateX(4deg);
+
+}
+
+
+#loginScreen .login-logo{
+
+  width:100%;
+  height:100%;
+
+  object-fit:contain;
+
+  filter:
+    drop-shadow(
+      0 5px 12px
+      rgba(0,0,0,.35)
+    );
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
+
+#loginScreen .login-brand{
+
+  text-align:center;
+
+  color:
+    #9fffe8;
+
+  font-size:10px;
+
+  font-weight:900;
+
+  letter-spacing:3px;
+
+  margin-bottom:7px;
+
+  text-shadow:
+    0 0 14px
+    rgba(0,255,190,.35);
+}
+
+
+/* =========================================================
+   TITLE
+   ========================================================= */
+
+#loginScreen .login-title{
+
+  margin:0;
+
+  text-align:center;
+
+  color:#fff;
+
+  font-size:32px;
+
+  font-weight:800;
+
+  letter-spacing:-.6px;
+
+  text-shadow:
+    0 5px 20px
+    rgba(0,0,0,.30);
+}
+
+
+#loginScreen .login-subtitle{
+
+  margin:
+    8px 0 24px;
+
+  text-align:center;
+
+  color:
+    rgba(224,238,246,.68);
+
+  font-size:12px;
+
+  line-height:1.6;
+}
+
+
+/* =========================================================
+   LOGIN ERROR
+   ========================================================= */
+
+#loginScreen #loginError{
+
+  display:none;
+
+  margin:
+    0 0 14px;
+
+  padding:
+    10px 12px;
+
+  border-radius:12px;
+
+  color:#ffd8dc;
+
+  background:
+    rgba(210,71,80,.14);
+
+  border:
+    1px solid
+    rgba(255,100,110,.25);
+
+  font-size:11px;
+
+  text-align:center;
+}
+
+
+/* =========================================================
+   FIELD
+   ========================================================= */
+
+#loginScreen .field{
+  margin-top:0;
+}
+
+
+#loginScreen .field label{
+
+  display:block;
+
+  margin:
+    0 0 8px 3px;
+
+  color:
+    rgba(224,238,246,.76);
+
+  font-size:10px;
+
+  font-weight:800;
+
+  letter-spacing:.7px;
+
+  text-transform:uppercase;
+}
+
+
+/* =========================================================
+   3D INPUT
+   ========================================================= */
+
+#loginScreen .input-3d{
+
+  position:relative;
+
+  display:flex;
+
+  align-items:center;
+
+  height:54px;
+
+  padding:0 14px;
+
+  border-radius:16px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.11),
+      rgba(255,255,255,.035)
+    );
+
+  border:
+    1px solid
+    rgba(255,255,255,.15);
+
+  box-shadow:
+    inset 0 2px 4px
+    rgba(0,0,0,.20),
+    0 8px 20px
+    rgba(0,0,0,.16);
+
+  transition:
+    .25s ease;
+}
+
+
+#loginScreen .input-3d:focus-within{
+
+  border-color:
+    rgba(0,255,190,.55);
+
+  box-shadow:
+    0 0 0 3px
+    rgba(0,255,190,.08),
+    0 10px 28px
+    rgba(0,0,0,.25),
+    inset 0 2px 4px
+    rgba(0,0,0,.20);
+
+  transform:
+    translateY(-1px);
+}
+
+
+#loginScreen .input-icon{
+
+  width:30px;
+
+  color:
+    #8fffe8;
+
+  font-size:17px;
+
+  text-align:center;
+
+  text-shadow:
+    0 0 12px
+    rgba(0,255,190,.55);
+}
+
+
+#loginScreen .input-3d input{
+
+  width:100%;
+  height:100%;
+
+  border:0 !important;
+
+  outline:none !important;
+
+  background:transparent !important;
+
+  color:#fff !important;
+
+  padding:
+    0 0 0 9px !important;
+
+  box-shadow:none !important;
+
+  font-size:14px;
+
+  font-weight:600;
+}
+
+
+#loginScreen .input-3d input::placeholder{
+
+  color:
+    rgba(215,230,239,.42);
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+#loginScreen .login-btn{
+
+  position:relative;
+
+  width:100%;
+
+  height:56px;
+
+  margin-top:18px;
+
+  display:flex;
+
+  align-items:center;
+
+  justify-content:center;
+
+  gap:10px;
+
+  overflow:hidden;
+
+  border:0;
+
+  border-radius:16px;
+
+  color:#061526;
+
+  font-size:13px;
+
+  font-weight:900;
+
+  letter-spacing:.2px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #8fffe8 0%,
+      #3ee9c7 42%,
+      #f4d47d 100%
+    );
+
+  box-shadow:
+    0 12px 30px
+    rgba(0,220,180,.22),
+    inset 0 1px 1px
+    rgba(255,255,255,.65);
+
+  transition:
+    transform .2s ease,
+    box-shadow .2s ease;
+}
+
+
+#loginScreen .login-btn:hover{
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 16px 35px
+    rgba(0,220,180,.30),
+    inset 0 1px 1px
+    rgba(255,255,255,.70);
+}
+
+
+#loginScreen .login-btn:active{
+
+  transform:
+    translateY(1px)
+    scale(.985);
+}
+
+
+#loginScreen .login-btn:disabled{
+
+  opacity:.65;
+
+  cursor:wait;
+
+  transform:none;
+}
+
+
+#loginScreen .login-btn-icon{
+
+  width:25px;
+  height:25px;
+
+  display:grid;
+
+  place-items:center;
+
+  border-radius:50%;
+
+  background:
+    rgba(0,0,0,.12);
+
+  font-size:14px;
+}
+
+
+/* =========================================================
+   BUTTON SHINE
+   ========================================================= */
+
+#loginScreen .login-btn::before{
+
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  left:-120%;
+
+  width:65%;
+  height:100%;
+
+  transform:
+    skewX(-20deg);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.60),
+      transparent
+    );
+}
+
+
+#loginScreen .login-btn:hover::before{
+
+  animation:
+    workerButtonShine
+    .75s ease;
+}
+
+
+@keyframes workerButtonShine{
+
+  from{
+    left:-120%;
+  }
+
+  to{
+    left:140%;
+  }
+}
+
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+#loginScreen .login-security{
+
+  margin-top:17px;
+
+  text-align:center;
+
+  color:
+    rgba(206,225,235,.52);
+
+  font-size:9px;
+
+  letter-spacing:.8px;
+
+  text-transform:uppercase;
+}
+
+
+#loginScreen .login-security span{
+
+  color:
+    #49e5c6;
+
+  margin-right:5px;
+
+  text-shadow:
+    0 0 8px
+    rgba(0,255,190,.65);
+}
+
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+#loginScreen .login-footer{
+
+  margin-top:18px;
+
+  padding-top:14px;
+
+  border-top:
+    1px solid
+    rgba(255,255,255,.08);
+
+  text-align:center;
+
+  color:
+    rgba(220,235,242,.32);
+
+  font-size:8px;
+
+  letter-spacing:1.5px;
+
+  font-weight:800;
+}
+
+
+/* =========================================================
+   MOBILE WORKER LOGIN
+   ========================================================= */
+
+@media(max-width:520px){
+
+  #loginScreen .login-card{
+
+    width:
+      calc(100% - 24px);
+
+    padding:
+      27px 21px 21px;
+
+    border-radius:24px;
+  }
+
+
+  #loginScreen .login-logo-wrap{
+
+    width:82px;
+    height:82px;
+
+    border-radius:23px;
+
+    padding:12px;
+  }
+
+
+  #loginScreen .login-title{
+
+    font-size:28px;
+  }
+
+
+  #loginScreen .login-subtitle{
+
+    margin-bottom:20px;
+
+    font-size:11px;
+  }
+
+
+  #loginScreen .input-3d{
+
+    height:52px;
+
+    border-radius:14px;
+  }
+
+
+  #loginScreen .login-btn{
+
+    height:53px;
+
+    border-radius:14px;
+  }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media(prefers-reduced-motion:reduce){
+
+  #loginScreen .login-card,
+  .login-bg-orb{
+
+    animation:none !important;
+  }
+
+}
