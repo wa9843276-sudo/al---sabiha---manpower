@@ -49,7 +49,6 @@ CREATE TABLE IF NOT EXISTS workers(
  salary REAL DEFAULT 0,
  status TEXT DEFAULT 'Active',
  joining_date TEXT,
- worker_pin TEXT,
  company_id INTEGER REFERENCES companies(id)
 );
 
@@ -103,13 +102,20 @@ const workerCols = db
   .prepare("PRAGMA table_info(workers)")
   .all()
   .map(c => c.name);
-if (!workerCols.includes("worker_pin")) {
-  db.exec("ALTER TABLE workers ADD COLUMN worker_pin TEXT");
-}
 if (!workerCols.includes("company_id")) {
   db.exec(
     "ALTER TABLE workers ADD COLUMN company_id INTEGER REFERENCES companies(id)"
   );
+}
+
+// Worker PIN is intentionally retired. Existing worker records are preserved;
+// only the obsolete PIN column is removed when the SQLite version supports it.
+if (workerCols.includes("worker_pin")) {
+  try {
+    db.exec("ALTER TABLE workers DROP COLUMN worker_pin");
+  } catch (e) {
+    console.warn("Worker PIN column could not be dropped automatically:", e.message);
+  }
 }
 
 
@@ -175,6 +181,15 @@ const clean = v =>
   v === undefined || v === null
     ? null
     : String(v).trim();
+
+function validMobile(value) {
+  const mobile = clean(value) || "";
+  if (!mobile) return null;
+  if (!/^[+0-9()\-\s]{7,25}$/.test(mobile)) {
+    throw new Error("Invalid mobile number.");
+  }
+  return mobile;
+}
 
 
 /* =========================================================
@@ -670,6 +685,8 @@ app.post(
 
     try {
 
+      const mobile = validMobile(req.body.mobile);
+
       const companyId =
         req.body.company_id
           ? Number(req.body.company_id)
@@ -704,8 +721,7 @@ app.post(
             salary,
             status,
             joining_date,
-            company_id,
-            worker_pin
+            company_id
           )
 
           VALUES(
@@ -717,7 +733,6 @@ app.post(
             ?,
             ?,
             'Active',
-            ?,
             ?,
             ?
           )
@@ -732,7 +747,7 @@ app.post(
 
           clean(req.body.vendor),
 
-          clean(req.body.mobile),
+          mobile,
 
           clean(req.body.designation),
 
@@ -744,9 +759,7 @@ app.post(
             req.body.joining_date
           ),
 
-          companyId,
-
-          clean(req.body.worker_pin)
+          companyId
 
         );
 
@@ -789,6 +802,8 @@ app.put(
 
       const workerId =
         Number(req.params.id);
+
+      const mobile = validMobile(req.body.mobile);
 
       const companyId =
         req.body.company_id
@@ -840,8 +855,7 @@ app.put(
           salary=?,
           status=?,
           joining_date=?,
-          company_id=?,
-          worker_pin=?
+          company_id=?
 
         WHERE id=?
       `).run(
@@ -855,7 +869,7 @@ app.put(
 
         clean(req.body.vendor),
 
-        clean(req.body.mobile),
+        mobile,
 
         clean(req.body.designation),
 
@@ -869,7 +883,6 @@ app.put(
         clean(req.body.joining_date),
 
         companyId,
-        clean(req.body.worker_pin),
         workerId
       );
 
@@ -1206,7 +1219,14 @@ app.get(
             SELECT COUNT(*)
             FROM sites s
             WHERE s.company_id=c.id
-          ) site_count
+          ) site_count,
+
+          (
+            SELECT COUNT(*)
+            FROM workers w
+            WHERE w.company_id=c.id
+              AND w.status='Active'
+          ) worker_count
 
         FROM companies c
 
@@ -1440,7 +1460,14 @@ app.get(
             s.contact_person,
             s.contact_number,
             s.status,
-            c.name AS company_name
+            c.name AS company_name,
+
+            (
+              SELECT COUNT(*)
+              FROM workers w
+              WHERE w.company_id=s.company_id
+                AND w.status='Active'
+            ) worker_count
 
           FROM sites s
 
@@ -2387,6 +2414,70 @@ app.post(
 );
 
 
+
+/* =========================================================
+   ANALYTICS API
+   ========================================================= */
+app.get("/api/analytics", login, (req, res) => {
+  try {
+    const days = Math.min(Math.max(Number(req.query.days) || 30, 7), 90);
+    const end = new Date();
+    const labels = [];
+    const counts = [];
+    const checkouts = [];
+
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date(end);
+      d.setDate(end.getDate() - i);
+      const date = new Intl.DateTimeFormat("en-CA", {
+        timeZone: UAE_TIMEZONE, year:"numeric", month:"2-digit", day:"2-digit"
+      }).format(d);
+      labels.push(date);
+      counts.push(db.prepare(`
+        SELECT COUNT(DISTINCT worker_id) c
+        FROM attendance
+        WHERE attendance_date=? AND check_in IS NOT NULL
+      `).get(date).c);
+      checkouts.push(db.prepare(`
+        SELECT COUNT(*) c
+        FROM attendance
+        WHERE attendance_date=? AND check_out IS NOT NULL
+      `).get(date).c);
+    }
+
+    const companyWorkers = db.prepare(`
+      SELECT c.name, COUNT(w.id) worker_count
+      FROM companies c
+      LEFT JOIN workers w ON w.company_id=c.id AND w.status='Active'
+      WHERE c.status='Active'
+      GROUP BY c.id, c.name
+      ORDER BY worker_count DESC, c.name
+    `).all();
+
+    const siteAttendance = db.prepare(`
+      SELECT COALESCE(s.name,'Unassigned') name, COUNT(a.id) attendance_count
+      FROM attendance a
+      LEFT JOIN sites s ON s.id=a.site_id
+      WHERE a.attendance_date >= ?
+      GROUP BY s.id, s.name
+      ORDER BY attendance_count DESC, name
+      LIMIT 10
+    `).all(labels[0]);
+
+    res.json({
+      labels,
+      daily_present: counts,
+      daily_checkouts: checkouts,
+      company_workers: companyWorkers,
+      site_attendance: siteAttendance
+    });
+  } catch (error) {
+    console.error("Analytics error:", error);
+    res.status(500).json({ error:"Unable to load analytics." });
+  }
+});
+
+
 /* =========================================================
    REPORTS
    ========================================================= */
@@ -2464,6 +2555,17 @@ app.get(
         Number(req.query.site_id)
       );
 
+    }
+
+    if (req.query.worker_id) {
+      sql += " AND a.worker_id=?";
+      p.push(Number(req.query.worker_id));
+    }
+
+    if (req.query.status === "checked_in") {
+      sql += " AND a.check_in IS NOT NULL AND a.check_out IS NULL";
+    } else if (req.query.status === "checked_out") {
+      sql += " AND a.check_out IS NOT NULL";
     }
 
     sql +=
@@ -2654,6 +2756,17 @@ app.get(
 
       }
 
+      if (req.query.worker_id) {
+        sql += " AND a.worker_id=?";
+        params.push(Number(req.query.worker_id));
+      }
+
+      if (req.query.status === "checked_in") {
+        sql += " AND a.check_in IS NOT NULL AND a.check_out IS NULL";
+      } else if (req.query.status === "checked_out") {
+        sql += " AND a.check_out IS NOT NULL";
+      }
+
       sql +=
         " ORDER BY a.attendance_date DESC,a.id DESC";
 
@@ -2741,6 +2854,20 @@ app.get(
       "al-sabiha-attendance-backup.db"
     )
 );
+
+
+
+/* =========================================================
+   HEALTH CHECK
+   ========================================================= */
+app.get("/api/health", (req, res) => {
+  try {
+    db.prepare("SELECT 1").get();
+    res.json({ success:true, status:"ok", service:"AL SABIHA" });
+  } catch (error) {
+    res.status(503).json({ success:false, status:"error" });
+  }
+});
 
 
 /* =========================================================
@@ -2996,6 +3123,40 @@ app.post("/api/worker-app/login", (req, res) => {
 
   }
 });
+
+
+// WORKER APP PROFILE UPDATE
+// Worker may update only the mobile number linked to their own record.
+app.put("/api/worker-app/profile", workerAuth, (req, res) => {
+  try {
+    const mobile = validMobile(req.body.mobile);
+    db.prepare(`
+      UPDATE workers
+      SET mobile=?
+      WHERE id=?
+        AND status='Active'
+    `).run(mobile, req.session.worker.id);
+
+    const worker = db.prepare(`
+      SELECT w.id, w.worker_code, w.name, w.mobile, w.designation,
+             w.employee_type, w.vendor, w.status, w.joining_date,
+             w.company_id, c.name AS company_name
+      FROM workers w
+      LEFT JOIN companies c ON c.id=w.company_id
+      WHERE w.id=?
+    `).get(req.session.worker.id);
+
+    if (!worker) {
+      req.session.worker = null;
+      return res.status(404).json({ success:false, message:"Worker account not found." });
+    }
+
+    return res.json({ success:true, worker });
+  } catch (error) {
+    return res.status(400).json({ success:false, message:error.message || "Unable to update mobile number." });
+  }
+});
+
 
 // WORKER APP LOGOUT
 app.post("/api/worker-app/logout", workerAuth, (req, res) => {

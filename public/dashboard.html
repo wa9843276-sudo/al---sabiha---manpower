@@ -1086,6 +1086,15 @@ shell("dashboard","Dashboard",`
 </style>
 
 
+
+<style>
+.analytics-grid{display:grid;grid-template-columns:2fr 1fr;gap:20px;margin-bottom:20px}
+.analytics-card{padding:20px;border-radius:20px;background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(255,255,255,.42));border:1px solid rgba(255,255,255,.78);box-shadow:0 12px 32px rgba(0,0,0,.16);backdrop-filter:blur(12px)}
+.analytics-card h2{margin:0;color:#061a30;font:700 18px Georgia,serif}
+.analytics-card p{margin:5px 0 15px;color:#53657a;font-size:12px}
+.chart-wrap{height:260px;position:relative}
+@media(max-width:850px){.analytics-grid{grid-template-columns:1fr}}
+</style>
 <div class="dashboard-page">
 
 
@@ -1237,6 +1246,23 @@ shell("dashboard","Dashboard",`
 
   </div>
 
+
+
+  <!-- =====================================================
+       ANALYTICS
+  ====================================================== -->
+  <div class="analytics-grid">
+    <div class="analytics-card">
+      <h2>Attendance Trend</h2>
+      <p>Daily present workers and completed check-outs — last 30 days</p>
+      <div class="chart-wrap"><canvas id="attendanceChart"></canvas></div>
+    </div>
+    <div class="analytics-card">
+      <h2>Worker Distribution</h2>
+      <p>Active workers by company</p>
+      <div class="chart-wrap"><canvas id="companyChart"></canvas></div>
+    </div>
+  </div>
 
   <!-- =====================================================
        COMPANY SUMMARY
@@ -1759,6 +1785,33 @@ shell("dashboard","Dashboard",`
 })();
 
 
+
+async function loadAnalytics(){
+  try{
+    if(!window.Chart){
+      await new Promise((resolve,reject)=>{
+        const s=document.createElement("script");
+        s.src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js";
+        s.onload=resolve; s.onerror=reject; document.head.appendChild(s);
+      });
+    }
+    const a=await api("/api/analytics?days=30");
+    const labels=(a.labels||[]).map(x=>x.slice(5));
+    const ctx=document.getElementById("attendanceChart");
+    if(ctx){
+      new Chart(ctx,{type:"line",data:{labels,datasets:[
+        {label:"Present",data:a.daily_present||[],tension:.35,borderWidth:3,pointRadius:2},
+        {label:"Check-outs",data:a.daily_checkouts||[],tension:.35,borderWidth:2,pointRadius:2}
+      ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom"}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+    }
+    const cc=document.getElementById("companyChart");
+    if(cc){
+      const items=(a.company_workers||[]).slice(0,8);
+      new Chart(cc,{type:"doughnut",data:{labels:items.map(x=>x.name),datasets:[{data:items.map(x=>x.worker_count),borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:12}}}}});
+    }
+  }catch(e){ console.warn("Analytics unavailable:",e); }
+}
+loadAnalytics();
 loadMe();
 
 </script>

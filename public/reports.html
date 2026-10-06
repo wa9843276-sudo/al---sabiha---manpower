@@ -44,6 +44,21 @@ shell(
           <option value="">All Sites</option>
         </select>
       </div>
+      <div class="field">
+        <label>Worker</label>
+        <select id="worker">
+          <option value="">All Workers</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Attendance Status</label>
+        <select id="status">
+          <option value="">All Status</option>
+          <option value="checked_in">Checked In</option>
+          <option value="checked_out">Checked Out</option>
+        </select>
+      </div>
 
     </div>
 
@@ -139,9 +154,10 @@ async function init(){
 
   try{
 
-    const [c,s] = await Promise.all([
+    const [c,s,w] = await Promise.all([
       api("/api/companies"),
-      api("/api/sites")
+      api("/api/sites"),
+      api("/api/workers")
     ]);
 
     $("#company").innerHTML =
@@ -154,6 +170,11 @@ async function init(){
       '<option value="">All Sites</option>' +
       s.map(x =>
         `<option value="${x.id}">${esc(x.name)}</option>`
+      ).join("");
+    $("#worker").innerHTML =
+      '<option value="">All Workers</option>' +
+      w.map(x =>
+        `<option value="${x.id}">${esc(x.name)} • ${esc(x.worker_code)}</option>`
       ).join("");
 
   }catch(error){
@@ -173,7 +194,9 @@ function getReportQuery(){
     date_from:$("#from").value,
     date_to:$("#to").value,
     company_id:$("#company").value,
-    site_id:$("#site").value
+    site_id:$("#site").value,
+    worker_id:$("#worker").value,
+    status:$("#status").value
 
   });
 

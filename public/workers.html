@@ -74,26 +74,7 @@ shell("workers","Workers",`
         >
 
       </div>
-
-
-      <div class="field">
-
-        <label>
-          Worker PIN
-        </label>
-
-        <input
-          id="worker_pin"
-          type="password"
-          inputmode="numeric"
-          placeholder="Enter Worker PIN"
-          autocomplete="new-password"
-        >
-
-      </div>
-
-
-      <div class="field">
+<div class="field">
 
         <label>
           Designation
@@ -508,6 +489,13 @@ async function load(){
 
             <button
               class="btn ghost"
+              onclick="viewWorker(${w.id})"
+            >
+              View
+            </button>
+
+            <button
+              class="btn ghost"
               onclick="qr(${w.id})"
             >
               QR
@@ -601,18 +589,7 @@ window.edit = id => {
 
   $("#name").value =
     w.name || "";
-
-
-  /*
-    PIN intentionally blank.
-    Admin can enter a new PIN when editing.
-  */
-
-  $("#worker_pin").value =
-    "";
-
-
-  $("#designation").value =
+$("#designation").value =
     w.designation || "";
 
 
@@ -671,8 +648,6 @@ window.clearForm = function(){
     "";
 
 
-  $("#worker_pin").value =
-    "";
 
 };
 
@@ -892,15 +867,7 @@ $("#f").onsubmit =
 
     const id =
       $("#id").value;
-
-
-    const workerPin =
-      $("#worker_pin")
-        .value
-        .trim();
-
-
-    const b = {
+const b = {
 
       worker_code:
         $("#code")
@@ -912,10 +879,6 @@ $("#f").onsubmit =
         $("#name")
           .value
           .trim(),
-
-
-      worker_pin:
-        workerPin,
 
 
       designation:
@@ -1034,6 +997,22 @@ $("#search").oninput =
   load;
 
 
+
+window.viewWorker = function(id){
+  const w = data.find(x => Number(x.id) === Number(id));
+  if(!w) return;
+  alert(
+    `Worker Details\n\n` +
+    `Name: ${w.name || "—"}\n` +
+    `Worker ID: ${w.worker_code || "—"}\n` +
+    `Designation: ${w.designation || "—"}\n` +
+    `Company: ${w.company_name || "—"}\n` +
+    `Site: —\n` +
+    `Mobile: ${w.mobile || "—"}\n` +
+    `Status: ${w.status || "—"}\n` +
+    `Joining Date: ${w.joining_date || "—"}`
+  );
+};
 
 /* =========================================================
    INITIALIZE

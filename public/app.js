@@ -1779,7 +1779,7 @@ function shell(active, title, body) {
   </header>
 
 
-  <section class="content">
+  <section class="content page-enter">
 
     <div class="toolbar">
 

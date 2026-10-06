@@ -868,6 +868,12 @@
             <div class="profile-label">Mobile</div>
             <div id="profileMobile" class="profile-value">—</div>
           </div>
+          <div class="profile-edit">
+            <input id="mobileUpdate" type="tel" inputmode="tel" autocomplete="tel"
+                   placeholder="+971 5X XXX XXXX">
+            <button class="login-btn" type="button" onclick="updateMobile()">Update Mobile Number</button>
+            <div id="mobileUpdateMessage" class="error" style="display:none"></div>
+          </div>
 
           <div class="profile-row">
             <div class="profile-label">Employee Type</div>
@@ -1178,6 +1184,7 @@
 
     $("#profileMobile").textContent =
       workerData.mobile || "—";
+    if($("#mobileUpdate")) $("#mobileUpdate").value = workerData.mobile || "";
 
     $("#profileType").textContent =
       workerData.employee_type || "—";
@@ -1190,6 +1197,31 @@
 
   }
 
+
+
+  async function updateMobile(){
+    const input=$("#mobileUpdate");
+    const message=$("#mobileUpdateMessage");
+    const mobile=(input.value||"").trim();
+    message.style.display="none";
+    try{
+      const data=await api("/api/worker-app/profile",{method:"PUT",body:JSON.stringify({mobile})});
+      if(data.success){
+        workerData={...workerData,...data.worker};
+        fillWorkerDetails();
+        message.className="error";
+        message.style.display="block";
+        message.style.background="rgba(0,220,150,.10)";
+        message.style.borderColor="rgba(0,220,150,.22)";
+        message.style.color="#8ff0ce";
+        message.textContent="Mobile number updated successfully.";
+      }
+    }catch(error){
+      message.className="error";
+      message.style.display="block";
+      message.textContent=error.message||"Unable to update mobile number.";
+    }
+  }
 
   /* =========================
      DASHBOARD
