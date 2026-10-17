@@ -1,0 +1,5729 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,initial-scale=1,viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#061526">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="black-translucent"
+  >
+
+  <link rel="manifest" href="/manifest.json">
+
+  <title>AL SABIHA | Mobile Attendance</title>
+
+  <script
+    src="https://unpkg.com/html5-qrcode"
+    defer>
+  </script>
+
+  <style>
+    :root{
+      --navy:#061526;
+      --navy2:#0a2138;
+      --navy3:#123c5e;
+
+      --gold:#d9ad4d;
+      --gold2:#f4d47d;
+
+      --cyan:#38e8ff;
+      --green:#38e89a;
+      --red:#ff647c;
+      --orange:#ffb84d;
+
+      --white:#ffffff;
+      --text:#eef7ff;
+      --muted:#91a7bb;
+
+      --glass:rgba(255,255,255,.075);
+      --glass2:rgba(255,255,255,.11);
+      --border:rgba(255,255,255,.13);
+
+      --shadow:
+        0 20px 60px rgba(0,0,0,.38);
+
+      --radius:22px;
+    }
+
+    *{
+      box-sizing:border-box;
+      -webkit-tap-highlight-color:transparent;
+    }
+
+    html{
+      width:100%;
+      min-height:100%;
+      background:#020b14;
+      overflow-x:hidden;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      width:100%;
+      min-width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      margin:0;
+      padding:0;
+      overflow-x:hidden;
+      overscroll-behavior-x:none;
+
+      background:
+        radial-gradient(
+          circle at 15% 8%,
+          rgba(56,232,255,.12),
+          transparent 28%
+        ),
+        radial-gradient(
+          circle at 88% 18%,
+          rgba(217,173,77,.12),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 50% 100%,
+          rgba(18,60,94,.30),
+          transparent 42%
+        ),
+        linear-gradient(
+          145deg,
+          #020a12,
+          #061526 50%,
+          #0b2944
+        );
+
+      color:var(--text);
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      touch-action:manipulation;
+    }
+
+    button,
+    input,
+    select,
+    textarea{
+      font:inherit;
+    }
+
+    button{
+      cursor:pointer;
+      -webkit-user-select:none;
+      user-select:none;
+      touch-action:manipulation;
+    }
+
+    input,
+    select,
+    textarea{
+      font-size:16px;
+    }
+
+    .hidden{
+      display:none !important;
+    }
+
+    /* =====================================================
+       APP FRAME
+       ===================================================== */
+
+    #appScreen{
+      width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+      padding-bottom:
+        calc(96px + env(safe-area-inset-bottom));
+    }
+
+    /* =====================================================
+       PIN SCREEN
+       ===================================================== */
+
+    #pinScreen{
+      position:fixed;
+      inset:0;
+      z-index:99999;
+
+      width:100%;
+      min-height:100vh;
+      min-height:100dvh;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      padding:
+        calc(24px + env(safe-area-inset-top))
+        20px
+        calc(24px + env(safe-area-inset-bottom));
+
+      background:
+        radial-gradient(
+          circle at 50% 20%,
+          rgba(56,232,255,.15),
+          transparent 32%
+        ),
+        radial-gradient(
+          circle at 50% 85%,
+          rgba(217,173,77,.12),
+          transparent 32%
+        ),
+        linear-gradient(
+          145deg,
+          #01070d,
+          #031321,
+          #061526
+        );
+    }
+
+    .pin-box{
+      position:relative;
+      width:100%;
+      max-width:420px;
+
+      padding:32px 22px;
+
+      border-radius:30px;
+
+      border:1px solid rgba(255,255,255,.14);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.105),
+          rgba(255,255,255,.035)
+        );
+
+      backdrop-filter:blur(28px);
+      -webkit-backdrop-filter:blur(28px);
+
+      box-shadow:
+        0 30px 90px rgba(0,0,0,.55),
+        inset 0 1px 0 rgba(255,255,255,.08);
+
+      text-align:center;
+
+      animation:pinEnter .55s ease both;
+    }
+
+    @keyframes pinEnter{
+      from{
+        opacity:0;
+        transform:translateY(20px) scale(.97);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0) scale(1);
+      }
+    }
+
+    .brand-logo{
+      width:88px;
+      height:88px;
+
+      margin:0 auto 18px;
+
+      object-fit:contain;
+
+      padding:12px;
+
+      border-radius:25px;
+
+      background:rgba(255,255,255,.055);
+
+      border:1px solid rgba(217,173,77,.35);
+
+      box-shadow:
+        0 0 40px rgba(217,173,77,.13);
+    }
+
+    .pin-box h1{
+      margin:0;
+
+      font-size:28px;
+      line-height:1.1;
+      font-weight:900;
+      letter-spacing:.7px;
+    }
+
+    .pin-box p{
+      margin:9px 0 25px;
+
+      color:var(--muted);
+
+      font-size:13px;
+    }
+
+    .pin-input{
+      width:100%;
+      height:58px;
+
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:17px;
+
+      outline:none;
+
+      background:rgba(0,0,0,.23);
+
+      color:#fff;
+
+      text-align:center;
+
+      letter-spacing:8px;
+
+      font-size:22px;
+      font-weight:800;
+    }
+
+    .pin-input:focus{
+      border-color:rgba(56,232,255,.60);
+
+      box-shadow:
+        0 0 0 4px rgba(56,232,255,.07),
+        0 0 30px rgba(56,232,255,.10);
+    }
+
+    .primary-btn{
+      width:100%;
+      min-height:55px;
+
+      margin-top:15px;
+
+      border:0;
+      border-radius:17px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--gold2),
+          var(--gold)
+        );
+
+      color:#071321;
+
+      font-size:14px;
+      font-weight:900;
+
+      box-shadow:
+        0 12px 30px rgba(217,173,77,.20);
+
+      transition:
+        transform .15s ease,
+        filter .15s ease,
+        box-shadow .15s ease;
+    }
+
+    .primary-btn:active{
+      transform:scale(.97);
+      filter:brightness(1.08);
+    }
+
+    .primary-btn:disabled{
+      opacity:.45;
+      cursor:not-allowed;
+    }
+
+    .pin-message{
+      min-height:21px;
+      margin-top:13px;
+
+      color:#ff9eaf;
+
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    /* =====================================================
+       TOP BAR
+       ===================================================== */
+
+    .topbar{
+      position:sticky;
+      top:0;
+      z-index:500;
+
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      width:100%;
+
+      padding:
+        calc(12px + env(safe-area-inset-top))
+        16px
+        12px;
+
+      background:
+        linear-gradient(
+          180deg,
+          rgba(2,11,19,.94),
+          rgba(2,11,19,.76)
+        );
+
+      border-bottom:
+        1px solid rgba(255,255,255,.08);
+
+      backdrop-filter:blur(24px);
+      -webkit-backdrop-filter:blur(24px);
+    }
+
+    .topbar-brand{
+      display:flex;
+      align-items:center;
+      gap:11px;
+      min-width:0;
+    }
+
+    .topbar-logo{
+      width:43px;
+      height:43px;
+      flex:none;
+
+      padding:5px;
+
+      border-radius:13px;
+
+      object-fit:contain;
+
+      background:rgba(255,255,255,.05);
+
+      border:1px solid rgba(217,173,77,.28);
+    }
+
+    .topbar-title{
+      font-size:15px;
+      font-weight:900;
+      letter-spacing:.2px;
+    }
+
+    .topbar-subtitle{
+      margin-top:2px;
+
+      color:#7990a5;
+
+      font-size:9px;
+      font-weight:700;
+
+      letter-spacing:1.2px;
+      text-transform:uppercase;
+    }
+
+    .live-dot{
+      display:flex;
+      align-items:center;
+      gap:6px;
+
+      flex:none;
+
+      color:#b8ffd9;
+
+      font-size:9px;
+      font-weight:900;
+
+      letter-spacing:.7px;
+    }
+
+    .live-dot span{
+      width:8px;
+      height:8px;
+
+      border-radius:50%;
+
+      background:var(--green);
+
+      box-shadow:
+        0 0 12px var(--green);
+
+      animation:livePulse 1.5s ease infinite;
+    }
+
+    @keyframes livePulse{
+      0%,100%{
+        opacity:.5;
+        transform:scale(.85);
+      }
+
+      50%{
+        opacity:1;
+        transform:scale(1);
+      }
+    }
+
+    /* =====================================================
+       PAGES
+       ===================================================== */
+
+    .page{
+      display:none;
+
+      width:100%;
+
+      padding:
+        17px
+        15px
+        24px;
+    }
+
+    .page.active{
+      display:block;
+
+      animation:pageIn .28s ease both;
+    }
+
+    @keyframes pageIn{
+      from{
+        opacity:0;
+        transform:translateY(8px);
+      }
+
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    /* =====================================================
+       HOME HERO
+       ===================================================== */
+
+    .hero{
+      position:relative;
+      overflow:hidden;
+
+      padding:25px 21px;
+
+      border-radius:28px;
+
+      border:1px solid rgba(255,255,255,.13);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,232,255,.12),
+          rgba(255,255,255,.045) 52%,
+          rgba(217,173,77,.06)
+        );
+
+      box-shadow:
+        0 20px 55px rgba(0,0,0,.28),
+        inset 0 1px 0 rgba(255,255,255,.07);
+    }
+
+    .hero::before{
+      content:"";
+
+      position:absolute;
+
+      width:190px;
+      height:190px;
+
+      right:-85px;
+      top:-85px;
+
+      border-radius:50%;
+
+      background:rgba(56,232,255,.12);
+
+      filter:blur(8px);
+    }
+
+    .hero::after{
+      content:"";
+
+      position:absolute;
+
+      width:140px;
+      height:140px;
+
+      left:-90px;
+      bottom:-90px;
+
+      border-radius:50%;
+
+      background:rgba(217,173,77,.08);
+
+      filter:blur(12px);
+    }
+
+    .hero > *{
+      position:relative;
+      z-index:2;
+    }
+
+    .hero-label{
+      color:var(--gold2);
+
+      font-size:10px;
+      font-weight:900;
+
+      letter-spacing:2px;
+      text-transform:uppercase;
+    }
+
+    .hero h1{
+      margin:10px 0 9px;
+
+      font-size:29px;
+      line-height:1.12;
+
+      letter-spacing:-.5px;
+    }
+
+    .hero p{
+      max-width:330px;
+
+      margin:0;
+
+      color:var(--muted);
+
+      font-size:12px;
+      line-height:1.65;
+    }
+
+    .hero-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:7px;
+
+      margin-top:17px;
+
+      padding:8px 12px;
+
+      border-radius:30px;
+
+      border:1px solid rgba(56,232,255,.18);
+
+      background:rgba(56,232,255,.07);
+
+      color:#c9faff;
+
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .hero-badge::before{
+      content:"";
+      width:6px;
+      height:6px;
+
+      border-radius:50%;
+
+      background:var(--cyan);
+
+      box-shadow:0 0 9px var(--cyan);
+    }
+
+    /* =====================================================
+       HOME ACTION GRID
+       ===================================================== */
+
+    .home-actions{
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:12px;
+
+      margin-top:14px;
+    }
+
+    .action-card{
+      position:relative;
+      overflow:hidden;
+
+      min-height:137px;
+
+      padding:17px;
+
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:22px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.085),
+          rgba(255,255,255,.035)
+        );
+
+      color:#fff;
+
+      text-align:left;
+
+      box-shadow:
+        0 15px 35px rgba(0,0,0,.20),
+        inset 0 1px 0 rgba(255,255,255,.05);
+
+      transition:
+        transform .14s ease,
+        border-color .18s ease,
+        background .18s ease;
+    }
+
+    .action-card::after{
+      content:"";
+
+      position:absolute;
+
+      width:80px;
+      height:80px;
+
+      right:-35px;
+      bottom:-35px;
+
+      border-radius:50%;
+
+      background:rgba(56,232,255,.06);
+    }
+
+    .action-card:active{
+      transform:scale(.965);
+      border-color:rgba(56,232,255,.30);
+      background:rgba(255,255,255,.10);
+    }
+
+    .action-icon{
+      width:46px;
+      height:46px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      margin-bottom:14px;
+
+      border-radius:15px;
+
+      border:1px solid rgba(217,173,77,.23);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(217,173,77,.14),
+          rgba(56,232,255,.06)
+        );
+
+      color:var(--gold2);
+
+      font-size:21px;
+
+      box-shadow:
+        0 8px 20px rgba(0,0,0,.18);
+    }
+
+    .action-card strong{
+      display:block;
+
+      font-size:13px;
+      font-weight:900;
+    }
+
+    .action-card small{
+      display:block;
+
+      margin-top:5px;
+
+      color:#8298ab;
+
+      font-size:10px;
+      line-height:1.45;
+    }
+
+    /* =====================================================
+       GLASS CARD
+       ===================================================== */
+
+    .card{
+      width:100%;
+
+      margin-bottom:15px;
+
+      padding:18px;
+
+      border-radius:24px;
+
+      border:1px solid rgba(255,255,255,.12);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(255,255,255,.085),
+          rgba(255,255,255,.035)
+        );
+
+      box-shadow:
+        0 18px 45px rgba(0,0,0,.22),
+        inset 0 1px 0 rgba(255,255,255,.055);
+
+      backdrop-filter:blur(18px);
+      -webkit-backdrop-filter:blur(18px);
+    }
+
+    .card-title{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+
+      gap:12px;
+
+      margin-bottom:16px;
+    }
+
+    .card-title h2{
+      margin:0;
+
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .card-title p{
+      margin:4px 0 0;
+
+      color:#8095a8;
+
+      font-size:10px;
+    }
+
+    .section-label{
+      display:block;
+
+      margin:13px 0 7px;
+
+      color:#aebfd0;
+
+      font-size:10px;
+      font-weight:800;
+
+      letter-spacing:.5px;
+    }
+
+    input,
+    select{
+      width:100%;
+      height:51px;
+
+      border:1px solid rgba(255,255,255,.11);
+      border-radius:15px;
+
+      outline:none;
+
+      background:
+        rgba(0,0,0,.22);
+
+      color:#fff;
+
+      padding:0 14px;
+
+      font-size:14px;
+
+      transition:
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+    }
+
+    input::placeholder{
+      color:#62788d;
+    }
+
+    input:focus,
+    select:focus{
+      border-color:rgba(56,232,255,.52);
+
+      background:rgba(0,0,0,.28);
+
+      box-shadow:
+        0 0 0 4px rgba(56,232,255,.055),
+        0 0 25px rgba(56,232,255,.06);
+    }
+
+    select option{
+      color:#111;
+    }
+
+    /* =====================================================
+       BUTTONS
+       ===================================================== */
+
+    .two-buttons{
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:10px;
+
+      margin-top:13px;
+    }
+
+    .btn{
+      position:relative;
+      overflow:hidden;
+
+      min-height:51px;
+
+      border-radius:15px;
+
+      border:1px solid rgba(255,255,255,.11);
+
+      font-size:12px;
+      font-weight:900;
+
+      transition:
+        transform .12s ease,
+        filter .12s ease,
+        opacity .15s ease,
+        box-shadow .15s ease;
+    }
+
+    .btn:active{
+      transform:scale(.965);
+      filter:brightness(1.12);
+    }
+
+    .btn:disabled{
+      opacity:.38;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .btn-gold{
+      background:
+        linear-gradient(
+          135deg,
+          var(--gold2),
+          var(--gold)
+        );
+
+      color:#061526;
+
+      border:0;
+
+      box-shadow:
+        0 10px 25px rgba(217,173,77,.15);
+    }
+
+    .btn-cyan{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,232,255,.12),
+          rgba(56,232,255,.045)
+        );
+
+      color:#c5faff;
+
+      border-color:
+        rgba(56,232,255,.23);
+    }
+
+    .btn-green{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(56,232,154,.14),
+          rgba(56,232,154,.05)
+        );
+
+      color:#adffd3;
+
+      border-color:
+        rgba(56,232,154,.25);
+    }
+
+    .btn-red{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,100,124,.13),
+          rgba(255,100,124,.04)
+        );
+
+      color:#ffb6c3;
+
+      border-color:
+        rgba(255,100,124,.23);
+    }
+
+    .btn-orange{
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,184,77,.14),
+          rgba(255,184,77,.05)
+        );
+
+      color:#ffd99a;
+
+      border-color:
+        rgba(255,184,77,.23);
+    }
+
+    /* =====================================================
+       BACK BUTTON
+       ===================================================== */
+
+    .back-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+
+      min-height:40px;
+
+      margin-bottom:12px;
+
+      padding:0 12px;
+
+      border-radius:13px;
+
+      border:1px solid rgba(255,255,255,.09);
+
+      background:rgba(255,255,255,.045);
+
+      color:#a9bac9;
+
+      font-size:11px;
+      font-weight:800;
+
+      transition:
+        transform .12s ease,
+        background .15s ease;
+    }
+
+    .back-btn:active{
+      transform:scale(.96);
+      background:rgba(255,255,255,.08);
+    }
+
+    /* =====================================================
+       FIND PAGE
+       ===================================================== */
+
+    .find-tools{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+
+      margin-bottom:4px;
+    }
+
+    .find-tools-badge{
+      padding:6px 9px;
+
+      border-radius:20px;
+
+      color:#a8f7ff;
+
+      background:rgba(56,232,255,.07);
+
+      border:1px solid rgba(56,232,255,.14);
+
+      font-size:9px;
+      font-weight:800;
+    }
+
+    /* =====================================================
+       QR SCANNER
+       ===================================================== */
+
+    #scannerBox{
+      position:relative;
+
+      width:100%;
+
+      margin-top:15px;
+
+      padding:10px;
+
+      border-radius:23px;
+
+      overflow:hidden;
+
+      border:1px solid rgba(56,232,255,.20);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(56,232,255,.06),
+          rgba(0,0,0,.25)
+        );
+
+      box-shadow:
+        0 20px 50px rgba(0,0,0,.35),
+        inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    #reader{
+      position:relative;
+
+      width:100% !important;
+
+      min-height:260px;
+
+      overflow:hidden;
+
+      border:0 !important;
+
+      border-radius:18px;
+
+      background:#02080f;
+    }
+
+    #reader video{
+      width:100% !important;
+      height:auto !important;
+
+      display:block;
+
+      border-radius:18px;
+    }
+
+    #reader img{
+      display:none !important;
+    }
+
+    /* Scanning frame */
+    #scannerBox::before{
+      content:"";
+
+      position:absolute;
+
+      z-index:10;
+
+      left:50%;
+      top:50%;
+
+      width:min(72vw,220px);
+      height:min(72vw,220px);
+
+      transform:translate(-50%,-50%);
+
+      pointer-events:none;
+
+      border:2px solid rgba(56,232,255,.85);
+
+      border-radius:20px;
+
+      box-shadow:
+        0 0 0 1px rgba(56,232,255,.12),
+        0 0 25px rgba(56,232,255,.20),
+        inset 0 0 25px rgba(56,232,255,.08);
+    }
+
+    /* Moving scan line */
+    #scannerBox::after{
+      content:"";
+
+      position:absolute;
+
+      z-index:11;
+
+      left:16%;
+      right:16%;
+
+      top:50%;
+
+      height:2px;
+
+      pointer-events:none;
+
+      background:
+        linear-gradient(
+          90deg,
+          transparent,
+          #38e8ff,
+          transparent
+        );
+
+      box-shadow:
+        0 0 10px rgba(56,232,255,.90),
+        0 0 25px rgba(56,232,255,.45);
+
+      animation:
+        scannerLine 2s ease-in-out infinite;
+    }
+
+    @keyframes scannerLine{
+      0%,100%{
+        transform:translateY(-105px);
+        opacity:.35;
+      }
+
+      50%{
+        transform:translateY(105px);
+        opacity:1;
+      }
+    }
+
+    .scanner-status{
+      position:relative;
+      z-index:20;
+
+      padding:11px 5px 3px;
+
+      text-align:center;
+
+      color:#c5faff;
+
+      font-size:11px;
+      font-weight:800;
+
+      letter-spacing:.2px;
+    }
+
+    .scanner-status::before{
+      content:"";
+
+      display:inline-block;
+
+      width:7px;
+      height:7px;
+
+      margin-right:7px;
+
+      border-radius:50%;
+
+      background:var(--cyan);
+
+      box-shadow:
+        0 0 10px var(--cyan);
+
+      animation:scannerDot 1.2s ease infinite;
+    }
+
+    @keyframes scannerDot{
+      0%,100%{
+        opacity:.35;
+      }
+
+      50%{
+        opacity:1;
+      }
+    }
+
+    .scanner-help{
+      position:relative;
+      z-index:20;
+
+      padding:4px 5px 8px;
+
+      color:#70879b;
+
+      text-align:center;
+
+      font-size:9px;
+    }
+
+    /* Hide html5-qrcode default UI text/buttons */
+    #reader__dashboard{
+      background:rgba(0,0,0,.18) !important;
+      color:#fff !important;
+      padding:8px !important;
+    }
+
+    #reader__dashboard_section_csr button{
+      min-height:40px !important;
+
+      border-radius:12px !important;
+
+      border:1px solid rgba(56,232,255,.20) !important;
+
+      background:rgba(56,232,255,.08) !important;
+
+      color:#c5faff !important;
+
+      font-weight:800 !important;
+    }
+
+    /* =====================================================
+       WORKER DETAILS
+       ===================================================== */
+
+    .worker-header{
+      display:flex;
+      align-items:center;
+
+      gap:13px;
+
+      margin-bottom:17px;
+    }
+
+    .worker-avatar{
+      width:58px;
+      height:58px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      flex:none;
+
+      border-radius:18px;
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(217,173,77,.25),
+          rgba(56,232,255,.10)
+        );
+
+      border:1px solid rgba(217,173,77,.27);
+
+      color:var(--gold2);
+
+      font-size:21px;
+      font-weight:900;
+
+      box-shadow:
+        0 10px 25px rgba(0,0,0,.18);
+    }
+
+    .worker-name{
+      font-size:18px;
+      font-weight:900;
+    }
+
+    .worker-code{
+      margin-top:3px;
+
+      color:#8298aa;
+
+      font-size:11px;
+    }
+
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:5px;
+
+      margin-top:7px;
+
+      padding:6px 9px;
+
+      border-radius:20px;
+
+      font-size:9px;
+      font-weight:900;
+    }
+
+    .status-active{
+      background:rgba(56,232,154,.09);
+
+      color:#a2ffd0;
+
+      border:1px solid rgba(56,232,154,.19);
+    }
+
+    .status-checked{
+      background:rgba(56,232,255,.09);
+
+      color:#a8f7ff;
+
+      border:1px solid rgba(56,232,255,.19);
+    }
+
+    .info-grid{
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:9px;
+
+      margin-bottom:14px;
+    }
+
+    .info-item{
+      min-width:0;
+
+      padding:12px;
+
+      border-radius:15px;
+
+      background:rgba(0,0,0,.17);
+
+      border:1px solid rgba(255,255,255,.06);
+    }
+
+    .info-item span{
+      display:block;
+
+      color:#6e8498;
+
+      font-size:8px;
+      font-weight:800;
+
+      text-transform:uppercase;
+
+      letter-spacing:.8px;
+    }
+
+    .info-item strong{
+      display:block;
+
+      margin-top:5px;
+
+      font-size:11px;
+      font-weight:800;
+
+      word-break:break-word;
+    }
+
+    .assignment-box{
+      margin-bottom:14px;
+
+      padding:13px;
+
+      border-radius:18px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(217,173,77,.07),
+          rgba(56,232,255,.04)
+        );
+
+      border:1px solid rgba(217,173,77,.13);
+    }
+
+    .assignment-row{
+      display:flex;
+
+      justify-content:space-between;
+
+      gap:12px;
+
+      padding:7px 0;
+    }
+
+    .assignment-row:not(:last-child){
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+
+    .assignment-row span{
+      color:#8398aa;
+
+      font-size:10px;
+    }
+
+    .assignment-row strong{
+      max-width:58%;
+
+      color:#e9f5ff;
+
+      text-align:right;
+
+      font-size:11px;
+
+      word-break:break-word;
+    }
+
+    /* =====================================================
+       GPS
+       ===================================================== */
+
+    .gps-box{
+      display:flex;
+      align-items:center;
+
+      gap:9px;
+
+      margin-top:12px;
+
+      padding:11px 13px;
+
+      border-radius:14px;
+
+      background:rgba(255,255,255,.035);
+
+      border:1px solid rgba(255,255,255,.06);
+
+      color:#8399ab;
+
+      font-size:10px;
+      font-weight:700;
+    }
+
+    .gps-dot{
+      width:8px;
+      height:8px;
+
+      flex:none;
+
+      border-radius:50%;
+
+      background:#72879a;
+    }
+
+    .gps-dot.ok{
+      background:var(--green);
+
+      box-shadow:
+        0 0 11px var(--green);
+    }
+
+    .gps-dot.error{
+      background:var(--red);
+
+      box-shadow:
+        0 0 9px rgba(255,100,124,.45);
+    }
+
+    /* =====================================================
+       MESSAGES
+       ===================================================== */
+
+    .message{
+      min-height:21px;
+
+      margin-top:11px;
+
+      padding:0 3px;
+
+      font-size:11px;
+
+      line-height:1.5;
+    }
+
+    .message.success{
+      color:#9dffcb;
+    }
+
+    .message.error{
+      color:#ff9eaf;
+    }
+
+    .message.info{
+      color:#a8f7ff;
+    }
+
+    /* =====================================================
+       ADD WORKER
+       ===================================================== */
+
+    .form-note{
+      margin-top:11px;
+
+      color:#70869a;
+
+      font-size:9px;
+
+      line-height:1.55;
+    }
+
+    /* =====================================================
+       BOTTOM NAV
+       ===================================================== */
+
+    .bottom-nav{
+      position:fixed;
+
+      left:10px;
+      right:10px;
+
+      bottom:
+        calc(9px + env(safe-area-inset-bottom));
+
+      z-index:900;
+
+      display:grid;
+
+      grid-template-columns:repeat(4,1fr);
+
+      padding:7px;
+
+      border-radius:23px;
+
+      background:
+        rgba(3,14,25,.90);
+
+      border:1px solid rgba(255,255,255,.12);
+
+      backdrop-filter:blur(25px);
+      -webkit-backdrop-filter:blur(25px);
+
+      box-shadow:
+        0 18px 50px rgba(0,0,0,.45),
+        inset 0 1px 0 rgba(255,255,255,.06);
+    }
+
+    .nav-btn{
+      min-height:56px;
+
+      border:0;
+
+      border-radius:17px;
+
+      background:transparent;
+
+      color:#71879a;
+
+      font-size:9px;
+      font-weight:800;
+
+      transition:
+        transform .12s ease,
+        color .15s ease,
+        background .15s ease;
+    }
+
+    .nav-btn:active{
+      transform:scale(.93);
+    }
+
+    .nav-btn.active{
+      color:var(--gold2);
+
+      background:
+        linear-gradient(
+          145deg,
+          rgba(217,173,77,.13),
+          rgba(217,173,77,.045)
+        );
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.05);
+    }
+
+    .nav-icon{
+      display:block;
+
+      margin-bottom:5px;
+
+      font-size:20px;
+
+      line-height:1;
+    }
+
+    /* =====================================================
+       PROCESSING
+       ===================================================== */
+
+    button.is-processing{
+      pointer-events:none;
+      opacity:.72;
+    }
+
+    button.is-processing::after{
+      content:"";
+
+      position:absolute;
+
+      width:15px;
+      height:15px;
+
+      right:13px;
+      top:50%;
+
+      margin-top:-8px;
+
+      border:2px solid rgba(255,255,255,.28);
+
+      border-top-color:#fff;
+
+      border-radius:50%;
+
+      animation:
+        buttonSpin .7s linear infinite;
+    }
+
+    @keyframes buttonSpin{
+      to{
+        transform:rotate(360deg);
+      }
+    }
+
+    /* =====================================================
+       SUCCESS ANIMATION
+       ===================================================== */
+
+    button.action-success{
+      animation:
+        actionSuccess .4s ease;
+    }
+
+    @keyframes actionSuccess{
+      0%{
+        transform:scale(1);
+      }
+
+      45%{
+        transform:scale(1.035);
+      }
+
+      100%{
+        transform:scale(1);
+      }
+    }
+
+    /* =====================================================
+       SMALL PHONES
+       ===================================================== */
+
+    @media(max-width:370px){
+
+      .page{
+        padding-left:12px;
+        padding-right:12px;
+      }
+
+      .hero{
+        padding:22px 18px;
+      }
+
+      .hero h1{
+        font-size:26px;
+      }
+
+      .home-actions{
+        gap:9px;
+      }
+
+      .action-card{
+        min-height:128px;
+        padding:14px;
+      }
+
+      .action-icon{
+        width:42px;
+        height:42px;
+        margin-bottom:11px;
+      }
+
+      .two-buttons{
+        gap:7px;
+      }
+
+      .card{
+        padding:15px;
+      }
+
+    }
+
+    /* =====================================================
+       TABLET / LARGE PHONE
+       ===================================================== */
+
+    @media(min-width:600px){
+
+      #appScreen{
+        max-width:600px;
+        margin:0 auto;
+      }
+
+      .topbar{
+        max-width:600px;
+        margin:0 auto;
+      }
+
+      .bottom-nav{
+        max-width:580px;
+        left:50%;
+        right:auto;
+
+        width:calc(100% - 30px);
+
+        transform:translateX(-50%);
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- =====================================================
+       PIN SCREEN
+       ===================================================== -->
+
+  <section id="pinScreen">
+
+    <div class="pin-box">
+
+      <img
+        src="/Logo.svg"
+        class="brand-logo"
+        alt="AL SABIHA"
+        onerror="this.style.display='none'"
+      >
+
+      <h1>AL SABIHA</h1>
+
+      <p>
+        Mobile Manpower Attendance
+      </p>
+
+      <input
+        id="pinInput"
+        class="pin-input"
+        type="password"
+        inputmode="numeric"
+        autocomplete="off"
+        maxlength="20"
+        placeholder="••••"
+      >
+
+      <button
+        id="continueBtn"
+        class="primary-btn"
+        type="button"
+      >
+        Continue
+      </button>
+
+      <div
+        id="pinMessage"
+        class="pin-message">
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- =====================================================
+       APP SCREEN
+       ===================================================== -->
+
+  <main id="appScreen" class="hidden">
+
+    <!-- TOP BAR -->
+
+    <header class="topbar">
+
+      <div class="topbar-brand">
+
+        <img
+          src="/Logo.svg"
+          class="topbar-logo"
+          alt="AL SABIHA"
+          onerror="this.style.display='none'"
+        >
+
+        <div>
+
+          <div class="topbar-title">
+            AL SABIHA
+          </div>
+
+          <div class="topbar-subtitle">
+            Manpower Attendance
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="live-dot">
+        <span></span>
+        LIVE
+      </div>
+
+    </header>
+
+
+    <!-- ===================================================
+         HOME
+         =================================================== -->
+
+    <section
+      id="homePage"
+      class="page active">
+
+      <div class="hero">
+
+        <div class="hero-label">
+          Attendance System
+        </div>
+
+        <h1>
+          Right People.<br>
+          Right Place.<br>
+          Right Time.
+        </h1>
+
+        <p>
+          Manage worker attendance quickly and securely
+          from your mobile device.
+        </p>
+
+        <div class="hero-badge">
+          UAE • 24-Hour Attendance
+        </div>
+
+      </div>
+
+
+      <div class="home-actions">
+
+        <button
+          id="homeFindBtn"
+          class="action-card"
+          type="button">
+
+          <div class="action-icon">
+            🔎
+          </div>
+
+          <strong>
+            Find Worker
+          </strong>
+
+          <small>
+            Search worker by code
+          </small>
+
+        </button>
+
+
+        <button
+          id="homeScanQRBtn"
+          class="action-card"
+          type="button">
+
+          <div class="action-icon">
+            ▣
+          </div>
+
+          <strong>
+            Scan QR
+          </strong>
+
+          <small>
+            Scan worker QR code
+          </small>
+
+        </button>
+
+
+        <button
+          id="homeAddWorkerBtn"
+          class="action-card"
+          type="button">
+
+          <div class="action-icon">
+            ＋
+          </div>
+
+          <strong>
+            Add Worker
+          </strong>
+
+          <small>
+            Register a new worker
+          </small>
+
+        </button>
+
+
+        <button
+          id="homeManualBtn"
+          class="action-card"
+          type="button">
+
+          <div class="action-icon">
+            ✓
+          </div>
+
+          <strong>
+            Attendance
+          </strong>
+
+          <small>
+            Worker check-in/out
+          </small>
+
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         FIND WORKER
+         =================================================== -->
+
+    <section
+      id="findPage"
+      class="page">
+
+      <button
+        id="findBackBtn"
+        class="back-btn"
+        type="button">
+        ← Home
+      </button>
+
+
+      <div class="card">
+
+        <div class="card-title">
+
+          <div>
+            <h2>Find Worker</h2>
+
+            <p>
+              Search by worker code or scan QR
+            </p>
+          </div>
+
+          <div class="find-tools-badge">
+            SECURE
+          </div>
+
+        </div>
+
+
+        <label
+          class="section-label"
+          for="workerCode">
+          Worker Code
+        </label>
+
+        <input
+          id="workerCode"
+          type="text"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="Example: AS001"
+        >
+
+
+        <div class="two-buttons">
+
+          <button
+            id="findBtn"
+            class="btn btn-gold"
+            type="button">
+            Find Worker
+          </button>
+
+          <button
+            id="scanBtn"
+            class="btn btn-cyan"
+            type="button">
+            Scan QR
+          </button>
+
+        </div>
+
+
+        <div
+          id="findMessage"
+          class="message">
+        </div>
+
+
+        <div
+          id="scannerBox"
+          class="hidden">
+
+          <div id="reader"></div>
+
+          <div class="scanner-status">
+            Align worker QR code inside the frame
+          </div>
+
+          <div class="scanner-help">
+            Keep the QR code inside the blue frame
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         WORKER DETAILS
+         =================================================== -->
+
+    <section
+      id="workerPage"
+      class="page">
+
+      <button
+        id="workerBackBtn"
+        class="back-btn"
+        type="button">
+        ← Find Worker
+      </button>
+
+
+      <div class="card">
+
+        <div class="worker-header">
+
+          <div
+            id="workerAvatar"
+            class="worker-avatar">
+            W
+          </div>
+
+          <div>
+
+            <div
+              id="workerName"
+              class="worker-name">
+              Worker
+            </div>
+
+            <div
+              id="workerCodeDisplay"
+              class="worker-code">
+              -
+            </div>
+
+            <div
+              id="workerStatus"
+              class="status-pill status-active">
+              ACTIVE
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="info-grid">
+
+          <div class="info-item">
+            <span>Designation</span>
+            <strong id="workerDesignation">-</strong>
+          </div>
+
+          <div class="info-item">
+            <span>Mobile</span>
+            <strong id="workerMobile">-</strong>
+          </div>
+
+          <div class="info-item">
+            <span>Employee Type</span>
+            <strong id="workerType">-</strong>
+          </div>
+
+          <div class="info-item">
+            <span>Worker Status</span>
+            <strong id="workerStatusText">-</strong>
+          </div>
+
+        </div>
+
+
+        <div class="assignment-box">
+
+          <div class="assignment-row">
+
+            <span>
+              Assigned Company
+            </span>
+
+            <strong id="assignedCompanyText">
+              -
+            </strong>
+
+          </div>
+
+
+          <div class="assignment-row">
+
+            <span>
+              Assigned Site
+            </span>
+
+            <strong id="assignedSiteText">
+              -
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <label
+          class="section-label"
+          for="companySelect">
+          Company
+        </label>
+
+        <select id="companySelect">
+          <option value="">
+            Select Company
+          </option>
+        </select>
+
+
+        <label
+          class="section-label"
+          for="siteSelect">
+          Site / Location
+        </label>
+
+        <select id="siteSelect">
+          <option value="">
+            Select Site
+          </option>
+        </select>
+
+
+        <div class="gps-box">
+
+          <div
+            id="gpsDot"
+            class="gps-dot">
+          </div>
+
+          <span id="gpsStatus">
+            Checking GPS...
+          </span>
+
+        </div>
+
+
+        <div class="two-buttons">
+
+          <button
+            id="checkInBtn"
+            class="btn btn-green"
+            type="button">
+            Check-In
+          </button>
+
+          <button
+            id="checkOutBtn"
+            class="btn btn-red"
+            type="button">
+            Check-Out
+          </button>
+
+        </div>
+
+
+        <div
+          id="attendanceMessage"
+          class="message">
+        </div>
+
+
+        <button
+          id="resetBtn"
+          class="btn btn-cyan"
+          type="button"
+          style="width:100%;margin-top:10px;">
+          Find Another Worker
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         ADD WORKER
+         =================================================== -->
+
+    <section
+      id="addPage"
+      class="page">
+
+      <button
+        id="addBackBtn"
+        class="back-btn"
+        type="button">
+        ← Home
+      </button>
+
+
+      <div class="card">
+
+        <div class="card-title">
+
+          <div>
+
+            <h2>Add Worker</h2>
+
+            <p>
+              Register a new manpower worker
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <label
+          class="section-label"
+          for="newWorkerCode">
+          Worker Code
+        </label>
+
+        <input
+          id="newWorkerCode"
+          type="text"
+          autocomplete="off"
+          autocapitalize="characters"
+          placeholder="Example: AS001"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerName">
+          Worker Name
+        </label>
+
+        <input
+          id="newWorkerName"
+          type="text"
+          autocomplete="name"
+          placeholder="Full name"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerDesignation">
+          Designation
+        </label>
+
+        <input
+          id="newWorkerDesignation"
+          type="text"
+          placeholder="Welder / Helper / Grinder"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerMobile">
+          Mobile
+        </label>
+
+        <input
+          id="newWorkerMobile"
+          type="tel"
+          inputmode="tel"
+          autocomplete="tel"
+          placeholder="05XXXXXXXX"
+        >
+
+
+        <label
+          class="section-label"
+          for="newWorkerCompany">
+          Company
+        </label>
+
+        <select id="newWorkerCompany">
+
+          <option value="">
+            Select Company
+          </option>
+
+        </select>
+
+
+        <button
+          id="addWorkerBtn"
+          class="btn btn-gold"
+          type="button"
+          style="width:100%;margin-top:15px;">
+          Add Worker
+        </button>
+
+
+        <div
+          id="addWorkerMessage"
+          class="message">
+        </div>
+
+
+        <div class="form-note">
+          Worker will be saved to the same attendance database
+          used by the main AL SABIHA website.
+        </div>
+
+      </div>
+
+    </section>
+
+
+    <!-- ===================================================
+         BOTTOM NAV
+         =================================================== -->
+
+    <nav class="bottom-nav">
+
+      <button
+        id="mobileNavHome"
+        class="nav-btn active"
+        type="button">
+
+        <span class="nav-icon">⌂</span>
+
+        Home
+
+      </button>
+
+
+      <button
+        id="mobileNavFind"
+        class="nav-btn"
+        type="button">
+
+        <span class="nav-icon">⌕</span>
+
+        Find
+
+      </button>
+
+
+      <button
+        id="mobileNavScan"
+        class="nav-btn"
+        type="button">
+
+        <span class="nav-icon">▣</span>
+
+        Scan
+
+      </button>
+
+
+      <button
+        id="mobileNavAdd"
+        class="nav-btn"
+        type="button">
+
+        <span class="nav-icon">＋</span>
+
+        Add
+
+      </button>
+
+    </nav>
+
+  </main>
+
+
+  <!-- =====================================================
+       JAVASCRIPT
+       ===================================================== -->
+
+  <script>
+
+    /* =====================================================
+       GLOBAL VARIABLES
+       ===================================================== */
+
+    const $ = selector =>
+      document.querySelector(selector);
+
+
+    let MOBILE_PIN = "";
+
+    let currentWorker = null;
+
+    let currentAttendanceOpen = false;
+
+    let currentGPS = {
+      latitude:null,
+      longitude:null
+    };
+
+    let scanner = null;
+
+    let scannerRunning = false;
+
+    let isSubmittingAttendance = false;
+
+    let isAddingWorker = false;
+
+    let audioContext = null;
+
+    let audioUnlocked = false;
+
+
+    /* =====================================================
+       PROFESSIONAL SOUND SYSTEM
+       ===================================================== */
+
+    function getAudioContext(){
+
+      try{
+
+        const AudioContext =
+          window.AudioContext ||
+          window.webkitAudioContext;
+
+        if(!AudioContext){
+          return null;
+        }
+
+        if(!audioContext){
+
+          audioContext =
+            new AudioContext();
+
+        }
+
+        if(
+          audioContext.state ===
+          "suspended"
+        ){
+
+          audioContext
+            .resume()
+            .catch(() => {});
+
+        }
+
+        return audioContext;
+
+      }catch(error){
+
+        return null;
+
+      }
+
+    }
+
+
+    function unlockAudio(){
+
+      const context =
+        getAudioContext();
+
+      if(!context){
+        return;
+      }
+
+      try{
+
+        if(
+          context.state ===
+          "suspended"
+        ){
+
+          context.resume();
+
+        }
+
+        audioUnlocked = true;
+
+      }catch(error){}
+
+    }
+
+
+    function playTone(
+      frequency = 700,
+      duration = 90,
+      volume = 0.16,
+      type = "sine",
+      delay = 0
+    ){
+
+      try{
+
+        const context =
+          getAudioContext();
+
+        if(!context){
+          return;
+        }
+
+        const start =
+          context.currentTime +
+          delay;
+
+        const oscillator =
+          context.createOscillator();
+
+        const gain =
+          context.createGain();
+
+
+        oscillator.type =
+          type;
+
+
+        oscillator.frequency.setValueAtTime(
+          frequency,
+          start
+        );
+
+
+        gain.gain.setValueAtTime(
+          0.0001,
+          start
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          volume,
+          start + .012
+        );
+
+
+        gain.gain.exponentialRampToValueAtTime(
+          0.0001,
+          start + duration / 1000
+        );
+
+
+        oscillator.connect(gain);
+
+        gain.connect(
+          context.destination
+        );
+
+
+        oscillator.start(start);
+
+        oscillator.stop(
+          start +
+          duration / 1000 +
+          .03
+        );
+
+      }catch(error){}
+
+    }
+
+
+    /* Normal button */
+    function soundButton(){
+
+      playTone(
+        620,
+        65,
+        .13,
+        "sine"
+      );
+
+    }
+
+
+    /* Find Worker */
+    function soundFindWorker(){
+
+      playTone(
+        700,
+        70,
+        .15,
+        "sine"
+      );
+
+      playTone(
+        920,
+        80,
+        .12,
+        "sine",
+        .07
+      );
+
+    }
+
+
+    /* QR Scanner OPEN */
+    function soundScanStart(){
+
+      playTone(
+        520,
+        75,
+        .15,
+        "sine"
+      );
+
+      playTone(
+        780,
+        90,
+        .14,
+        "sine",
+        .08
+      );
+
+    }
+
+
+    /* QR SUCCESS — DONE */
+    function soundScanDone(){
+
+      playTone(
+        880,
+        85,
+        .18,
+        "sine"
+      );
+
+      playTone(
+        1180,
+        110,
+        .20,
+        "sine",
+        .10
+      );
+
+      playTone(
+        1480,
+        145,
+        .16,
+        "sine",
+        .22
+      );
+
+    }
+
+
+    /* CHECK-IN */
+    function soundCheckIn(){
+
+      playTone(
+        660,
+        100,
+        .18,
+        "sine"
+      );
+
+      playTone(
+        880,
+        120,
+        .20,
+        "sine",
+        .11
+      );
+
+      playTone(
+        1100,
+        150,
+        .18,
+        "sine",
+        .24
+      );
+
+    }
+
+
+    /* CHECK-OUT */
+    function soundCheckOut(){
+
+      playTone(
+        1100,
+        100,
+        .18,
+        "sine"
+      );
+
+      playTone(
+        850,
+        120,
+        .18,
+        "sine",
+        .11
+      );
+
+      playTone(
+        650,
+        150,
+        .16,
+        "sine",
+        .24
+      );
+
+    }
+
+
+    /* ADD WORKER */
+    function soundAddWorker(){
+
+      playTone(
+        600,
+        80,
+        .16,
+        "sine"
+      );
+
+      playTone(
+        800,
+        90,
+        .17,
+        "sine",
+        .09
+      );
+
+      playTone(
+        1000,
+        130,
+        .18,
+        "sine",
+        .19
+      );
+
+    }
+
+
+    /* SUCCESS */
+    function soundSuccess(){
+
+      playTone(
+        760,
+        90,
+        .17,
+        "sine"
+      );
+
+      playTone(
+        1000,
+        130,
+        .18,
+        "sine",
+        .10
+      );
+
+    }
+
+
+    /* BACK */
+    function soundBack(){
+
+      playTone(
+        480,
+        70,
+        .12,
+        "sine"
+      );
+
+    }
+
+
+    /* ERROR */
+    function soundError(){
+
+      playTone(
+        280,
+        120,
+        .20,
+        "sawtooth"
+      );
+
+      playTone(
+        190,
+        170,
+        .16,
+        "sawtooth",
+        .13
+      );
+
+    }
+
+
+    /* GPS */
+    function soundGPS(){
+
+      playTone(
+        760,
+        70,
+        .12,
+        "sine"
+      );
+
+      playTone(
+        980,
+        90,
+        .13,
+        "sine",
+        .08
+      );
+
+    }
+
+
+    /*
+      First touch unlocks mobile audio.
+    */
+
+    document.addEventListener(
+      "pointerdown",
+      function(){
+
+        unlockAudio();
+
+      },
+      {
+        once:true,
+        passive:true
+      }
+    );
+
+
+    /* =====================================================
+       DOM REFERENCES
+       ===================================================== */
+
+    const pinScreen =
+      $("#pinScreen");
+
+    const appScreen =
+      $("#appScreen");
+
+    const pinInput =
+      $("#pinInput");
+
+    const continueBtn =
+      $("#continueBtn");
+
+    const pinMessage =
+      $("#pinMessage");
+
+
+    /* =====================================================
+       SAFE TEXT
+       ===================================================== */
+
+    function esc(value){
+
+      return String(value ?? "")
+        .replace(
+          /[&<>"']/g,
+          char =>
+            ({
+              "&":"&amp;",
+              "<":"&lt;",
+              ">":"&gt;",
+              '"':"&quot;",
+              "'":"&#039;"
+            })[char]
+        );
+
+    }
+
+
+    /* =====================================================
+       MESSAGE
+       ===================================================== */
+
+    function showMessage(
+      element,
+      message,
+      type = "info"
+    ){
+
+      if(!element){
+        return;
+      }
+
+      element.textContent =
+        message;
+
+      element.className =
+        "message " + type;
+
+    }
+
+
+    function clearMessage(element){
+
+      if(!element){
+        return;
+      }
+
+      element.textContent = "";
+
+      element.className =
+        "message";
+
+    }
+
+
+    /* =====================================================
+       TIME
+       ===================================================== */
+
+    function formatTime24(value){
+
+      if(
+        value === null ||
+        value === undefined ||
+        value === ""
+      ){
+
+        return "current time";
+
+      }
+
+
+      const valueString =
+        String(value).trim();
+
+
+      if(
+        valueString.includes("T") &&
+        (
+          valueString.includes("Z") ||
+          /[+-]\d{2}:\d{2}$/.test(
+            valueString
+          )
+        )
+      ){
+
+        const date =
+          new Date(valueString);
+
+
+        if(
+          !Number.isNaN(
+            date.getTime()
+          )
+        ){
+
+          return new Intl.DateTimeFormat(
+            "en-GB",
+            {
+              timeZone:"Asia/Dubai",
+              hour:"2-digit",
+              minute:"2-digit",
+              hourCycle:"h23"
+            }
+          ).format(date);
+
+        }
+
+      }
+
+
+      let match =
+        valueString.match(
+          /(?:T|\s)(\d{2}):(\d{2})(?::\d{2})?/
+        );
+
+
+      if(match){
+
+        return `${match[1]}:${match[2]}`;
+
+      }
+
+
+      match =
+        valueString.match(
+          /^(\d{2}):(\d{2})(?::\d{2})?$/
+        );
+
+
+      if(match){
+
+        return `${match[1]}:${match[2]}`;
+
+      }
+
+
+      match =
+        valueString.match(
+          /^(\d{1,2}):(\d{2})(?::\d{2})?\s*(AM|PM)$/i
+        );
+
+
+      if(match){
+
+        let hour =
+          Number(match[1]);
+
+        const minute =
+          match[2];
+
+        const ampm =
+          match[4].toUpperCase();
+
+
+        if(
+          ampm === "PM" &&
+          hour !== 12
+        ){
+
+          hour += 12;
+
+        }
+
+
+        if(
+          ampm === "AM" &&
+          hour === 12
+        ){
+
+          hour = 0;
+
+        }
+
+
+        return (
+          String(hour).padStart(2,"0") +
+          ":" +
+          minute
+        );
+
+      }
+
+
+      return valueString;
+
+    }
+
+
+    /* =====================================================
+       API
+       ===================================================== */
+
+    async function api(
+      url,
+      options = {}
+    ){
+
+      const opts = {
+        ...options,
+
+        headers:{
+          ...(options.headers || {}),
+          "x-mobile-pin":MOBILE_PIN
+        }
+      };
+
+
+      if(
+        !opts.method ||
+        String(opts.method).toUpperCase() === "GET"
+      ){
+
+        opts.cache = "no-store";
+
+      }
+
+
+      if(
+        opts.body &&
+        typeof opts.body !== "string"
+      ){
+
+        opts.headers["Content-Type"] =
+          "application/json";
+
+        opts.body =
+          JSON.stringify(opts.body);
+
+      }
+
+
+      let response;
+
+
+      try{
+
+        response =
+          await fetch(url,opts);
+
+      }catch(error){
+
+        throw new Error(
+          "Network error. Please check your internet connection."
+        );
+
+      }
+
+
+      let data = {};
+
+
+      try{
+
+        data =
+          await response.json();
+
+      }catch(error){
+
+        data = {};
+
+      }
+
+
+      if(
+        !response.ok ||
+        data?.success === false
+      ){
+
+        throw new Error(
+          data?.error ||
+          data?.message ||
+          `Request failed (${response.status})`
+        );
+
+      }
+
+
+      return data;
+
+    }
+
+
+    /* =====================================================
+       LOGIN
+       ===================================================== */
+
+    async function loginMobile(){
+
+      unlockAudio();
+
+      const pin =
+        String(
+          pinInput.value || ""
+        ).trim();
+
+
+      if(!pin){
+
+        soundError();
+
+        pinMessage.textContent =
+          "Please enter mobile PIN.";
+
+        return;
+
+      }
+
+
+      continueBtn.disabled = true;
+
+      pinMessage.textContent =
+        "Checking...";
+
+
+      try{
+
+        MOBILE_PIN = pin;
+
+
+        await api(
+          "/api/mobile/companies"
+        );
+
+
+        localStorage.setItem(
+          "al_sabiha_mobile_pin",
+          pin
+        );
+
+
+        pinScreen.style.display =
+          "none";
+
+        appScreen.classList.remove(
+          "hidden"
+        );
+
+
+        pinMessage.textContent = "";
+
+
+        soundSuccess();
+
+
+        await loadCompanies();
+
+
+      }catch(error){
+
+        MOBILE_PIN = "";
+
+        soundError();
+
+        pinMessage.textContent =
+          error.message ||
+          "Invalid PIN.";
+
+      }finally{
+
+        continueBtn.disabled =
+          false;
+
+      }
+
+    }
+
+
+    continueBtn.addEventListener(
+      "click",
+      loginMobile
+    );
+
+
+    pinInput.addEventListener(
+      "keydown",
+      function(event){
+
+        if(event.key === "Enter"){
+
+          event.preventDefault();
+
+          loginMobile();
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       RESTORE PIN
+       ===================================================== */
+
+    async function restoreSavedPin(){
+
+      const savedPin =
+        localStorage.getItem(
+          "al_sabiha_mobile_pin"
+        );
+
+
+      if(!savedPin){
+
+        return;
+
+      }
+
+
+      MOBILE_PIN =
+        savedPin;
+
+
+      try{
+
+        await api(
+          "/api/mobile/companies"
+        );
+
+
+        pinScreen.style.display =
+          "none";
+
+        appScreen.classList.remove(
+          "hidden"
+        );
+
+
+        await loadCompanies();
+
+
+      }catch(error){
+
+        MOBILE_PIN = "";
+
+        localStorage.removeItem(
+          "al_sabiha_mobile_pin"
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       PAGES
+       ===================================================== */
+
+    const pages = {
+
+      home:$("#homePage"),
+
+      find:$("#findPage"),
+
+      worker:$("#workerPage"),
+
+      add:$("#addPage")
+
+    };
+
+
+    function showPage(
+      pageName
+    ){
+
+      Object.values(pages)
+        .forEach(page => {
+
+          if(page){
+
+            page.classList.remove(
+              "active"
+            );
+
+          }
+
+        });
+
+
+      if(pages[pageName]){
+
+        pages[pageName]
+          .classList.add(
+            "active"
+          );
+
+      }
+
+
+      window.scrollTo({
+        top:0,
+        behavior:"smooth"
+      });
+
+    }
+
+
+    function setMobileNav(
+      activeId
+    ){
+
+      document
+        .querySelectorAll(".nav-btn")
+        .forEach(button => {
+
+          button.classList.remove(
+            "active"
+          );
+
+        });
+
+
+      const active =
+        document.getElementById(
+          activeId
+        );
+
+
+      if(active){
+
+        active.classList.add(
+          "active"
+        );
+
+      }
+
+    }
+
+
+    function openHomeScreen(
+      playSound = true
+    ){
+
+      if(playSound){
+        soundBack();
+      }
+
+      stopScanner();
+
+      showPage("home");
+
+      setMobileNav(
+        "mobileNavHome"
+      );
+
+    }
+
+
+    function openFindWorkerScreen(
+      playSound = true
+    ){
+
+      if(playSound){
+        soundFindWorker();
+      }
+
+      showPage("find");
+
+      setMobileNav(
+        "mobileNavFind"
+      );
+
+    }
+
+
+    function openWorkerDetailsScreen(){
+
+      showPage("worker");
+
+      setMobileNav(
+        "mobileNavFind"
+      );
+
+    }
+
+
+    function openAddWorkerScreen(
+      playSound = true
+    ){
+
+      if(playSound){
+        soundButton();
+      }
+
+      stopScanner();
+
+      showPage("add");
+
+      setMobileNav(
+        "mobileNavAdd"
+      );
+
+    }
+
+
+    /* =====================================================
+       HOME BUTTONS
+       ===================================================== */
+
+    $("#homeFindBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundFindWorker();
+
+          openFindWorkerScreen(
+            false
+          );
+
+          setTimeout(
+            () =>
+              $("#workerCode").focus(),
+            150
+          );
+
+        }
+      );
+
+
+    $("#homeScanQRBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          soundScanStart();
+
+          openFindWorkerScreen(
+            false
+          );
+
+          setMobileNav(
+            "mobileNavScan"
+          );
+
+          await startScanner();
+
+        }
+      );
+
+
+    $("#homeAddWorkerBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openAddWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#homeManualBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openFindWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       BOTTOM NAV
+       ===================================================== */
+
+    $("#mobileNavHome")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openHomeScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#mobileNavFind")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundFindWorker();
+
+          openFindWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#mobileNavScan")
+      .addEventListener(
+        "click",
+        async function(){
+
+          soundScanStart();
+
+          openFindWorkerScreen(
+            false
+          );
+
+          setMobileNav(
+            "mobileNavScan"
+          );
+
+          await startScanner();
+
+        }
+      );
+
+
+    $("#mobileNavAdd")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          openAddWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       BACK BUTTONS
+       ===================================================== */
+
+    $("#findBackBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          openHomeScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#workerBackBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          openFindWorkerScreen(
+            false
+          );
+
+        }
+      );
+
+
+    $("#addBackBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          openHomeScreen(
+            false
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       LOAD COMPANIES
+       ===================================================== */
+
+    async function loadCompanies(){
+
+      const data =
+        await api(
+          "/api/mobile/companies"
+        );
+
+
+      const companies =
+        Array.isArray(data)
+          ? data
+          : (
+              data.companies ||
+              data.data ||
+              []
+            );
+
+
+      const companySelect =
+        $("#companySelect");
+
+
+      const newWorkerCompany =
+        $("#newWorkerCompany");
+
+
+      companySelect.innerHTML =
+        `<option value="">Select Company</option>`;
+
+
+      newWorkerCompany.innerHTML =
+        `<option value="">Select Company</option>`;
+
+
+      companies.forEach(
+        company => {
+
+          if(!company){
+            return;
+          }
+
+
+          const id =
+            company.id ??
+            company.company_id;
+
+
+          const name =
+            company.name ??
+            company.company_name ??
+            company.title ??
+            "";
+
+
+          if(
+            id === null ||
+            id === undefined ||
+            !name
+          ){
+
+            return;
+
+          }
+
+
+          const option1 =
+            document.createElement(
+              "option"
+            );
+
+
+          option1.value =
+            String(id);
+
+          option1.textContent =
+            name;
+
+
+          companySelect.appendChild(
+            option1
+          );
+
+
+          const option2 =
+            document.createElement(
+              "option"
+            );
+
+
+          option2.value =
+            String(id);
+
+          option2.textContent =
+            name;
+
+
+          newWorkerCompany.appendChild(
+            option2
+          );
+
+        }
+      );
+
+    }
+
+
+    /* =====================================================
+       LOAD SITES
+       ===================================================== */
+
+    async function loadSites(
+      companyId,
+      preferredSiteId = null
+    ){
+
+      const siteSelect =
+        $("#siteSelect");
+
+
+      siteSelect.innerHTML =
+        `<option value="">Loading sites...</option>`;
+
+
+      if(!companyId){
+
+        siteSelect.innerHTML =
+          `<option value="">Select Site</option>`;
+
+        return [];
+
+      }
+
+
+      try{
+
+        const data =
+          await api(
+            `/api/mobile/sites?company_id=${encodeURIComponent(companyId)}`
+          );
+
+
+        const sites =
+          Array.isArray(data)
+            ? data
+            : (
+                data.sites ||
+                data.data ||
+                []
+              );
+
+
+        siteSelect.innerHTML =
+          `<option value="">Select Site</option>`;
+
+
+        sites.forEach(
+          site => {
+
+            if(!site){
+              return;
+            }
+
+
+            const id =
+              site.id ??
+              site.site_id;
+
+
+            const name =
+              site.name ??
+              site.site_name ??
+              site.title ??
+              "";
+
+
+            if(
+              id === null ||
+              id === undefined ||
+              !name
+            ){
+
+              return;
+
+            }
+
+
+            const option =
+              document.createElement(
+                "option"
+              );
+
+
+            option.value =
+              String(id);
+
+            option.textContent =
+              name;
+
+
+            siteSelect.appendChild(
+              option
+            );
+
+          }
+        );
+
+
+        if(preferredSiteId){
+
+          const wanted =
+            String(preferredSiteId);
+
+
+          const exists =
+            Array.from(
+              siteSelect.options
+            ).some(
+              option =>
+                option.value === wanted
+            );
+
+
+          if(exists){
+
+            siteSelect.value =
+              wanted;
+
+          }
+
+        }
+
+
+        return sites;
+
+
+      }catch(error){
+
+        siteSelect.innerHTML =
+          `<option value="">Unable to load sites</option>`;
+
+        throw error;
+
+      }
+
+    }
+
+
+    /* =====================================================
+       AUTOMATIC SITE
+       ===================================================== */
+
+    function selectAutomaticSite(
+      sites,
+      data
+    ){
+
+      if(!Array.isArray(sites)){
+        return;
+      }
+
+
+      const assignedSites =
+        data?.assigned_company_sites ||
+        data?.assigned_sites ||
+        [];
+
+
+      let selectedSiteId =
+        data?.assigned_site_id ||
+        data?.site_id ||
+        currentWorker?.site_id ||
+        null;
+
+
+      if(!selectedSiteId){
+
+        if(
+          Array.isArray(assignedSites) &&
+          assignedSites.length === 1
+        ){
+
+          selectedSiteId =
+            assignedSites[0]?.id ||
+            assignedSites[0]?.site_id ||
+            null;
+
+        }
+
+      }
+
+
+      if(selectedSiteId){
+
+        const siteSelect =
+          $("#siteSelect");
+
+
+        const wanted =
+          String(selectedSiteId);
+
+
+        const exists =
+          Array.from(
+            siteSelect.options
+          ).some(
+            option =>
+              option.value === wanted
+          );
+
+
+        if(exists){
+
+          siteSelect.value =
+            wanted;
+
+        }
+
+      }
+
+    }
+
+
+    /* =====================================================
+       FIND WORKER
+       ===================================================== */
+
+    async function findWorker(
+      workerCodeOverride = null
+    ){
+
+      const inputCode =
+        workerCodeOverride !== null
+          ? workerCodeOverride
+          : $("#workerCode").value;
+
+
+      const workerCode =
+        String(inputCode || "")
+          .trim();
+
+
+      if(!workerCode){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          "Please enter worker code.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      stopScanner();
+
+
+      const findBtn =
+        $("#findBtn");
+
+
+      findBtn.disabled = true;
+
+      findBtn.classList.add(
+        "is-processing"
+      );
+
+
+      showMessage(
+        $("#findMessage"),
+        "Searching worker...",
+        "info"
+      );
+
+
+      try{
+
+        const data =
+          await api(
+            `/api/mobile/worker?worker_code=${encodeURIComponent(workerCode)}`
+          );
+
+
+        if(
+          !data ||
+          !data.worker
+        ){
+
+          throw new Error(
+            "Worker information was not returned."
+          );
+
+        }
+
+
+        await displayWorker(data);
+
+
+        clearMessage(
+          $("#findMessage")
+        );
+
+
+        showMessage(
+          $("#attendanceMessage"),
+          "✓ Worker found successfully.",
+          "success"
+        );
+
+
+      }catch(error){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          error.message ||
+          "Worker not found.",
+          "error"
+        );
+
+      }finally{
+
+        findBtn.disabled = false;
+
+        findBtn.classList.remove(
+          "is-processing"
+        );
+
+      }
+
+    }
+
+
+    $("#findBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundFindWorker();
+
+          findWorker();
+
+        }
+      );
+
+
+    $("#workerCode")
+      .addEventListener(
+        "keydown",
+        function(event){
+
+          if(event.key === "Enter"){
+
+            event.preventDefault();
+
+            soundFindWorker();
+
+            findWorker();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       DISPLAY WORKER
+       ===================================================== */
+
+    async function displayWorker(
+      data
+    ){
+
+      const worker =
+        data.worker;
+
+
+      currentWorker =
+        worker;
+
+
+      currentAttendanceOpen =
+        !!(
+          data.currently_checked_in ||
+          data.open_attendance
+        );
+
+
+      const name =
+        worker.name ||
+        worker.full_name ||
+        "Unknown Worker";
+
+
+      const workerCode =
+        worker.worker_code ||
+        worker.code ||
+        "-";
+
+
+      $("#workerName").textContent =
+        name;
+
+
+      $("#workerCodeDisplay").textContent =
+        workerCode;
+
+
+      $("#workerDesignation").textContent =
+        worker.designation ||
+        "-";
+
+
+      $("#workerMobile").textContent =
+        worker.mobile ||
+        worker.phone ||
+        "-";
+
+
+      $("#workerType").textContent =
+        worker.employee_type ||
+        worker.type ||
+        "-";
+
+
+      $("#workerStatusText").textContent =
+        worker.status ||
+        (
+          worker.active === false
+            ? "Inactive"
+            : "Active"
+        );
+
+
+      $("#workerAvatar").textContent =
+        String(name)
+          .trim()
+          .charAt(0)
+          .toUpperCase() ||
+        "W";
+
+
+      const status =
+        String(
+          worker.status ||
+          (
+            worker.active === false
+              ? "Inactive"
+              : "Active"
+          )
+        );
+
+
+      $("#workerStatus").textContent =
+        currentAttendanceOpen
+          ? "CHECKED IN"
+          : status.toUpperCase();
+
+
+      $("#workerStatus").className =
+        "status-pill " +
+        (
+          currentAttendanceOpen
+            ? "status-checked"
+            : "status-active"
+        );
+
+
+      const companyId =
+        worker.company_id ||
+        worker.companyId ||
+        data.assigned_company?.id ||
+        data.assigned_company_id ||
+        null;
+
+
+      const companyName =
+        data.assigned_company?.name ||
+        data.assigned_company?.company_name ||
+        worker.company_name ||
+        worker.company ||
+        "-";
+
+
+      if(companyId){
+
+        $("#companySelect").value =
+          String(companyId);
+
+      }
+
+
+      let sites = [];
+
+
+      if(companyId){
+
+        try{
+
+          sites =
+            await loadSites(
+              companyId,
+              worker.site_id ||
+              data.assigned_site_id ||
+              data.site_id ||
+              null
+            );
+
+        }catch(error){}
+
+      }else{
+
+        $("#siteSelect").innerHTML =
+          `<option value="">Select Site</option>`;
+
+      }
+
+
+      selectAutomaticSite(
+        sites,
+        data
+      );
+
+
+      $("#assignedCompanyText").textContent =
+        companyName;
+
+
+      let assignedSiteName =
+        data.assigned_site?.name ||
+        data.assigned_site?.site_name ||
+        worker.site_name ||
+        data.site_name ||
+        "-";
+
+
+      const selectedSiteOption =
+        $("#siteSelect").selectedOptions?.[0];
+
+
+      if(
+        selectedSiteOption &&
+        selectedSiteOption.value
+      ){
+
+        assignedSiteName =
+          selectedSiteOption.textContent;
+
+      }
+
+
+      $("#assignedSiteText").textContent =
+        assignedSiteName;
+
+
+      updateAttendanceButtons();
+
+
+      openWorkerDetailsScreen();
+
+
+      getGPS();
+
+    }
+
+
+    /* =====================================================
+       COMPANY CHANGE
+       ===================================================== */
+
+    $("#companySelect").addEventListener("change", async function(){
+
+  soundButton();
+
+  const companyId = this.value;
+
+  $("#assignedCompanyText").textContent =
+    this.options[this.selectedIndex]?.textContent || "-";
+
+  $("#assignedSiteText").textContent = "-";
+
+  try {
+
+    const sites = await loadSites(companyId);
+
+    // Agar is company ki sirf 1 location hai
+    if (Array.isArray(sites) && sites.length === 1) {
+
+      const site = sites[0];
+
+      const siteId =
+        site.id ||
+        site.site_id ||
+        "";
+
+      if (siteId) {
+
+        $("#siteSelect").value = String(siteId);
+
+        const selected =
+          $("#siteSelect").options[
+            $("#siteSelect").selectedIndex
+          ];
+
+        $("#assignedSiteText").textContent =
+          selected?.textContent || "-";
+      }
+    }
+
+  } catch(error) {
+
+    soundError();
+
+    showMessage(
+      $("#attendanceMessage"),
+      error.message || "Unable to load sites.",
+      "error"
+    );
+  }
+
+});
+    /* =====================================================
+       SITE CHANGE
+       ===================================================== */
+
+    $("#siteSelect")
+      .addEventListener(
+        "change",
+        function(){
+
+          soundButton();
+
+          const selected =
+            this.options[
+              this.selectedIndex
+            ];
+
+
+          $("#assignedSiteText")
+            .textContent =
+              selected?.value
+                ? selected.textContent
+                : "-";
+
+        }
+      );
+
+
+    /* =====================================================
+       GPS
+       ===================================================== */
+
+    function getGPS(){
+
+      const gpsStatus =
+        $("#gpsStatus");
+
+
+      const gpsDot =
+        $("#gpsDot");
+
+
+      gpsDot.className =
+        "gps-dot";
+
+
+      gpsStatus.textContent =
+        "Checking GPS...";
+
+
+      if(!navigator.geolocation){
+
+        gpsStatus.textContent =
+          "GPS is not supported on this device.";
+
+
+        gpsDot.classList.add(
+          "error"
+        );
+
+
+        currentGPS = {
+          latitude:null,
+          longitude:null
+        };
+
+
+        soundError();
+
+        return;
+
+      }
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        function(position){
+
+          currentGPS = {
+
+            latitude:
+              position.coords.latitude,
+
+            longitude:
+              position.coords.longitude
+
+          };
+
+
+          gpsDot.className =
+            "gps-dot ok";
+
+
+          gpsStatus.textContent =
+            "GPS location detected";
+
+
+          soundGPS();
+
+        },
+
+        function(error){
+
+          currentGPS = {
+
+            latitude:null,
+            longitude:null
+
+          };
+
+
+          gpsDot.className =
+            "gps-dot error";
+
+
+          if(
+            error.code ===
+            error.PERMISSION_DENIED
+          ){
+
+            gpsStatus.textContent =
+              "GPS permission denied.";
+
+          }else{
+
+            gpsStatus.textContent =
+              "Unable to get GPS location.";
+
+          }
+
+        },
+
+        {
+          enableHighAccuracy:true,
+          timeout:10000,
+          maximumAge:30000
+        }
+
+      );
+
+    }
+
+
+    /* =====================================================
+       ATTENDANCE BUTTON STATE
+       ===================================================== */
+
+    function updateAttendanceButtons(){
+
+      const checkIn =
+        $("#checkInBtn");
+
+
+      const checkOut =
+        $("#checkOutBtn");
+
+
+      if(
+        !checkIn ||
+        !checkOut
+      ){
+
+        return;
+
+      }
+
+
+      if(currentAttendanceOpen){
+
+        checkIn.disabled = true;
+
+        checkOut.disabled =
+          isSubmittingAttendance;
+
+
+        checkIn.textContent =
+          "Already Checked In";
+
+
+        checkOut.textContent =
+          "Check-Out";
+
+
+      }else{
+
+        checkIn.disabled =
+          isSubmittingAttendance;
+
+
+        checkOut.disabled = true;
+
+
+        checkIn.textContent =
+          "Check-In";
+
+
+        checkOut.textContent =
+          "Not Checked In";
+
+      }
+
+    }
+
+
+    /* =====================================================
+       REFRESH ATTENDANCE
+       ===================================================== */
+
+    async function refreshWorkerAttendanceState(){
+
+      if(
+        !currentWorker ||
+        !currentWorker.worker_code
+      ){
+
+        return null;
+
+      }
+
+
+      const data =
+        await api(
+          `/api/mobile/worker?worker_code=${encodeURIComponent(currentWorker.worker_code)}`
+        );
+
+
+      if(data.worker){
+
+        currentWorker =
+          data.worker;
+
+      }
+
+
+      currentAttendanceOpen =
+        !!(
+          data.currently_checked_in ||
+          data.open_attendance
+        );
+
+
+      updateAttendanceButtons();
+
+
+      return data;
+
+    }
+
+
+    /* =====================================================
+       CHECK-IN
+       ===================================================== */
+
+    $("#checkInBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          if(
+            !currentWorker ||
+            !currentWorker.worker_code
+          ){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please find a worker first.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          if(currentAttendanceOpen){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "This worker is already checked in.",
+              "error"
+            );
+
+            updateAttendanceButtons();
+
+            return;
+
+          }
+
+
+          const companyId =
+            $("#companySelect").value;
+
+
+          const siteId =
+            $("#siteSelect").value;
+
+
+          if(!companyId){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please select company.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          if(!siteId){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please select site / location.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          isSubmittingAttendance =
+            true;
+
+
+          updateAttendanceButtons();
+
+
+          showMessage(
+            $("#attendanceMessage"),
+            "Checking in...",
+            "info"
+          );
+
+
+          try{
+
+            const data =
+              await api(
+                "/api/mobile/attendance/checkin",
+                {
+                  method:"POST",
+
+                  body:{
+                    worker_code:
+                      currentWorker.worker_code,
+
+                    company_id:
+                      Number(companyId),
+
+                    site_id:
+                      Number(siteId),
+
+                    latitude:
+                      currentGPS.latitude,
+
+                    longitude:
+                      currentGPS.longitude
+                  }
+                }
+              );
+
+
+            currentAttendanceOpen =
+              true;
+
+
+            updateAttendanceButtons();
+
+
+            const checkInTime =
+              formatTime24(
+                data.check_in ||
+                data.checkIn ||
+                data.attendance?.check_in
+              );
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              `✓ Check-In successful at ${checkInTime}.`,
+              "success"
+            );
+
+
+            $("#checkInBtn")
+              .classList.add(
+                "action-success"
+              );
+
+
+            setTimeout(
+              () =>
+                $("#checkInBtn")
+                  .classList.remove(
+                    "action-success"
+                  ),
+              500
+            );
+
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(error){
+
+              currentAttendanceOpen =
+                true;
+
+              updateAttendanceButtons();
+
+            }
+
+
+            soundCheckIn();
+
+
+          }catch(error){
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(refreshError){}
+
+
+            updateAttendanceButtons();
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              error.message ||
+              "Check-In failed.",
+              "error"
+            );
+
+
+            soundError();
+
+
+          }finally{
+
+            isSubmittingAttendance =
+              false;
+
+
+            updateAttendanceButtons();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       CHECK-OUT
+       ===================================================== */
+
+    $("#checkOutBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          if(
+            !currentWorker ||
+            !currentWorker.worker_code
+          ){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "Please find a worker first.",
+              "error"
+            );
+
+            return;
+
+          }
+
+
+          if(!currentAttendanceOpen){
+
+            soundError();
+
+            showMessage(
+              $("#attendanceMessage"),
+              "This worker is not currently checked in.",
+              "error"
+            );
+
+            updateAttendanceButtons();
+
+            return;
+
+          }
+
+
+          isSubmittingAttendance =
+            true;
+
+
+          updateAttendanceButtons();
+
+
+          showMessage(
+            $("#attendanceMessage"),
+            "Checking out...",
+            "info"
+          );
+
+
+          try{
+
+            const data =
+              await api(
+                "/api/mobile/attendance/checkout",
+                {
+                  method:"POST",
+
+                  body:{
+                    worker_code:
+                      currentWorker.worker_code,
+
+                    latitude:
+                      currentGPS.latitude,
+
+                    longitude:
+                      currentGPS.longitude
+                  }
+                }
+              );
+
+
+            currentAttendanceOpen =
+              false;
+
+
+            updateAttendanceButtons();
+
+
+            const checkOutTime =
+              formatTime24(
+                data.check_out ||
+                data.checkOut ||
+                data.attendance?.check_out
+              );
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              `✓ Check-Out successful at ${checkOutTime}.`,
+              "success"
+            );
+
+
+            $("#checkOutBtn")
+              .classList.add(
+                "action-success"
+              );
+
+
+            setTimeout(
+              () =>
+                $("#checkOutBtn")
+                  .classList.remove(
+                    "action-success"
+                  ),
+              500
+            );
+
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(error){
+
+              currentAttendanceOpen =
+                false;
+
+              updateAttendanceButtons();
+
+            }
+
+
+            soundCheckOut();
+
+
+          }catch(error){
+
+            try{
+
+              await refreshWorkerAttendanceState();
+
+            }catch(refreshError){}
+
+
+            updateAttendanceButtons();
+
+
+            showMessage(
+              $("#attendanceMessage"),
+              error.message ||
+              "Check-Out failed.",
+              "error"
+            );
+
+
+            soundError();
+
+
+          }finally{
+
+            isSubmittingAttendance =
+              false;
+
+
+            updateAttendanceButtons();
+
+          }
+
+        }
+      );
+
+
+    /* =====================================================
+       RESET WORKER
+       ===================================================== */
+
+    $("#resetBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundBack();
+
+          currentWorker = null;
+
+          currentAttendanceOpen =
+            false;
+
+          currentGPS = {
+            latitude:null,
+            longitude:null
+          };
+
+
+          $("#workerCode").value =
+            "";
+
+
+          $("#companySelect").value =
+            "";
+
+
+          $("#siteSelect").innerHTML =
+            `<option value="">Select Site</option>`;
+
+
+          $("#assignedCompanyText")
+            .textContent =
+              "-";
+
+
+          $("#assignedSiteText")
+            .textContent =
+              "-";
+
+
+          $("#workerName")
+            .textContent =
+              "Worker";
+
+
+          $("#workerCodeDisplay")
+            .textContent =
+              "-";
+
+
+          $("#workerDesignation")
+            .textContent =
+              "-";
+
+
+          $("#workerMobile")
+            .textContent =
+              "-";
+
+
+          $("#workerType")
+            .textContent =
+              "-";
+
+
+          $("#workerStatusText")
+            .textContent =
+              "-";
+
+
+          $("#attendanceMessage")
+            .textContent =
+              "";
+
+
+          updateAttendanceButtons();
+
+
+          openFindWorkerScreen(
+            false
+          );
+
+
+          setTimeout(
+            () =>
+              $("#workerCode").focus(),
+            150
+          );
+
+        }
+      );
+
+
+    /* =====================================================
+       QR SCANNER
+       ===================================================== */
+
+    async function startScanner(){
+
+      const scannerBox =
+        $("#scannerBox");
+
+
+      scannerBox.classList.remove(
+        "hidden"
+      );
+
+
+      if(scannerRunning){
+
+        return;
+
+      }
+
+
+      if(
+        typeof Html5Qrcode ===
+        "undefined"
+      ){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          "QR scanner is still loading. Please try again.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      try{
+
+        if(scanner){
+
+          try{
+
+            await scanner.clear();
+
+          }catch(error){}
+
+        }
+
+
+        scanner =
+          new Html5Qrcode(
+            "reader"
+          );
+
+
+        scannerRunning =
+          true;
+
+
+        await scanner.start(
+
+          {
+            facingMode:"environment"
+          },
+
+          {
+            fps:10,
+
+            qrbox:function(
+              viewfinderWidth,
+              viewfinderHeight
+            ){
+
+              const minEdge =
+                Math.min(
+                  viewfinderWidth,
+                  viewfinderHeight
+                );
+
+
+              const size =
+                Math.floor(
+                  minEdge * .68
+                );
+
+
+              return {
+                width:size,
+                height:size
+              };
+
+            },
+
+            aspectRatio:1
+
+          },
+
+          function(decodedText){
+
+            handleQRCode(
+              decodedText
+            );
+
+          },
+
+          function(errorMessage){
+
+            /* Normal scan frames ignored */
+
+          }
+
+        );
+
+
+      }catch(error){
+
+        scannerRunning =
+          false;
+
+
+        soundError();
+
+
+        showMessage(
+          $("#findMessage"),
+          "Unable to start camera. Please allow camera permission.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    async function stopScanner(){
+
+      if(!scanner){
+
+        scannerRunning =
+          false;
+
+        return;
+
+      }
+
+
+      try{
+
+        if(scannerRunning){
+
+          await scanner.stop();
+
+        }
+
+      }catch(error){}
+
+
+      try{
+
+        await scanner.clear();
+
+      }catch(error){}
+
+
+      scannerRunning =
+        false;
+
+      scanner =
+        null;
+
+    }
+
+
+    /* =====================================================
+       QR RESULT
+       ===================================================== */
+
+    async function handleQRCode(
+      decodedText
+    ){
+
+      const value =
+        String(
+          decodedText || ""
+        ).trim();
+
+
+      if(!value){
+
+        soundError();
+
+        return;
+
+      }
+
+
+      await stopScanner();
+
+
+      $("#scannerBox")
+        .classList.add(
+          "hidden"
+        );
+
+
+      let workerCode =
+        value;
+
+
+      try{
+
+        if(
+          value.startsWith(
+            "http://"
+          ) ||
+          value.startsWith(
+            "https://"
+          )
+        ){
+
+          const url =
+            new URL(value);
+
+
+          workerCode =
+            url.searchParams.get(
+              "worker_code"
+            ) ||
+            url.searchParams.get(
+              "code"
+            ) ||
+            url.searchParams.get(
+              "worker"
+            ) ||
+            value;
+
+        }
+
+      }catch(error){
+
+        workerCode =
+          value;
+
+      }
+
+
+      workerCode =
+        String(workerCode)
+          .replace(
+            /^worker[_-]?code[:=]/i,
+            ""
+          )
+          .trim();
+
+
+      if(!workerCode){
+
+        soundError();
+
+        showMessage(
+          $("#findMessage"),
+          "QR code does not contain a worker code.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      $("#workerCode").value =
+        workerCode;
+
+
+      /* QR SUCCESS DONE SOUND */
+      soundScanDone();
+
+
+      await findWorker(
+        workerCode
+      );
+
+    }
+
+
+    $("#scanBtn")
+      .addEventListener(
+        "click",
+        async function(){
+
+          soundScanStart();
+
+          await startScanner();
+
+        }
+      );
+
+
+    /* =====================================================
+       ADD WORKER
+       ===================================================== */
+
+    async function addWorker(){
+
+      if(isAddingWorker){
+
+        return;
+
+      }
+
+
+      const workerCode =
+        String(
+          $("#newWorkerCode").value ||
+          ""
+        ).trim();
+
+
+      const name =
+        String(
+          $("#newWorkerName").value ||
+          ""
+        ).trim();
+
+
+      const designation =
+        String(
+          $("#newWorkerDesignation").value ||
+          ""
+        ).trim();
+
+
+      const mobile =
+        String(
+          $("#newWorkerMobile").value ||
+          ""
+        ).trim();
+
+
+      const companyId =
+        $("#newWorkerCompany").value;
+
+
+      if(!workerCode){
+
+        soundError();
+
+        showMessage(
+          $("#addWorkerMessage"),
+          "Please enter worker code.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if(!name){
+
+        soundError();
+
+        showMessage(
+          $("#addWorkerMessage"),
+          "Please enter worker name.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      if(!companyId){
+
+        soundError();
+
+        showMessage(
+          $("#addWorkerMessage"),
+          "Please select company.",
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      isAddingWorker =
+        true;
+
+
+      const addButton =
+        $("#addWorkerBtn");
+
+
+      addButton.disabled =
+        true;
+
+
+      addButton.classList.add(
+        "is-processing"
+      );
+
+
+      showMessage(
+        $("#addWorkerMessage"),
+        "Adding worker...",
+        "info"
+      );
+
+
+      try{
+
+        const data =
+          await api(
+            "/api/mobile/workers",
+            {
+              method:"POST",
+
+              body:{
+                worker_code:
+                  workerCode,
+
+                name:
+                  name,
+
+                designation:
+                  designation,
+
+                mobile:
+                  mobile,
+
+                company_id:
+                  Number(companyId)
+              }
+            }
+          );
+
+
+        showMessage(
+          $("#addWorkerMessage"),
+          `✓ ${data.message || "Worker added successfully."}`,
+          "success"
+        );
+
+
+        addButton
+          .classList.add(
+            "action-success"
+          );
+
+
+        setTimeout(
+          () =>
+            addButton
+              .classList.remove(
+                "action-success"
+              ),
+          500
+        );
+
+
+        /* SUCCESS SOUND ONLY */
+        soundAddWorker();
+
+
+        $("#newWorkerCode").value =
+          "";
+
+        $("#newWorkerName").value =
+          "";
+
+        $("#newWorkerDesignation").value =
+          "";
+
+        $("#newWorkerMobile").value =
+          "";
+
+        $("#newWorkerCompany").value =
+          "";
+
+
+        try{
+
+          await loadCompanies();
+
+        }catch(error){}
+
+
+      }catch(error){
+
+        soundError();
+
+        showMessage(
+          $("#addWorkerMessage"),
+          error.message ||
+          "Unable to add worker.",
+          "error"
+        );
+
+      }finally{
+
+        isAddingWorker =
+          false;
+
+
+        addButton.disabled =
+          false;
+
+
+        addButton.classList.remove(
+          "is-processing"
+        );
+
+      }
+
+    }
+
+
+    $("#addWorkerBtn")
+      .addEventListener(
+        "click",
+        function(){
+
+          soundButton();
+
+          addWorker();
+
+        }
+      );
+
+
+    /* =====================================================
+       VISIBILITY
+       ===================================================== */
+
+    document.addEventListener(
+      "visibilitychange",
+      async function(){
+
+        if(
+          document.visibilityState ===
+          "visible" &&
+          currentWorker
+        ){
+
+          try{
+
+            await refreshWorkerAttendanceState();
+
+          }catch(error){}
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       STARTUP
+       ===================================================== */
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      function(){
+
+        updateAttendanceButtons();
+
+        restoreSavedPin();
+
+      }
+    );
+
+  </script>
+
+</body>
+</html>

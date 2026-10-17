@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Company-wise Workforce | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("company-report", "Company-wise Workforce", `
+<div class="actions" style="margin-bottom:14px"><a class="btn gold" href="/api/v2/export/company-workforce.xlsx">Export Excel</a></div>
+<div id="kp" class="kpis"></div>
+<div class="panel" style="padding:0"><div class="table-wrap" style="border:0"><table><thead><tr><th>Company</th><th>Category</th><th class="num">Total</th><th class="num">Active</th><th class="num">Inactive</th><th class="num">Group Company</th><th class="num">Supplier (SUP)</th><th class="num">Sponsored (active)</th></tr></thead><tbody id="rows"><tr><td colspan="8"><div class="loading">Loading…</div></td></tr></tbody></table></div></div>
+<p style="color:var(--muted);font-size:13px">Each worker is counted once, under their current working company. “Sponsored” counts active workers whose Visa/Sponsor company is that company.</p>`);
+loadMe();
+api("/api/v2/reports/company-workforce").then(d => {
+  const t = d.totals, k = (l, v) => `<div class="kpi"><small>${l}</small><b>${v}</b></div>`;
+  $("#kp").innerHTML = k("Total workers", t.total_workers) + k("Active", t.active_workers) + k("Inactive", t.inactive_workers) + k("Group Company", t.group_workers) + k("Supplier (SUP)", t.supplier_workers);
+  $("#rows").innerHTML = d.items.map(r => `<tr><td><a href="/workers.html?company_id=${r.company_id || "none"}"><b>${esc(r.company_name)}</b></a></td><td>${r.roles.length ? r.roles.map(x => `<span class="badge info">${esc(x)}</span>`).join(" ") : "—"}</td><td class="num">${r.total_workers}</td><td class="num">${r.active_workers}</td><td class="num">${r.inactive_workers}</td><td class="num">${r.group_workers}</td><td class="num">${r.supplier_workers}</td><td class="num">${r.sponsored_active}</td></tr>`).join("");
+}).catch(e => $("#rows").innerHTML = `<tr><td colspan="8"><div class="message error">${esc(e.message)}</div></td></tr>`);
+</script></body></html>

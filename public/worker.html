@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Worker Profile | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("workers", "Worker Profile", `<div id="box"><div class="loading">Loading profile…</div></div>`, { crumbs: ["Main Menu", "Worker Database", "Worker Profile"] });
+loadMe();
+const id = new URLSearchParams(location.search).get("id");
+const back = "/workers.html" + (sessionStorage.getItem("wdb") ? "?" + qs(JSON.parse(sessionStorage.getItem("wdb"))) : "");
+let L, D;
+
+async function load() {
+  try {
+    [L, D] = await Promise.all([api("/api/v2/lookups"), api("/api/v2/workers/" + encodeURIComponent(id))]);
+    render();
+    if (new URLSearchParams(location.search).get("edit")) openEdit();
+  } catch (e) { $("#box").innerHTML = `<div class="message error">${esc(e.message)}</div><a class="btn ghost" href="${back}">Back to Worker Database</a>`; }
+}
+function render() {
+  const w = D.worker, st = D.stats;
+  const opts = (sel, any) => L.companies.filter(c => c.status === "Active" || c.id === sel).map(c => `<option value="${c.id}" ${c.id === sel ? "selected" : ""}>${esc(c.name)}</option>`).join("");
+  $("#box").innerHTML = `
+  <div class="actions" style="margin-bottom:14px"><a class="btn ghost" href="${back}">← Back to Worker Database</a><button class="btn ghost" id="bEdit">Edit details</button>
+    <button class="btn ${w.status === "Active" ? "danger" : "gold"}" id="bToggle">${w.status === "Active" ? "Deactivate" : "Reactivate"}</button></div>
+  <div class="grid g2">
+   <section class="panel"><h2>${esc(w.name)} <span class="badge ${w.status === "Active" ? "ok" : "bad"}">${esc(w.status)}</span> ${D.currently_checked_in ? '<span class="badge info">Checked in now</span>' : ""}</h2>
+    <dl class="dl"><dt>Employee ID</dt><dd><b>${esc(w.worker_code)}</b></dd><dt>Designation</dt><dd>${esc(w.designation || "—")}</dd>
+    <dt>Company Type</dt><dd>${esc(w.company_type_label)}</dd><dt>Visa/Sponsor Company</dt><dd>${esc(w.sponsor_name || "—")}</dd>
+    <dt>Working/Assigned Company</dt><dd>${esc(w.company_name || "Unassigned")}</dd><dt>Mobile</dt><dd>${esc(w.mobile || "—")}</dd>
+    <dt>Joining date</dt><dd>${esc(w.joining_date || "—")}</dd>${w.salary !== undefined ? `<dt>Salary</dt><dd>${esc(w.salary)}</dd>` : ""}
+    <dt>Attendance</dt><dd>${st.days} day(s), ${st.records} record(s)${st.last_date ? ", last " + esc(st.last_date) : ""}</dd></dl></section>
+   <section class="panel"><h2>Reassign working company</h2>
+    <p style="color:var(--muted);margin-top:0">Moves the worker for future attendance. Past attendance keeps the company recorded at the time.</p>
+    <div class="form-grid"><div class="field"><label for="rCo">New working company</label><select id="rCo"><option value="">— Unassigned —</option>${opts(w.company_id)}</select></div>
+    <div class="field"><label for="rNote">Note (optional)</label><input id="rNote" maxlength="200"></div></div>
+    <div class="actions" style="margin-top:12px"><button class="btn gold" id="bRe">Reassign</button></div>
+    <h3 style="margin-top:20px">QR code</h3><div id="qr" class="hint">Loading…</div></section>
+  </div>
+  <section class="panel"><h2>Assignment history</h2>${D.assignment_history.length ? `<div class="table-wrap"><table><thead><tr><th>When</th><th>From</th><th>To</th><th>By</th><th>Note</th></tr></thead><tbody>${D.assignment_history.map(h => `<tr><td>${esc(h.changed_at)}</td><td>${esc(h.from_company || "—")}</td><td>${esc(h.to_company || "Unassigned")}</td><td>${esc(h.changed_by || "")}</td><td>${esc(h.note || "")}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">No assignment changes recorded yet.</div>'}</section>
+  <section class="panel"><h2>Recent attendance</h2>${D.recent_attendance.length ? `<div class="table-wrap"><table><thead><tr><th>Date</th><th>Company at the time</th><th>Site</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody>${D.recent_attendance.map(a => `<tr><td>${esc(a.attendance_date)}</td><td>${esc(a.company_name || "—")}</td><td>${esc(a.site_name || "—")}</td><td>${esc(fmtDT(a.check_in))}</td><td>${esc(fmtDT(a.check_out))}</td><td><span class="badge ${a.check_out ? "ok" : "info"}">${esc(a.attendance_status)}</span></td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">No attendance yet.</div>'}</section>`;
+  $("#bEdit").onclick = openEdit;
+  $("#bRe").onclick = async () => {
+    const to = $("#rCo").value, name = to ? $("#rCo").selectedOptions[0].text : "Unassigned";
+    if (!(await confirmDialog(`Move ${w.name} to ${name}? Past attendance will not change.`, { ok: "Reassign" }))) return;
+    try { const r = await api(`/api/v2/workers/${id}/reassign`, { method: "POST", body: { company_id: to, note: $("#rNote").value } }); toast(r.changed ? "Worker reassigned" : "No change", "success"); load(); }
+    catch (e) { toast(e.message, "error"); }
+  };
+  $("#bToggle").onclick = async () => {
+    const to = w.status === "Active" ? "Inactive" : "Active";
+    if (!(await confirmDialog(`${to === "Inactive" ? "Deactivate" : "Reactivate"} ${w.name}? Attendance history is kept.`, { danger: to === "Inactive", ok: to === "Inactive" ? "Deactivate" : "Reactivate" }))) return;
+    try { await api("/api/v2/workers/" + id, { method: "PATCH", body: { status: to } }); toast("Status updated", "success"); load(); } catch (e) { toast(e.message, "error"); }
+  };
+  api(`/api/workers/${id}/qrcode`).then(q => { $("#qr").innerHTML = q.qr || q.qrcode || q.image ? `<img alt="QR code for ${esc(w.worker_code)}" width="160" height="160" src="${esc(q.qr || q.qrcode || q.image)}">` : "QR not available"; }).catch(() => { $("#qr").textContent = "QR not available"; });
+}
+function openEdit() {
+  const w = D.worker, d = document.createElement("dialog"); d.className = "dlg";
+  const co = (sel) => L.companies.filter(c => c.status === "Active" || c.id === sel).map(c => `<option value="${c.id}" ${c.id === sel ? "selected" : ""}>${esc(c.name)}</option>`).join("");
+  d.innerHTML = `<form method="dialog" id="ef"><h3>Edit ${esc(w.worker_code)}</h3><div class="form-grid" style="margin-top:12px">
+   <div class="field"><label for="eName">Employee Name</label><input id="eName" value="${esc(w.name)}" maxlength="120" required></div>
+   <div class="field"><label for="eDes">Designation</label><input id="eDes" value="${esc(w.designation || "")}"></div>
+   <div class="field"><label for="eType">Company Type</label><select id="eType">${L.company_types.map(t => `<option value="${t.value}" ${t.value === w.employee_type ? "selected" : ""}>${esc(t.label)}</option>`).join("")}</select></div>
+   <div class="field"><label for="eSp">Visa/Sponsor Company</label><select id="eSp"><option value="">— None —</option>${co(w.sponsor_company_id)}</select></div>
+   <div class="field"><label for="eMob">Mobile</label><input id="eMob" value="${esc(w.mobile || "")}"></div>
+   <div class="field"><label for="eJoin">Joining date</label><input id="eJoin" type="date" value="${esc(w.joining_date || "")}"></div></div>
+   <p class="hint" style="color:var(--muted);font-size:12px">Employee ID cannot be changed. Use “Reassign” to change the working company.</p>
+   <div id="eMsg"></div><div class="dlg-actions"><button class="btn ghost" value="cancel" formnovalidate>Cancel</button><button class="btn gold" value="save">Save changes</button></div></form>`;
+  document.body.appendChild(d); d.showModal();
+  d.addEventListener("close", () => d.remove());
+  d.querySelector("form").addEventListener("submit", async ev => {
+    if (ev.submitter?.value !== "save") return;
+    ev.preventDefault();
+    try {
+      await api("/api/v2/workers/" + id, { method: "PATCH", body: { name: $("#eName").value, designation: $("#eDes").value, company_type: $("#eType").value, sponsor_company_id: $("#eSp").value, mobile: $("#eMob").value, joining_date: $("#eJoin").value } });
+      d.close(); toast("Worker updated", "success"); load();
+    } catch (e) { $("#eMsg").innerHTML = `<div class="message error">${esc(e.message)}</div>`; }
+  });
+}
+load();
+</script></body></html>

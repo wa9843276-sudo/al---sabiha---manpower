@@ -1,0 +1,76 @@
+plugins { id 'com.android.application' }
+
+def baseUrl = (project.findProperty('ALSABIHA_BASE_URL') ?: 'https://CHANGE-ME.invalid').toString().replaceAll('/+$', '')
+def ksFile = rootProject.file('keystore.properties')
+def ks = new Properties()
+if (ksFile.exists()) ksFile.withInputStream { ks.load(it) }
+
+android {
+    namespace 'com.alsabiha.manpower'
+    compileSdk 34
+    defaultConfig {
+        minSdk 24            // Android 7.0+
+        targetSdk 34
+        versionCode 1
+        versionName '1.0.0'
+        buildConfigField 'String', 'BASE_URL', "\"${baseUrl}\""
+    }
+    buildFeatures { buildConfig true }
+    flavorDimensions 'role'
+    productFlavors {
+        admin {
+            dimension 'role'
+            applicationId 'com.alsabiha.manpower.admin'
+            buildConfigField 'String', 'START_PATH', '"/mobile.html"'
+        }
+        worker {
+            dimension 'role'
+            applicationId 'com.alsabiha.manpower.worker'
+            buildConfigField 'String', 'START_PATH', '"/worker-app.html"'
+        }
+    }
+    signingConfigs {
+        if (ks.getProperty('admin.storeFile')) {
+            adminRelease {
+                storeFile file(ks.getProperty('admin.storeFile'))
+                storePassword ks.getProperty('admin.storePassword')
+                keyAlias ks.getProperty('admin.keyAlias')
+                keyPassword ks.getProperty('admin.keyPassword')
+            }
+        }
+        if (ks.getProperty('worker.storeFile')) {
+            workerRelease {
+                storeFile file(ks.getProperty('worker.storeFile'))
+                storePassword ks.getProperty('worker.storePassword')
+                keyAlias ks.getProperty('worker.keyAlias')
+                keyPassword ks.getProperty('worker.keyPassword')
+            }
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    // Apply each flavor's own signing key only when its credentials exist (otherwise unsigned).
+    androidComponents {
+        onVariants(selector().withBuildType('release')) { v ->
+            def name = v.flavorName
+            if (android.signingConfigs.findByName(name + 'Release')) {
+                v.signingConfig.setConfig(android.signingConfigs.getByName(name + 'Release'))
+            }
+        }
+    }
+}
+
+// Refuse to build a release that points at a placeholder or non-HTTPS server.
+afterEvaluate {
+    tasks.matching { it.name ==~ /(assemble|bundle|package).*Release/ }.configureEach {
+        doFirst {
+            if (baseUrl.contains('CHANGE-ME') || !baseUrl.startsWith('https://'))
+                throw new GradleException("Set -PALSABIHA_BASE_URL=https://your-domain (HTTPS required for release). Current: ${baseUrl}")
+        }
+    }
+}

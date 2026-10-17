@@ -1,3 +1,66 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Companies | AL SABIHA</title><link rel="stylesheet" href="/style.css"></head><body><script src="/app.js"></script><script>
-shell("companies","Companies",`<div class="panel"><h2>Add / Edit Company</h2><form id="f"><input type="hidden" id="id"><div class="form-grid"><div class="field"><label>Company Name</label><input id="name" required></div><div class="field"><label>Contact Person</label><input id="contact_person"></div><div class="field"><label>Contact Number</label><input id="contact_number"></div><div class="field"><label>Status</label><select id="status"><option>Active</option><option>Inactive</option></select></div></div><br><button class="btn gold">Save Company</button></form></div><div class="panel"><h2>Company Database</h2><div class="table-wrap"><table><thead><tr><th>Company</th><th>Contact Person</th><th>Contact</th><th>Workers</th><th>Sites</th><th>Status</th><th>Actions</th></tr></thead><tbody id="rows"></tbody></table></div></div>`);
-let data=[];async function load(){data=await api("/api/companies");$("#rows").innerHTML=data.map(x=>`<tr><td><b>${esc(x.name)}</b></td><td>${esc(x.contact_person||"—")}</td><td>${esc(x.contact_number||"—")}</td><td>${x.worker_count||0}</td><td>${x.site_count||0}</td><td><span class="badge">${esc(x.status)}</span></td><td><button class="btn ghost" onclick="edit(${x.id})">Edit</button> <button class="btn ghost" onclick="del(${x.id})">Disable</button></td></tr>`).join("")||'<tr><td colspan="7">No companies.</td></tr>'}window.edit=id=>{const x=data.find(z=>z.id===id);$("#id").value=id;$("#name").value=x.name;$("#contact_person").value=x.contact_person||"";$("#contact_number").value=x.contact_number||"";$("#status").value=x.status||"Active"};window.del=async id=>{if(confirm("Disable this company?")){await api("/api/companies/"+id,{method:"DELETE"});load()}};$("#f").onsubmit=async e=>{e.preventDefault();const b={name:$("#name").value,contact_person:$("#contact_person").value,contact_number:$("#contact_number").value,status:$("#status").value};const id=$("#id").value;await api(id?"/api/companies/"+id:"/api/companies",{method:id?"PUT":"POST",body:JSON.stringify(b)});e.target.reset();$("#id").value="";load()};load();loadMe();</script></body></html>
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Companies & Suppliers | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("companies", "Companies & Suppliers", `
+<div class="panel"><div class="toolbar" style="margin:0">
+  <div class="field grow"><label for="q">Search companies</label><input id="q" type="search" placeholder="Company name"></div>
+  <div class="field"><label for="st">Status</label><select id="st"><option value="">All</option><option>Active</option><option>Inactive</option></select></div>
+  <button class="btn gold" id="add">Add Company</button><a class="btn ghost" id="exp" href="/api/v2/export/company-workforce.xlsx">Export Excel</a>
+</div>
+<div class="tabs" id="tabs" role="group" aria-label="Filter by category"></div></div>
+<div id="note" class="message warn" hidden></div>
+<div class="panel" style="padding:0"><div class="table-wrap" style="border:0"><table><thead><tr><th>Company</th><th>Category</th><th>Status</th><th class="num">Active workers</th><th class="num">Sponsored workers</th><th class="num">Sites</th><th>Contact</th><th>Actions</th></tr></thead>
+<tbody id="rows"><tr><td colspan="8"><div class="loading">Loading…</div></td></tr></tbody></table></div></div>
+<p style="color:var(--muted);font-size:13px">A company can hold more than one category (for example both Supplier and Client). Categories marked “Needs review” were not classified automatically; confirm them by editing the company.</p>
+`);
+loadMe();
+const ROLE = { group: "AL SABIHA Group", supplier: "External Supplier", client: "Client / Project" };
+let role = "", data;
+const tabs = [["", "All"], ["group", "Group companies"], ["supplier", "External suppliers"], ["client", "Clients / working"], ["unclassified", "Needs review"]];
+function drawTabs(by) {
+  $("#tabs").innerHTML = tabs.map(([k, l]) => `<button class="tab" data-k="${k}" aria-pressed="${role === k}">${l}${k && by ? ` (${by[k] ?? 0})` : ""}</button>`).join("");
+  $$(".tab").forEach(b => b.onclick = () => { role = b.dataset.k; load(); });
+}
+async function load() {
+  try {
+    data = await api("/api/v2/companies?" + qs({ search: $("#q").value, status: $("#st").value, role }));
+    drawTabs(data.by_role);
+    const nr = data.items.filter(c => c.review_required).length;
+    $("#note").hidden = !nr; $("#note").textContent = `${nr} company record(s) have no category yet and need review.`;
+    $("#rows").innerHTML = data.items.length ? data.items.map(c => `<tr>
+      <td><b>${esc(c.name)}</b></td>
+      <td>${c.roles.length ? c.roles.map(r => `<span class="badge ${r === "group" ? "gold" : r === "supplier" ? "info" : "ok"}">${esc(ROLE[r])}</span>`).join(" ") : '<span class="badge warn">Needs review</span>'}</td>
+      <td><span class="badge ${c.status === "Active" ? "ok" : "bad"}">${esc(c.status)}</span></td>
+      <td class="num">${c.active_workers}</td><td class="num">${c.sponsored_workers}</td><td class="num">${c.site_count}</td>
+      <td>${esc([c.contact_person, c.contact_number].filter(Boolean).join(" · ") || "—")}</td>
+      <td class="actions"><button class="btn ghost sm" data-e="${c.id}">Edit</button><a class="btn ghost sm" href="/workers.html?company_id=${c.id}">Workers</a></td></tr>`).join("")
+      : `<tr><td colspan="8"><div class="empty"><b>No companies found</b>Adjust the filters or add a company.</div></td></tr>`;
+    $$("[data-e]").forEach(b => b.onclick = () => edit(data.items.find(c => c.id == b.dataset.e)));
+  } catch (e) { $("#rows").innerHTML = `<tr><td colspan="8"><div class="message error">${esc(e.message)}</div></td></tr>`; }
+}
+function edit(c) {
+  const n = !c, d = document.createElement("dialog"); d.className = "dlg";
+  c = c || { name: "", roles: [], contact_person: "", contact_number: "", notes: "", status: "Active" };
+  d.innerHTML = `<form method="dialog"><h3>${n ? "Add company" : "Edit company"}</h3><div class="form-grid" style="margin-top:12px">
+    <div class="field" style="grid-column:1/-1"><label for="cn">Company name *</label><input id="cn" value="${esc(c.name)}" maxlength="120" required></div>
+    <div class="field" style="grid-column:1/-1"><label>Category (one or more)</label><div class="checks">${Object.entries(ROLE).map(([k, l]) => `<label><input type="checkbox" name="r" value="${k}" ${c.roles.includes(k) ? "checked" : ""}> ${l}</label>`).join("")}</div></div>
+    <div class="field"><label for="cp">Contact person</label><input id="cp" value="${esc(c.contact_person || "")}"></div>
+    <div class="field"><label for="cc">Contact number</label><input id="cc" value="${esc(c.contact_number || "")}"></div>
+    ${n ? "" : `<div class="field"><label for="cs">Status</label><select id="cs"><option ${c.status === "Active" ? "selected" : ""}>Active</option><option ${c.status === "Inactive" ? "selected" : ""}>Inactive</option></select></div>`}
+    <div class="field" style="grid-column:1/-1"><label for="cno">Notes</label><textarea id="cno" rows="2">${esc(c.notes || "")}</textarea></div></div>
+    <div id="cm"></div><div class="dlg-actions"><button class="btn ghost" value="cancel" formnovalidate>Cancel</button><button class="btn gold" value="save">Save</button></div></form>`;
+  document.body.appendChild(d); d.showModal(); d.addEventListener("close", () => d.remove());
+  d.querySelector("form").addEventListener("submit", async ev => {
+    if (ev.submitter?.value !== "save") return; ev.preventDefault();
+    const body = { name: $("#cn").value, roles: [...d.querySelectorAll('input[name=r]:checked')].map(x => x.value), contact_person: $("#cp").value, contact_number: $("#cc").value, notes: $("#cno").value };
+    if (!n) body.status = $("#cs").value;
+    try { await api(n ? "/api/v2/companies" : "/api/v2/companies/" + c.id, { method: n ? "POST" : "PATCH", body }); d.close(); toast("Saved", "success"); load(); }
+    catch (e) { $("#cm").innerHTML = `<div class="message error">${esc(e.message)}</div>`; }
+  });
+}
+$("#add").onclick = () => edit(null);
+$("#q").addEventListener("input", debounce(load, 250)); $("#st").onchange = load;
+load();
+</script></body></html>

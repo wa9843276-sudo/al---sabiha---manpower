@@ -280,7 +280,7 @@
 <body>
 
 <script src="/app.js"></script>
-<script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
 <script>
 
@@ -486,7 +486,7 @@ function playAttendanceSound(type){
 
 shell(
   "scan",
-  "QR Scan Attendance",
+  "Scan QR Attendance",
   `
 
   <main class="scan-page">
@@ -496,7 +496,7 @@ shell(
       <div class="scan-title">
 
         <img
-          src="/logo.svg"
+          src="/Logo.svg"
           class="scan-logo"
           alt="AL SABIHA"
           onerror="this.style.display='none'"

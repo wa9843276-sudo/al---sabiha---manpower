@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Quick Actions | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("quick", "Quick Actions", `<div class="tiles">
+ <a class="tile" href="/scan.html"><b>Scan QR Attendance</b><span>Check workers in or out with the camera.</span></a>
+ <a class="tile" href="/manual-attendance.html"><b>Manual Attendance</b><span>Record attendance by hand for a worker.</span></a>
+ <a class="tile" href="/worker-add.html"><b>Add Worker</b><span>Create a single worker record.</span></a>
+ <a class="tile" href="/import.html"><b>Import Workers from Excel</b><span>Upload a workbook, preview, then confirm.</span></a>
+ <a class="tile" href="/workers.html"><b>Find a Worker</b><span>Search by name or Employee ID.</span></a>
+ <a class="tile" href="/recent-attendance.html"><b>Recent Attendance</b><span>Latest check-ins and check-outs.</span></a>
+ <a class="tile" href="/companies.html"><b>Companies &amp; Suppliers</b><span>Manage company master data.</span></a>
+ <a class="tile" href="/monthly-report.html"><b>Monthly Report</b><span>Days present and hours per worker.</span></a></div>`, { sub: "Shortcuts to other modules. Each opens its own page." });
+loadMe();
+</script></body></html>

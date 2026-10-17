@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Attendance Analytics | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script src="/js/charts.js"></script>
+<script>
+shell("analytics", "Attendance Analytics", `
+<div class="panel"><div class="toolbar" style="margin:0">
+ <div class="field"><label for="date">End date</label><input id="date" type="date"></div>
+ <div class="field"><label for="days">Window</label><select id="days"><option value="14">14 days</option><option value="30" selected>30 days</option><option value="60">60 days</option><option value="90">90 days</option></select></div>
+ <div class="field"><label for="co">Company (at check-in)</label><select id="co"><option value="">All</option></select></div>
+ <div class="field"><label for="si">Site</label><select id="si"><option value="">All</option></select></div></div></div>
+<div id="kp" class="kpis"></div>
+<section class="panel"><h2>Daily attendance</h2><div id="d"></div><div class="legend" style="flex-direction:row;gap:16px;margin-top:6px"><span><i style="background:#0e8aa6"></i>Unique workers</span><span><i style="background:#b88a2a"></i>Attendance records</span></div></section>
+<section class="panel"><h2>Monthly attendance (last 12 months)</h2><div id="mo"></div></section>
+<section class="panel"><h2>Definitions</h2><p style="margin:0;color:var(--muted)">Unique workers = distinct workers with a check-in that day (or month). Records = every check-in. Attendance rate = workers present on the end date ÷ active workers in scope; it is not an absence figure because no expected-attendance roster exists.</p></section>`);
+loadMe();
+async function load() {
+  try {
+    const d = await api("/api/v2/dashboard?" + qs({ date: $("#date").value, days: $("#days").value, company_id: $("#co").value, site_id: $("#si").value }));
+    $("#date").value = d.date;
+    const k = d.kpis, t = d.charts.daily_trend, sum = t.reduce((s, x) => s + x.workers, 0);
+    const c = (l, v, s) => `<div class="kpi"><small>${l}</small><b>${v}</b><em>${s || "&nbsp;"}</em></div>`;
+    $("#kp").innerHTML = c("Present on end date", k.present_today, "unique workers") + c("Attendance rate", k.attendance_rate_pct == null ? "—" : k.attendance_rate_pct + "%", "of active workers") + c("Checked in now", k.checked_in_now, "open check-ins") + c("Avg workers / day", t.length ? (sum / t.length).toFixed(1) : "0", "over window");
+    lineChart($("#d"), t, { key: "workers", key2: "records", label: p => p.date.slice(5) });
+    lineChart($("#mo"), d.charts.monthly_trend, { key: "workers", key2: "records", label: p => p.month });
+  } catch (e) { $("#kp").innerHTML = `<div class="message error">${esc(e.message)}</div>`; }
+}
+["date", "days", "co", "si"].forEach(i => $("#" + i).addEventListener("change", load));
+api("/api/v2/lookups").then(L => { L.companies.forEach(c => $("#co").add(new Option(c.name, c.id))); L.sites.forEach(s => $("#si").add(new Option(s.name + (s.location ? " — " + s.location : ""), s.id))); });
+load();
+</script></body></html>

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Add Worker | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("worker-add", "Add Worker", `
+<form class="panel" id="f" novalidate>
+  <div class="form-grid">
+    <div class="field"><label for="worker_code">Employee ID *</label><input id="worker_code" autocomplete="off" required maxlength="40"><span class="hint">Letters, digits . _ - / — saved in capitals. Cannot be changed later (printed on the QR code).</span><span class="err" id="e_worker_code"></span></div>
+    <div class="field"><label for="name">Employee Name *</label><input id="name" required maxlength="120"><span class="err" id="e_name"></span></div>
+    <div class="field"><label for="designation">Designation / Trade</label><input id="designation" list="desigList" maxlength="80"><datalist id="desigList"></datalist></div>
+    <div class="field"><label for="company_type">Company Type</label><select id="company_type"></select></div>
+    <div class="field"><label for="sponsor_company_id">Visa/Sponsor Company</label><select id="sponsor_company_id"><option value="">— None —</option></select><span class="hint">The company that holds the worker's visa. Not the same as where they work.</span></div>
+    <div class="field"><label for="company_id">Working/Assigned Company</label><select id="company_id"><option value="">— Unassigned —</option></select><span class="hint">Where the worker is currently deployed. Can be reassigned later.</span></div>
+    <div class="field"><label for="status">Worker Status</label><select id="status"><option>Active</option><option>Inactive</option></select></div>
+    <div class="field"><label for="mobile">Mobile Number</label><input id="mobile" type="tel" maxlength="25"><span class="err" id="e_mobile"></span></div>
+    <div class="field"><label for="joining_date">Joining Date</label><input id="joining_date" type="date"></div>
+    <div class="field"><label for="salary">Salary</label><input id="salary" type="number" min="0" step="0.01"></div>
+  </div>
+  <div id="msg" role="alert"></div>
+  <div class="actions" style="margin-top:18px"><button class="btn gold" id="save" type="submit">Create Worker</button><a class="btn ghost" href="/workers.html">Go to Worker Database</a><a class="btn ghost" href="/import.html">Import from Excel</a></div>
+</form>`);
+loadMe();
+const g = id => $("#" + id);
+api("/api/v2/lookups").then(L => {
+  L.company_types.forEach(t => g("company_type").add(new Option(t.label, t.value)));
+  L.companies.filter(c => c.status === "Active").forEach(c => { g("sponsor_company_id").add(new Option(c.name, c.id)); g("company_id").add(new Option(c.name, c.id)); });
+  L.designations.forEach(d => g("desigList").appendChild(Object.assign(document.createElement("option"), { value: d })));
+});
+const fields = ["worker_code", "name", "designation", "company_type", "sponsor_company_id", "company_id", "status", "mobile", "joining_date", "salary"];
+function clearErr() { $$(".err").forEach(e => e.textContent = ""); $$("[aria-invalid]").forEach(e => e.removeAttribute("aria-invalid")); g("msg").innerHTML = ""; }
+function showErr(f, m) { const e = g("e_" + f); if (e) e.textContent = m; const i = g(f); if (i) { i.setAttribute("aria-invalid", "true"); i.focus(); } }
+g("f").addEventListener("submit", async ev => {
+  ev.preventDefault(); clearErr();
+  if (!g("worker_code").value.trim()) return showErr("worker_code", "Employee ID is required.");
+  if (!g("name").value.trim()) return showErr("name", "Employee name is required.");
+  const body = {}; fields.forEach(f => body[f] = g(f).value);
+  g("save").disabled = true;
+  try {
+    const r = await api("/api/v2/workers", { method: "POST", body });
+    g("msg").innerHTML = `<div class="message success">Worker <b>${esc(r.worker_code)}</b> created. <a href="${esc(r.profile_url)}">Open profile</a> · <a href="/worker-add.html">Add another</a></div>`;
+    toast("Worker created", "success"); g("f").reset();
+  } catch (e) {
+    if (e.data?.field) showErr(e.data.field, e.message);
+    g("msg").innerHTML = `<div class="message error">${esc(e.message)}${e.data?.existing_id ? ` <a href="/worker.html?id=${e.data.existing_id}">Open existing worker</a>` : ""}</div>`;
+  } finally { g("save").disabled = false; }
+});
+</script></body></html>

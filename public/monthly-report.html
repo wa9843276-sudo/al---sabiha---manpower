@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Monthly Reports | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("monthly", "Monthly Reports", `
+<div class="panel"><div class="toolbar" style="margin:0">
+ <div class="field"><label for="m">Month</label><input id="m" type="month"></div>
+ <div class="field"><label for="co">Company (at check-in)</label><select id="co"><option value="">All</option></select></div>
+ <div class="field"><label for="si">Site</label><select id="si"><option value="">All</option></select></div>
+ <a class="btn gold" id="exp" href="#">Export Excel</a></div></div>
+<div id="kp" class="kpis"></div>
+<div class="panel" style="padding:0"><div class="table-wrap" style="border:0"><table><thead><tr><th>Employee ID</th><th>Worker</th><th>Designation</th><th class="num">Days present</th><th class="num">Records</th><th class="num">Total hours</th><th class="num">Manual</th><th class="num">Open</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+<p style="color:var(--muted);font-size:13px">Days present = distinct dates with a check-in. Hours = sum of completed check-in/check-out pairs; open records are not counted.</p>`);
+loadMe();
+$("#m").value = new Date(Date.now() + 4 * 3600e3).toISOString().slice(0, 7);
+async function load() {
+  const q = { month: $("#m").value, company_id: $("#co").value, site_id: $("#si").value };
+  $("#exp").href = "/api/v2/export/monthly.xlsx?" + qs(q);
+  if (!q.month) { $("#rows").innerHTML = ""; return; }
+  $("#rows").innerHTML = '<tr><td colspan="8"><div class="loading">Loading…</div></td></tr>';
+  try {
+    const d = await api("/api/v2/reports/monthly?" + qs(q)), k = (l, v) => `<div class="kpi"><small>${l}</small><b>${v}</b></div>`;
+    $("#kp").innerHTML = k("Workers with attendance", d.totals.workers) + k("Worker-days", d.totals.days) + k("Total hours", d.totals.hours);
+    $("#rows").innerHTML = d.items.length ? d.items.map(r => `<tr><td><b>${esc(r.worker_code)}</b></td><td><a href="/worker.html?id=${r.worker_id}">${esc(r.worker_name)}</a></td><td>${esc(r.designation || "—")}</td><td class="num">${r.days_present}</td><td class="num">${r.records}</td><td class="num">${r.total_hours}</td><td class="num">${r.manual_records}</td><td class="num">${r.open_records}</td></tr>`).join("") : '<tr><td colspan="8"><div class="empty"><b>No attendance in this month</b>Pick another month or filter.</div></td></tr>';
+  } catch (e) { $("#rows").innerHTML = `<tr><td colspan="8"><div class="message error">${esc(e.message)}</div></td></tr>`; }
+}
+["m", "co", "si"].forEach(i => $("#" + i).addEventListener("change", load));
+api("/api/v2/lookups").then(L => { L.companies.forEach(c => $("#co").add(new Option(c.name, c.id))); L.sites.forEach(s => $("#si").add(new Option(s.name + (s.location ? " — " + s.location : ""), s.id))); });
+load();
+</script></body></html>

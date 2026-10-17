@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Recent Attendance | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("recent", "Recent Attendance", `
+<div class="panel"><div class="toolbar" style="margin:0">
+ <div class="field"><label for="from">From</label><input id="from" type="date"></div>
+ <div class="field"><label for="to">To</label><input id="to" type="date"></div>
+ <div class="field"><label for="co">Company (at check-in)</label><select id="co"><option value="">All</option></select></div>
+ <div class="field"><label for="si">Site</label><select id="si"><option value="">All</option></select></div>
+ <div class="field"><label for="stt">Status</label><select id="stt"><option value="">All</option><option value="checked_in">Checked in</option><option value="checked_out">Checked out</option></select></div>
+ <div class="field"><label for="wk">Worker (name or ID)</label><input id="wk" type="search"></div>
+ <button class="btn ghost" id="reset">Reset</button><a class="btn ghost" id="exp" href="#">Export Excel</a>
+</div></div>
+<div class="panel" style="padding:0"><div id="sum" class="pager" style="padding:12px 16px;margin:0" aria-live="polite"></div>
+<div class="table-wrap" style="border:0;border-radius:0"><table><thead><tr><th>Date</th><th>Employee ID</th><th>Worker</th><th>Designation</th><th>Company</th><th>Site</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody id="rows"><tr><td colspan="9"><div class="loading">Loading…</div></td></tr></tbody></table></div>
+<div class="pager" style="padding:0 16px 14px"><span id="pi"></span><span class="actions"><button class="btn ghost sm" id="prev">Previous</button><button class="btn ghost sm" id="next">Next</button></span></div></div>`);
+loadMe();
+const S = { page: 1, page_size: 25 }, ids = ["from", "to", "co", "si", "stt", "wk"];
+const map = { from: "date_from", to: "date_to", co: "company_id", si: "site_id", stt: "status", wk: "worker" };
+let pages = 1, seq = 0;
+const cur = () => ({ ...S, ...Object.fromEntries(ids.map(i => [map[i], $("#" + i).value])) });
+async function load() {
+  const my = ++seq, q = cur();
+  $("#exp").href = "/api/v2/export/attendance.xlsx?" + qs({ ...q, page: "", page_size: "" });
+  try {
+    const d = await api("/api/v2/attendance?" + qs(q)); if (my !== seq) return; pages = d.pages;
+    $("#sum").innerHTML = `<span><b>${d.total}</b> record${d.total === 1 ? "" : "s"}, newest first</span>`;
+    $("#rows").innerHTML = d.items.length ? d.items.map(a => `<tr><td>${esc(a.attendance_date)}</td><td><b>${esc(a.worker_code)}</b></td><td>${esc(a.worker_name)}</td><td>${esc(a.designation || "—")}</td><td>${esc(a.company_name || "—")}</td><td>${esc(a.site_name || "—")}</td><td>${esc(fmtDT(a.check_in))}${a.is_manual ? ' <span class="badge gold">manual</span>' : ""}</td><td>${esc(fmtDT(a.check_out))}</td><td><span class="badge ${a.check_out ? (a.attendance_status === "Auto Checkout" ? "warn" : "ok") : "info"}">${esc(a.attendance_status)}</span></td></tr>`).join("") : `<tr><td colspan="9"><div class="empty"><b>No attendance records</b>Change the filters to see more.</div></td></tr>`;
+    $("#pi").textContent = `Page ${d.page} of ${d.pages}`; $("#prev").disabled = d.page <= 1; $("#next").disabled = d.page >= d.pages;
+  } catch (e) { $("#rows").innerHTML = `<tr><td colspan="9"><div class="message error">${esc(e.message)}</div></td></tr>`; }
+}
+ids.forEach(i => $("#" + i).addEventListener(i === "wk" ? "input" : "change", debounce(() => { S.page = 1; load(); }, 250)));
+$("#prev").onclick = () => { S.page--; load(); }; $("#next").onclick = () => { if (S.page < pages) { S.page++; load(); } };
+$("#reset").onclick = () => { ids.forEach(i => $("#" + i).value = ""); S.page = 1; load(); };
+api("/api/v2/lookups").then(L => { L.companies.forEach(c => $("#co").add(new Option(c.name, c.id))); L.sites.forEach(s => $("#si").add(new Option(s.name + (s.location ? " — " + s.location : ""), s.id))); });
+load();
+</script></body></html>

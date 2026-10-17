@@ -1,1641 +1,975 @@
-```html
-<!doctype html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport"
-        content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-
-  <meta name="theme-color" content="#061526">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f5f7fb">
   <title>AL SABIHA | Worker App</title>
-
-  <link rel="icon" href="/logo.svg">
-
   <style>
-    *{
-      box-sizing:border-box;
-      -webkit-tap-highlight-color:transparent;
-    }
-
-    html,body{
-      margin:0;
-      padding:0;
-      width:100%;
-      min-height:100%;
-      font-family:Arial,Helvetica,sans-serif;
-      background:#020b15;
-      color:#fff;
-    }
-
-    body{
-      min-height:100vh;
-      overflow-x:hidden;
-    }
-
-    button,input{
-      font:inherit;
-    }
-
-    .app{
-      width:100%;
-      min-height:100vh;
-      background:
-        radial-gradient(circle at 15% 10%,rgba(0,255,180,.12),transparent 30%),
-        radial-gradient(circle at 90% 15%,rgba(0,190,255,.12),transparent 30%),
-        linear-gradient(160deg,#020914,#061526 55%,#020914);
-    }
-
-    .screen{
-      min-height:100vh;
-      padding-bottom:86px;
-    }
-
-    /* =========================
-       LOGIN
-       ========================= */
-
-    #loginScreen{
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
-    }
-
-    .login-card{
-      width:100%;
-      max-width:430px;
-      padding:30px 22px;
-      border:1px solid rgba(255,255,255,.13);
-      border-radius:28px;
-      background:rgba(8,22,37,.78);
-      backdrop-filter:blur(22px);
-      box-shadow:
-        0 25px 80px rgba(0,0,0,.5),
-        0 0 35px rgba(0,255,190,.08);
-    }
-
-    .login-logo{
-      width:78px;
-      height:78px;
-      object-fit:contain;
-      display:block;
-      margin:0 auto 18px;
-    }
-
-    .login-title{
-      text-align:center;
-      margin:0;
-      font-size:28px;
-      font-weight:800;
-      letter-spacing:.4px;
-    }
-
-    .login-subtitle{
-      text-align:center;
-      color:#9db0c0;
-      font-size:13px;
-      margin:8px 0 28px;
-    }
-
-    .field{
-      margin-bottom:16px;
-    }
-
-    .field label{
-      display:block;
-      font-size:12px;
-      color:#b8c7d4;
-      margin:0 0 7px 4px;
-    }
-
-    .field input{
-      width:100%;
-      height:52px;
-      border-radius:15px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.055);
-      color:#fff;
-      outline:none;
-      padding:0 15px;
-    }
-
-    .field input:focus{
-      border-color:rgba(0,255,190,.55);
-      box-shadow:0 0 0 3px rgba(0,255,190,.08);
-    }
-
-    .login-btn{
-      width:100%;
-      height:54px;
-      border:0;
-      border-radius:16px;
-      color:#02130f;
-      font-weight:800;
-      background:linear-gradient(135deg,#00f0a8,#63f7d1);
-      box-shadow:0 10px 30px rgba(0,255,180,.18);
-      cursor:pointer;
-    }
-
-    .login-btn:active{
-      transform:scale(.98);
-    }
-
-    .error{
-      display:none;
-      margin:0 0 14px;
-      padding:11px 13px;
-      border-radius:12px;
-      background:rgba(255,70,70,.12);
-      border:1px solid rgba(255,70,70,.2);
-      color:#ff9d9d;
-      font-size:13px;
-    }
-
-    /* =========================
-       APP HEADER
-       ========================= */
-
-    .app-header{
-      position:sticky;
-      top:0;
-      z-index:20;
-      padding:15px 16px 13px;
-      background:rgba(3,13,24,.82);
-      backdrop-filter:blur(18px);
-      border-bottom:1px solid rgba(255,255,255,.07);
-    }
-
-    .header-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:10px;
-    }
-
-    .brand img{
-      width:42px;
-      height:42px;
-      object-fit:contain;
-    }
-
-    .brand-title{
-      font-size:15px;
-      font-weight:800;
-    }
-
-    .brand-sub{
-      color:#8194a5;
-      font-size:11px;
-      margin-top:2px;
-    }
-
-    .logout-small{
-      width:40px;
-      height:40px;
-      border-radius:13px;
-      border:1px solid rgba(255,255,255,.1);
-      background:rgba(255,255,255,.05);
-      color:#fff;
-      font-size:18px;
-    }
-
-    /* =========================
-       CONTENT
-       ========================= */
-
-    .content{
-      padding:18px 15px 20px;
-    }
-
-    .welcome{
-      margin-bottom:18px;
-    }
-
-    .welcome-small{
-      color:#8296a8;
-      font-size:12px;
-      margin-bottom:4px;
-    }
-
-    .welcome-name{
-      font-size:25px;
-      font-weight:800;
-      line-height:1.15;
-    }
-
-    .worker-card{
-      position:relative;
-      overflow:hidden;
-      border-radius:24px;
-      padding:20px;
-      margin-bottom:15px;
-      background:
-        radial-gradient(circle at 90% 10%,rgba(0,255,190,.16),transparent 35%),
-        linear-gradient(145deg,rgba(15,39,60,.96),rgba(5,18,31,.96));
-      border:1px solid rgba(255,255,255,.1);
-      box-shadow:0 18px 45px rgba(0,0,0,.25);
-    }
-
-    .worker-card:after{
-      content:"";
-      position:absolute;
-      width:120px;
-      height:120px;
-      right:-55px;
-      bottom:-55px;
-      border-radius:50%;
-      border:1px solid rgba(0,255,190,.18);
-    }
-
-    .worker-code{
-      display:inline-block;
-      padding:6px 10px;
-      border-radius:10px;
-      background:rgba(0,255,190,.09);
-      border:1px solid rgba(0,255,190,.15);
-      color:#65f5d1;
-      font-size:11px;
-      font-weight:700;
-      margin-bottom:10px;
-    }
-
-    .worker-name{
-      font-size:23px;
-      font-weight:800;
-      margin-bottom:15px;
-    }
-
-    .info-grid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .info-box{
-      min-width:0;
-      padding:11px;
-      border-radius:14px;
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.06);
-    }
-
-    .info-label{
-      color:#718597;
-      font-size:10px;
-      margin-bottom:4px;
-      text-transform:uppercase;
-      letter-spacing:.5px;
-    }
-
-    .info-value{
-      color:#edf5fa;
-      font-size:13px;
-      font-weight:700;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-
-    /* =========================
-       QR
-       ========================= */
-
-    .section-title{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      margin:21px 2px 11px;
-    }
-
-    .section-title h2{
-      margin:0;
-      font-size:17px;
-    }
-
-    .section-title span{
-      color:#708697;
-      font-size:11px;
-    }
-
-    .qr-card{
-      border-radius:22px;
-      padding:22px 18px;
-      text-align:center;
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.09);
-    }
-
-    .qr-wrap{
-      width:210px;
-      height:210px;
-      margin:0 auto 14px;
-      padding:12px;
-      background:#fff;
-      border-radius:18px;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-    }
-
-    #qrImage{
-      width:100%;
-      height:100%;
-      object-fit:contain;
-    }
-
-    .qr-code-text{
-      color:#65f5d1;
-      font-weight:800;
-      font-size:14px;
-    }
-
-    .qr-help{
-      color:#778b9b;
-      font-size:11px;
-      line-height:1.5;
-      margin-top:6px;
-    }
-
-    /* =========================
-       TODAY
-       ========================= */
-
-    .today-card{
-      border-radius:22px;
-      padding:17px;
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .attendance-item{
-      padding:14px 0;
-      border-bottom:1px solid rgba(255,255,255,.07);
-    }
-
-    .attendance-item:first-child{
-      padding-top:0;
-    }
-
-    .attendance-item:last-child{
-      border-bottom:0;
-      padding-bottom:0;
-    }
-
-    .att-top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .att-date{
-      font-size:13px;
-      font-weight:800;
-    }
-
-    .status{
-      padding:5px 8px;
-      border-radius:8px;
-      font-size:10px;
-      font-weight:800;
-    }
-
-    .status-present{
-      color:#68f3cb;
-      background:rgba(0,255,180,.09);
-    }
-
-    .status-open{
-      color:#ffd978;
-      background:rgba(255,205,80,.09);
-    }
-
-    .att-details{
-      margin-top:9px;
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-    }
-
-    .att-detail{
-      color:#8ca0b0;
-      font-size:11px;
-    }
-
-    .att-detail b{
-      color:#e8f0f5;
-      font-size:12px;
-    }
-
-    .empty{
-      padding:22px 8px;
-      text-align:center;
-      color:#718697;
-      font-size:12px;
-    }
-
-    /* =========================
-       HISTORY
-       ========================= */
-
-    .history-list{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-
-    .history-card{
-      padding:14px;
-      border-radius:17px;
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.07);
-    }
-
-    .history-head{
-      display:flex;
-      justify-content:space-between;
-      gap:10px;
-      align-items:center;
-    }
-
-    .history-date{
-      font-weight:800;
-      font-size:13px;
-    }
-
-    .history-company{
-      margin-top:7px;
-      color:#c5d3dc;
-      font-size:12px;
-    }
-
-    .history-site{
-      margin-top:4px;
-      color:#7f94a5;
-      font-size:11px;
-    }
-
-    .history-times{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:8px;
-      margin-top:11px;
-    }
-
-    .time-box{
-      padding:9px;
-      border-radius:11px;
-      background:rgba(255,255,255,.04);
-    }
-
-    .time-label{
-      color:#718596;
-      font-size:9px;
-      text-transform:uppercase;
-    }
-
-    .time-value{
-      margin-top:3px;
-      color:#eaf4f8;
-      font-size:12px;
-      font-weight:700;
-    }
-
-    /* =========================
-       PROFILE
-       ========================= */
-
-    .profile-card{
-      border-radius:22px;
-      padding:18px;
-      background:rgba(255,255,255,.045);
-      border:1px solid rgba(255,255,255,.08);
-    }
-
-    .profile-row{
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      padding:12px 0;
-      border-bottom:1px solid rgba(255,255,255,.06);
-    }
-
-    .profile-row:last-child{
-      border-bottom:0;
-    }
-
-    .profile-label{
-      color:#718697;
-      font-size:11px;
-    }
-
-    .profile-value{
-      color:#edf5f8;
-      font-size:12px;
-      font-weight:700;
-      text-align:right;
-      max-width:60%;
-      word-break:break-word;
-    }
-
-    /* =========================
-       BOTTOM NAV
-       ========================= */
-
-    .bottom-nav{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      z-index:50;
-      height:74px;
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      background:rgba(3,13,24,.92);
-      backdrop-filter:blur(20px);
-      border-top:1px solid rgba(255,255,255,.08);
-      padding-bottom:env(safe-area-inset-bottom);
-    }
-
-    .nav-btn{
-      border:0;
-      background:transparent;
-      color:#6f8394;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      gap:4px;
-      font-size:10px;
-    }
-
-    .nav-icon{
-      font-size:20px;
-      line-height:1;
-    }
-
-    .nav-btn.active{
-      color:#5ff2cd;
-    }
-
-    /* =========================
-       LOADING
-       ========================= */
-
-    .loading{
-      text-align:center;
-      color:#8295a5;
-      font-size:12px;
-      padding:25px 0;
-    }
-
-    .hidden{
-      display:none !important;
-    }
-
-    @media(min-width:700px){
-      body{
-        background:#020914;
-      }
-
-      .app{
-        max-width:520px;
-        margin:0 auto;
-        box-shadow:0 0 70px rgba(0,0,0,.45);
-      }
-
-      .bottom-nav{
-        max-width:520px;
-        left:50%;
-        right:auto;
-        transform:translateX(-50%);
-        width:100%;
-      }
+    :root {
+      --bg:#f5f7fb; --white:#fff; --navy:#10243d;
+      --gold:#c79b3b; --cyan:#19a7b8; --text:#172033;
+      --muted:#697586; --line:#e5eaf1;
+      --shadow:0 10px 30px rgba(16,36,61,.07);
+      --radius:22px;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0; color:var(--text); background:var(--bg);
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+    }
+    button,input { font:inherit; }
+    button { cursor:pointer; }
+    .hidden { display:none!important; }
+    .app-shell { max-width:1100px; min-height:100dvh; margin:auto; padding:18px 16px 100px; }
+    .topbar { display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; }
+    .brand { display:flex; align-items:center; gap:11px; }
+    .brand-logo { width:45px; height:45px; object-fit:contain; padding:5px; border:1px solid var(--line); border-radius:15px; background:#fff; }
+    .brand-name { font-size:14px; font-weight:900; letter-spacing:.08em; color:var(--navy); }
+    .brand-sub { font-size:10px; color:var(--muted); margin-top:4px; letter-spacing:.08em; }
+    .icon-button { width:43px; height:43px; border:1px solid var(--line); border-radius:14px; background:#fff; color:var(--navy); }
+    .icon-button svg { width:20px; height:20px; vertical-align:middle; }
+    .eyebrow { color:var(--gold); font-size:10px; font-weight:900; letter-spacing:.14em; text-transform:uppercase; }
+    h1 { font-size:clamp(26px,5vw,36px); line-height:1.12; letter-spacing:-.04em; margin:8px 0; }
+    h2 { font-size:19px; letter-spacing:-.025em; margin:0 0 8px; }
+    h3 { font-size:14px; margin:0 0 8px; }
+    p { line-height:1.55; }
+    .muted { color:var(--muted); }
+    .small { font-size:12px; }
+    .page-heading { margin:8px 0 22px; }
+    .page-heading p { margin:0; color:var(--muted); font-size:13px; }
+    .card { padding:20px; border:1px solid var(--line); border-radius:var(--radius); background:rgba(255,255,255,.96); box-shadow:var(--shadow); }
+    .card + .card { margin-top:15px; }
+    .hero-card { position:relative; overflow:hidden; padding:24px; color:#fff; border:0; border-radius:24px; background:linear-gradient(130deg,#10243d,#19415f 72%,#176b77); }
+    .hero-card:after { content:""; position:absolute; width:170px; height:170px; right:-65px; top:-70px; border:1px solid #ffffff30; border-radius:50%; box-shadow:0 0 0 22px #ffffff09,0 0 0 44px #ffffff08; }
+    .hero-card .eyebrow { color:#f1d28b; }
+    .hero-card h2 { font-size:24px; margin:9px 0 5px; }
+    .hero-card p { margin:0; font-size:13px; color:#ffffffc7; }
+    .worker-code-pill { display:inline-flex; gap:8px; align-items:center; margin-top:18px; padding:8px 12px; border:1px solid #ffffff35; border-radius:99px; background:#ffffff12; font-size:11px; font-weight:800; }
+    .status-dot { width:7px; height:7px; border-radius:50%; background:#55d6a0; }
+    .section-row { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:24px 2px 12px; }
+    .section-row h2 { margin:0; font-size:17px; }
+    .text-button { border:0; background:transparent; color:#128b9b; font-size:12px; font-weight:800; padding:8px 0; }
+    .stats-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; margin-top:13px; }
+    .stat-card { padding:16px; border:1px solid var(--line); border-radius:19px; background:#fff; }
+    .stat-icon { display:grid; place-items:center; width:36px; height:36px; margin-bottom:13px; border-radius:12px; background:#e9f7f9; color:#128b9b; }
+    .stat-icon.gold { background:#fff5df; color:#a77a19; }
+    .stat-icon svg { width:19px; height:19px; }
+    .stat-value { font-size:27px; font-weight:900; letter-spacing:-.05em; color:var(--navy); }
+    .stat-label { margin-top:5px; color:var(--muted); font-size:11px; line-height:1.4; }
+    .info-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .info-item { min-width:0; padding:13px; border:1px solid #edf0f5; border-radius:15px; background:#f9fafc; }
+    .info-label { margin-bottom:7px; color:var(--muted); font-size:9px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    .info-value { color:var(--navy); font-size:12px; font-weight:800; overflow-wrap:anywhere; }
+    .quick-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:11px; }
+    .quick-action { display:flex; align-items:center; gap:10px; padding:13px; text-align:left; border:1px solid var(--line); border-radius:18px; background:#fff; color:var(--text); }
+    .action-icon { display:grid; place-items:center; flex-shrink:0; width:40px; height:40px; border-radius:13px; background:#edf7f9; color:#128b9b; }
+    .action-icon svg { width:20px; height:20px; }
+    .quick-action strong { display:block; font-size:12px; }
+    .quick-action span span { display:block; margin-top:4px; color:var(--muted); font-size:10px; }
+    .list { display:flex; flex-direction:column; }
+    .list-row { display:flex; align-items:center; gap:11px; min-width:0; padding:14px 0; border-bottom:1px solid var(--line); }
+    .list-row:last-child { border-bottom:0; padding-bottom:0; }
+    .list-row:first-child { padding-top:0; }
+    .list-icon { display:grid; place-items:center; flex-shrink:0; width:39px; height:39px; border-radius:13px; background:#f0f4f8; color:var(--navy); }
+    .list-icon svg { width:18px; height:18px; }
+    .list-main { flex:1; min-width:0; }
+    .list-title { font-size:12px; font-weight:850; overflow-wrap:anywhere; }
+    .list-sub { margin-top:4px; color:var(--muted); font-size:10px; line-height:1.5; overflow-wrap:anywhere; }
+    .badge { padding:6px 8px; border-radius:99px; white-space:nowrap; background:#eaf7ef; color:#17784f; font-size:9px; font-weight:900; }
+    .badge.pending { background:#fff4df; color:#986a13; }
+    .badge.neutral { background:#eef2f7; color:#586779; }
+    .empty { padding:25px 10px; text-align:center; color:var(--muted); font-size:12px; line-height:1.6; }
+    .primary-btn,.secondary-btn { display:flex; align-items:center; justify-content:center; gap:9px; width:100%; padding:14px 16px; border-radius:15px; font-weight:850; }
+    .primary-btn { border:0; color:#fff; background:var(--navy); box-shadow:0 8px 18px #10243d20; }
+    .secondary-btn { border:1px solid var(--line); color:var(--navy); background:#fff; }
+    .primary-btn:disabled { opacity:.6; }
+    .primary-btn svg,.secondary-btn svg { width:18px; height:18px; }
+    .field { margin-bottom:16px; }
+    .field label { display:block; margin-bottom:8px; color:#344054; font-size:12px; font-weight:850; }
+    .field input { width:100%; min-height:48px; padding:12px 14px; outline:none; border:1px solid #dfe5ed; border-radius:14px; background:#fbfcfe; color:var(--text); }
+    .field input:focus { border-color:var(--cyan); box-shadow:0 0 0 4px #19a7b81a; background:#fff; }
+    .field-help { margin-top:7px; color:var(--muted); font-size:10px; line-height:1.5; }
+    .error-message,.success-message { margin:0 0 14px; padding:11px 12px; border-radius:12px; font-size:12px; line-height:1.5; }
+    .error-message { color:#a42b36; background:#fff0f1; }
+    .success-message { margin:12px 0 0; color:#146c48; background:#eaf8f0; }
+    .login-wrap { display:grid; place-items:center; min-height:100dvh; padding:24px 17px; }
+    .login-container { width:min(100%,420px); }
+    .login-brand { margin-bottom:25px; text-align:center; }
+    .login-logo { width:78px; height:78px; object-fit:contain; padding:10px; margin-bottom:15px; border:1px solid var(--line); border-radius:25px; background:#fff; box-shadow:var(--shadow); }
+    .login-brand .brand-name { font-size:16px; }
+    .login-brand .brand-sub { font-size:11px; }
+    .login-card { padding:24px; }
+    .login-card h1 { font-size:28px; }
+    .login-card>p { margin:9px 0 22px; color:var(--muted); font-size:13px; }
+    .login-footer { margin-top:20px; color:#8b95a5; text-align:center; font-size:10px; line-height:1.7; }
+    .qr-wrap { text-align:center; }
+    .qr-box { display:grid; place-items:center; min-height:230px; padding:18px; margin:18px 0; border:1px dashed #cbd5e1; border-radius:20px; background:#fff; }
+    .qr-box img { display:block; width:min(100%,250px); height:auto; }
+    .qr-placeholder { color:var(--muted); font-size:12px; line-height:1.6; }
+    .qr-code-text { margin:10px 0 16px; padding:10px; border-radius:10px; background:#f3f6fa; font-family:monospace; font-size:11px; overflow-wrap:anywhere; }
+    .profile-avatar { display:grid; place-items:center; width:60px; height:60px; border:1px solid var(--line); border-radius:20px; background:linear-gradient(140deg,#e7f6f8,#fff4d9); color:var(--navy); font-size:21px; font-weight:900; }
+    .profile-head { display:flex; align-items:center; gap:13px; margin-bottom:20px; }
+    .profile-head h2 { margin:0 0 5px; }
+    .profile-head p { margin:0; color:var(--muted); font-size:11px; }
+    .bottom-nav { position:fixed; z-index:20; right:0; bottom:0; left:0; display:flex; justify-content:center; padding:9px 12px calc(9px + env(safe-area-inset-bottom)); border-top:1px solid #e1e6ed; background:#ffffffed; backdrop-filter:blur(18px); }
+    .nav-inner { display:grid; grid-template-columns:repeat(4,1fr); gap:4px; width:min(100%,600px); }
+    .nav-btn { display:flex; flex-direction:column; align-items:center; gap:5px; padding:7px 2px; border:0; border-radius:12px; background:transparent; color:#8490a1; font-size:10px; font-weight:800; }
+    .nav-btn svg { width:21px; height:21px; }
+    .nav-btn.active { color:var(--navy); background:#f0f4f8; }
+    .nav-btn.active svg { color:var(--gold); }
+    .page { animation:fadeIn .18s ease-out; }
+    @keyframes fadeIn { from {opacity:.5;transform:translateY(4px)} to {opacity:1;transform:translateY(0)} }
+    .toast { position:fixed; z-index:50; bottom:94px; left:50%; width:max-content; max-width:calc(100% - 32px); transform:translateX(-50%); padding:12px 16px; border-radius:13px; background:var(--navy); color:#fff; font-size:12px; box-shadow:var(--shadow); }
+    .app-footer { padding:24px 10px 4px; color:#98a2b3; text-align:center; font-size:10px; }
+    @media(min-width:760px) {
+      .app-shell { padding:26px 28px 40px; }
+      .dashboard-layout { display:grid; grid-template-columns:1.4fr .9fr; align-items:start; gap:18px; }
+      .bottom-nav { position:static; width:min(100%,600px); margin:25px auto 0; padding:0; border:0; background:transparent; }
+      .nav-inner { padding:6px; border:1px solid var(--line); border-radius:18px; background:#ffffffdf; box-shadow:var(--shadow); }
+      .toast { bottom:25px; }
+    }
+    @media(max-width:380px) {
+      .app-shell { padding-right:12px; padding-left:12px; }
+      .card { padding:16px; }
+      .hero-card { padding:20px; }
+      .stat-card { padding:13px; }
+      .stat-value { font-size:24px; }
+      .quick-action { gap:8px; padding:11px; }
+      .action-icon { width:35px; height:35px; }
     }
   </style>
 </head>
-
 <body>
-
-<div class="app">
-
-  <section id="loginScreen">
-
-  <div class="login-bg-orb orb-1"></div>
-  <div class="login-bg-orb orb-2"></div>
-  <div class="login-bg-orb orb-3"></div>
-
-  <div class="login-card">
-
-    <div class="login-card-glow"></div>
-
-    <div class="login-logo-wrap">
-      <img
-        class="login-logo"
-        src="/logo.svg"
-        alt="AL SABIHA">
-    </div>
-
-    <div class="login-brand">
-      AL SABIHA
-    </div>
-
-    <h1 class="login-title">
-      Worker App
-    </h1>
-
-    <p class="login-subtitle">
-      Your Work. Your Attendance. Your Identity.
-    </p>
-
-    <div id="loginError" class="error"></div>
-
-    <div class="field">
-
-      <label>
-        Worker Name / Worker Code
-      </label>
-
-      <div class="input-3d">
-
-        <span class="input-icon">◈</span>
-
-        <input
-          id="identifier"
-          type="text"
-          placeholder="Enter Worker Name or Code"
-          autocomplete="username">
-
+  <section id="loginScreen" class="login-wrap">
+    <div class="login-container">
+      <div class="login-brand">
+        <img class="login-logo" src="/Logo.svg" onerror="this.onerror=null;this.src='/Logo.svg';" alt="AL SABIHA logo">
+        <div class="brand-name">AL SABIHA</div>
+        <div class="brand-sub">GROUP OF COMPANIES</div>
       </div>
-
-    </div>
-
-    <button
-      id="loginBtn"
-      class="login-btn">
-
-      <span class="login-btn-icon">➜</span>
-
-      <span>
-        Login to Worker App
-      </span>
-
-    </button>
-
-    <div class="login-security">
-      <span>●</span>
-      Secure Worker Access
-    </div>
-
-    <div class="login-footer">
-      AL SABIHA GROUP OF COMPANIES
-    </div>
-
-  </div>
-
-</section>
-  <!-- =========================
-       DASHBOARD
-       ========================= -->
-  <section id="appScreen" class="screen hidden">
-
-    <header class="app-header">
-
-      <div class="header-row">
-
-        <div class="brand">
-          <img src="/Logo.svg" alt="AL SABIHA">
-
-          <div>
-            <div class="brand-title">AL SABIHA</div>
-            <div class="brand-sub">Worker App</div>
+      <div class="card login-card">
+        <div class="eyebrow">Worker Portal</div>
+        <h1>Welcome back.</h1>
+        <p>Sign in to view your worker profile, attendance history and personal QR code.</p>
+        <div id="loginError" class="error-message hidden" role="alert"></div>
+        <form id="loginForm">
+          <div class="field">
+            <label for="identifier">Worker Code or Registered Mobile</label>
+            <input id="identifier" name="identifier" type="text" autocomplete="username" placeholder="Enter worker code or mobile number" required>
+            <div class="field-help">Use the worker code or mobile number registered by your administrator.</div>
           </div>
-        </div>
-
-        <button id="logoutBtn" class="logout-small" title="Logout">
-          ↪
-        </button>
-
+          <button id="loginBtn" class="primary-btn" type="submit">
+            <span>Continue securely</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </button>
+        </form>
       </div>
-
-    </header>
-
-
-    <main class="content">
-
-      <!-- HOME -->
-      <section id="homePage">
-
-        <div class="welcome">
-          <div class="welcome-small">Welcome back</div>
-          <div id="welcomeName" class="welcome-name">Worker</div>
-        </div>
-
-        <div class="worker-card">
-
-          <div id="workerCode" class="worker-code">
-            Worker Code
-          </div>
-
-          <div id="workerName" class="worker-name">
-            Worker Name
-          </div>
-
-          <div class="info-grid">
-
-            <div class="info-box">
-              <div class="info-label">Company</div>
-              <div id="companyName" class="info-value">—</div>
-            </div>
-
-            <div class="info-box">
-              <div class="info-label">Site</div>
-              <div id="siteName" class="info-value">—</div>
-            </div>
-
-            <div class="info-box">
-              <div class="info-label">Designation</div>
-              <div id="designation" class="info-value">—</div>
-            </div>
-
-            <div class="info-box">
-              <div class="info-label">Status</div>
-              <div id="workerStatus" class="info-value">—</div>
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div class="section-title">
-          <h2>Today's Attendance</h2>
-          <span id="todayCount">0 Record</span>
-        </div>
-
-        <div class="today-card">
-          <div id="todayAttendance">
-            <div class="loading">Loading attendance...</div>
-          </div>
-        </div>
-
-      </section>
-
-
-      <!-- QR PAGE -->
-      <section id="qrPage" class="hidden">
-
-        <div class="section-title">
-          <h2>My QR Code</h2>
-          <span>Personal QR</span>
-        </div>
-
-        <div class="qr-card">
-
-          <div class="qr-wrap">
-            <img id="qrImage" src="" alt="Worker QR Code">
-          </div>
-
-          <div id="qrCodeText" class="qr-code-text">
-            —
-          </div>
-
-          <div class="qr-help">
-            Show this QR code to the authorised AL SABIHA
-            Attendance Scanner for attendance.
-          </div>
-
-        </div>
-
-      </section>
-
-
-      <!-- HISTORY PAGE -->
-      <section id="historyPage" class="hidden">
-
-        <div class="section-title">
-          <h2>Attendance History</h2>
-          <span>My Records</span>
-        </div>
-
-        <div id="historyList" class="history-list">
-          <div class="loading">Loading history...</div>
-        </div>
-
-      </section>
-
-
-      <!-- PROFILE PAGE -->
-      <section id="profilePage" class="hidden">
-
-        <div class="section-title">
-          <h2>My Profile</h2>
-          <span>Worker Details</span>
-        </div>
-
-        <div class="profile-card">
-
-          <div class="profile-row">
-            <div class="profile-label">Name</div>
-            <div id="profileName" class="profile-value">—</div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Worker Code</div>
-            <div id="profileCode" class="profile-value">—</div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Company</div>
-            <div id="profileCompany" class="profile-value">—</div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Designation</div>
-            <div id="profileDesignation" class="profile-value">—</div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Mobile</div>
-            <div id="profileMobile" class="profile-value">—</div>
-          </div>
-          <div class="profile-edit">
-            <input id="mobileUpdate" type="tel" inputmode="tel" autocomplete="tel"
-                   placeholder="+971 5X XXX XXXX">
-            <button class="login-btn" type="button" onclick="updateMobile()">Update Mobile Number</button>
-            <div id="mobileUpdateMessage" class="error" style="display:none"></div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Employee Type</div>
-            <div id="profileType" class="profile-value">—</div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Vendor</div>
-            <div id="profileVendor" class="profile-value">—</div>
-          </div>
-
-          <div class="profile-row">
-            <div class="profile-label">Joining Date</div>
-            <div id="profileJoining" class="profile-value">—</div>
-          </div>
-
-        </div>
-
-      </section>
-
-    </main>
-
-
-    <!-- =========================
-         BOTTOM NAV
-         ========================= -->
-
-    <nav class="bottom-nav">
-
-      <button class="nav-btn active" data-page="homePage">
-        <span class="nav-icon">⌂</span>
-        <span>Home</span>
-      </button>
-
-      <button class="nav-btn" data-page="qrPage">
-        <span class="nav-icon">▦</span>
-        <span>My QR</span>
-      </button>
-
-      <button class="nav-btn" data-page="historyPage">
-        <span class="nav-icon">◷</span>
-        <span>Attendance</span>
-      </button>
-
-      <button class="nav-btn" data-page="profilePage">
-        <span class="nav-icon">●</span>
-        <span>Profile</span>
-      </button>
-
-    </nav>
-
+      <div class="login-footer">YOUR TRUST • OUR PRIORITY<br>Secure Worker Portal · AL SABIHA Group of Companies</div>
+    </div>
   </section>
 
-</div>
+  <section id="appScreen" class="hidden">
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand">
+          <img class="brand-logo" src="/Logo.svg" onerror="this.onerror=null;this.src='/Logo.svg';" alt="AL SABIHA logo">
+          <div>
+            <div class="brand-name">AL SABIHA</div>
+            <div class="brand-sub">WORKER PORTAL</div>
+          </div>
+        </div>
+        <button id="logoutBtn" class="icon-button" type="button" aria-label="Log out" title="Log out">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17l5-5-5-5M15 12H3"/><path d="M12 3h6a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-6"/></svg>
+        </button>
+      </header>
+      <main>
+        <section id="homePage" class="page">
+          <div class="page-heading">
+            <div class="eyebrow">Your work, at a glance</div>
+            <h1 id="welcomeName">Welcome</h1>
+            <p>Here is your worker information and latest attendance activity.</p>
+          </div>
+          <div class="dashboard-layout">
+            <div>
+              <div class="card hero-card">
+                <div class="eyebrow">AL SABIHA Worker</div>
+                <h2 id="workerName">Worker Name</h2>
+                <p id="companyName">Company not assigned</p>
+                <div class="worker-code-pill"><span class="status-dot"></span><span id="workerCode">Worker Code</span><span>·</span><span id="workerStatus">Active</span></div>
+              </div>
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <div class="stat-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></svg></div>
+                  <div class="stat-value" id="todayCount">—</div>
+                  <div class="stat-label">Attendance records today</div>
+                </div>
+                <div class="stat-card">
+                  <div class="stat-icon gold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+                  <div class="stat-value" id="todayHours">—</div>
+                  <div class="stat-label">Latest check-in time</div>
+                </div>
+              </div>
+              <div class="section-row"><h2>Quick access</h2></div>
+              <div class="quick-actions">
+                <button class="quick-action" type="button" data-goto="qrPage">
+                  <span class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v2M14 20h2M19 19h2v2h-2z"/></svg></span>
+                  <span><strong>My QR Code</strong><span>Show your worker QR</span></span>
+                </button>
+                <button class="quick-action" type="button" data-goto="historyPage">
+                  <span class="action-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></span>
+                  <span><strong>Attendance</strong><span>Review recent records</span></span>
+                </button>
+              </div>
+            </div>
+            <div>
+              <div class="section-row"><h2>Worker details</h2></div>
+              <div class="card">
+                <div class="info-grid">
+                  <div class="info-item"><div class="info-label">Designation / Trade</div><div class="info-value" id="designation">—</div></div>
+                  <div class="info-item"><div class="info-label">Company</div><div class="info-value" id="companyDetail">—</div></div>
+                  <div class="info-item"><div class="info-label">Site / Location</div><div class="info-value" id="siteName">—</div></div>
+                  <div class="info-item"><div class="info-label">Worker Status</div><div class="info-value" id="workerStatusDetail">—</div></div>
+                </div>
+              </div>
+              <div class="section-row"><h2>Latest attendance</h2><button class="text-button" type="button" data-goto="historyPage">View all</button></div>
+              <div class="card"><div id="todayAttendance" class="list"><div class="empty">Loading your attendance…</div></div></div>
+            </div>
+          </div>
+        </section>
 
+        <section id="qrPage" class="page hidden">
+          <div class="page-heading">
+            <div class="eyebrow">Fast identification</div>
+            <h1>My QR Code</h1>
+            <p>Show this code to your authorized attendance administrator when requested.</p>
+          </div>
+          <div class="card qr-wrap">
+            <div class="profile-avatar" style="margin:0 auto 12px" id="qrAvatar">AS</div>
+            <h2 id="qrWorkerName">Worker Name</h2>
+            <p class="muted small" id="qrWorkerCode">Worker Code</p>
+            <div class="qr-box" id="qrImage">
+              <div class="qr-placeholder">Your QR code will appear here when available.</div>
+            </div>
+            <div class="qr-code-text" id="qrCodeText">QR information will appear here.</div>
+            <button class="secondary-btn" id="refreshQrBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7v5h-5M4 17v-5h5"/><path d="M5.6 9A7 7 0 0 1 18 6l2 6M4 12l2 6a7 7 0 0 0 12.4-3"/></svg>
+              Refresh QR Code
+            </button>
+          </div>
+          <div class="card">
+            <h3>Keep your code secure</h3>
+            <p class="muted small" style="line-height:1.6;margin-bottom:0">Your QR code is for worker identification. Attendance can only be recorded through the authorized AL SABIHA attendance system.</p>
+          </div>
+        </section>
+
+        <section id="historyPage" class="page hidden">
+          <div class="page-heading">
+            <div class="eyebrow">Your records</div>
+            <h1>Attendance history</h1>
+            <p>Review check-in and check-out records available in your worker account.</p>
+          </div>
+          <div class="card">
+            <div class="section-row" style="margin:0 0 14px">
+              <h2>Recent records</h2>
+              <button id="refreshHistoryBtn" class="text-button" type="button">Refresh</button>
+            </div>
+            <div id="historyList" class="list">
+              <div class="empty">Loading attendance history…</div>
+            </div>
+          </div>
+          <div class="app-footer">Attendance records are supplied by your administrator.</div>
+        </section>
+
+        <section id="profilePage" class="page hidden">
+          <div class="page-heading">
+            <div class="eyebrow">Your account</div>
+            <h1>My profile</h1>
+            <p>View your registered details and update your mobile number if permitted.</p>
+          </div>
+          <div class="card">
+            <div class="profile-head">
+              <div class="profile-avatar" id="profileAvatar">AS</div>
+              <div>
+                <h2 id="profileName">Worker Name</h2>
+                <p id="profileCode">Worker Code</p>
+              </div>
+            </div>
+            <div class="info-grid">
+              <div class="info-item">
+                <div class="info-label">Company</div>
+                <div class="info-value" id="profileCompany">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Designation / Trade</div>
+                <div class="info-value" id="profileDesignation">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Worker Type</div>
+                <div class="info-value" id="profileType">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Supplier / Vendor</div>
+                <div class="info-value" id="profileVendor">—</div>
+              </div>
+              <div class="info-item">
+                <div class="info-label">Joining Date</div>
+                <div class="info-value" id="profileJoining">—</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2>Contact information</h2>
+            <p class="muted small">Keep your registered mobile number up to date.</p>
+            <form id="mobileUpdate">
+              <div class="field">
+                <label for="profileMobile">Mobile number</label>
+                <input id="profileMobile" name="mobile" type="tel" inputmode="tel" autocomplete="tel" placeholder="Enter mobile number">
+              </div>
+              <button id="saveMobileBtn" class="primary-btn" type="submit">Save mobile number</button>
+              <div id="mobileUpdateMessage" class="hidden" role="status"></div>
+            </form>
+          </div>
+          <div class="app-footer">AL SABIHA Group of Companies · YOUR TRUST • OUR PRIORITY</div>
+        </section>
+      </main>
+
+      <nav class="bottom-nav" aria-label="Main navigation">
+        <div class="nav-inner">
+          <button class="nav-btn active" type="button" data-page="homePage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 10 9-7 9 7"/><path d="M5 9v11h14V9M9 20v-7h6v7"/></svg>
+            <span>Home</span>
+          </button>
+          <button class="nav-btn" type="button" data-page="qrPage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><path d="M14 14h3v3h-3zM20 14v2M14 20h2M19 19h2v2h-2z"/></svg>
+            <span>My QR</span>
+          </button>
+          <button class="nav-btn" type="button" data-page="historyPage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg>
+            <span>Attendance</span>
+          </button>
+          <button class="nav-btn" type="button" data-page="profilePage">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            <span>Profile</span>
+          </button>
+        </div>
+      </nav>
+    </div>
+  </section>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+</body>
+</html>
 
 <script>
+"use strict";
 
-  const $ = selector => document.querySelector(selector);
+const $ = (selector) => document.querySelector(selector);
+const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
-  let workerData = null;
+let workerData = null;
+let attendanceRecords = [];
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;",
+    '"': "&quot;", "'": "&#39;"
+  })[char]);
+}
 
-  /* =========================
-     HELPERS
-     ========================= */
-
-  function escapeHtml(value){
-
-    return String(value ?? "")
-      .replace(/[&<>"']/g, char => ({
-        "&":"&amp;",
-        "<":"&lt;",
-        ">":"&gt;",
-        '"':"&quot;",
-        "'":"&#039;"
-      }[char]));
-
-  }
-
-
-  function showLoginError(message){
-
-    const box = $("#loginError");
-
-    box.textContent = message || "Unable to login.";
-
-    box.style.display = "block";
-
-  }
-
-
-  function hideLoginError(){
-
-    $("#loginError").style.display = "none";
-
-  }
-
-
-  async function api(url, options = {}){
-
-    const response = await fetch(url, {
-      credentials:"include",
-      ...options,
-      headers:{
-        "Content-Type":"application/json",
-        ...(options.headers || {})
-      }
-    });
-
-    let data = {};
-
-    try{
-      data = await response.json();
-    }catch(e){
-      data = {};
+function firstValue(object, keys, fallback = "—") {
+  if (!object || typeof object !== "object") return fallback;
+  for (const key of keys) {
+    const value = object[key];
+    if (value !== undefined && value !== null && String(value).trim() !== "") {
+      return value;
     }
+  }
+  return fallback;
+}
 
-    if(!response.ok){
+function workerObject(payload) {
+  if (!payload || typeof payload !== "object") return {};
+  return payload.worker || payload.user ||
+    payload.data?.worker || payload.data?.user ||
+    payload.data || payload;
+}
 
-      const error = new Error(
-        data.message ||
-        data.error ||
-        `Request failed (${response.status})`
-      );
+function recordsFrom(payload) {
+  if (Array.isArray(payload)) return payload;
+  if (!payload || typeof payload !== "object") return [];
+  const options = [
+    payload.attendance, payload.records, payload.history,
+    payload.data?.attendance, payload.data?.records,
+    payload.data?.history, payload.data
+  ];
+  return options.find(Array.isArray) || [];
+}
 
-      error.status = response.status;
-
-      throw error;
+async function api(url, options = {}) {
+  const response = await fetch(url, {
+    credentials: "include",
+    ...options,
+    headers: {
+      ...(options.body ? { "Content-Type": "application/json" } : {}),
+      ...(options.headers || {})
     }
+  });
 
-    return data;
-
+  const raw = await response.text();
+  let data = {};
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    data = { message: raw };
   }
 
+  if (!response.ok || data.success === false || data.ok === false) {
+    throw new Error(firstValue(
+      data, ["message", "error", "detail"],
+      `Request failed (${response.status})`
+    ));
+  }
+  return data;
+}
 
-  /* =========================
-     LOGIN
-     ========================= */
+let toastTimer;
+function showToast(message) {
+  const toast = $("#toast");
+  toast.textContent = message;
+  toast.classList.remove("hidden");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toast.classList.add("hidden"), 3000);
+}
 
-  async function login(){
+function showLoginError(message) {
+  $("#loginError").textContent = message;
+  $("#loginError").classList.remove("hidden");
+}
 
-  hideLoginError();
+function hideLoginError() {
+  $("#loginError").textContent = "";
+  $("#loginError").classList.add("hidden");
+}
 
-  const identifier =
-    $("#identifier").value.trim();
+function setBusy(button, busy, text = "Please wait…") {
+  if (!button) return;
+  if (busy) {
+    button.dataset.originalHtml = button.innerHTML;
+    button.disabled = true;
+    button.textContent = text;
+  } else {
+    button.disabled = false;
+    if (button.dataset.originalHtml) {
+      button.innerHTML = button.dataset.originalHtml;
+    }
+    delete button.dataset.originalHtml;
+  }
+}
 
+function initials(name) {
+  return String(name || "").trim().split(/\s+/)
+    .filter(Boolean).slice(0, 2)
+    .map(word => word[0]).join("").toUpperCase() || "AS";
+}
 
-  if(!identifier){
+function formatDate(value) {
+  if (!value || value === "—") return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleDateString(undefined, {
+    day: "2-digit", month: "short", year: "numeric"
+  });
+}
 
-    showLoginError(
-      "Worker Name or Worker Code is required."
-    );
+function formatTime(value) {
+  if (!value || value === "—") return "—";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return String(value);
+  return date.toLocaleTimeString(undefined, {
+    hour: "2-digit", minute: "2-digit"
+  });
+}
 
+function dateFromRecord(record) {
+  return firstValue(record, [
+    "date", "attendance_date", "work_date", "created_at",
+    "check_in", "checkIn", "check_in_time", "checkInTime"
+  ], "—");
+}
+
+function renderRecord(record) {
+  const date = formatDate(dateFromRecord(record));
+  const checkIn = firstValue(record, [
+    "check_in", "checkIn", "check_in_time",
+    "checkInTime", "in_time", "checkin"
+  ]);
+  const checkOut = firstValue(record, [
+    "check_out", "checkOut", "check_out_time",
+    "checkOutTime", "out_time", "checkout"
+  ]);
+  const company = firstValue(record, [
+    "company_name", "companyName", "company"
+  ], "");
+  const site = firstValue(record, [
+    "site_name", "siteName", "site", "location"
+  ], "");
+  const status = String(firstValue(record, [
+    "status", "attendance_status", "attendanceStatus"
+  ], "Recorded"));
+
+  const lower = status.toLowerCase();
+  const badgeClass =
+    lower.includes("pending") || lower.includes("open")
+      ? "badge pending"
+      : lower.includes("absent") || lower.includes("reject")
+        ? "badge neutral" : "badge";
+
+  const details = [];
+  if (checkIn !== "—") details.push("In " + escapeHtml(formatTime(checkIn)));
+  if (checkOut !== "—") details.push("Out " + escapeHtml(formatTime(checkOut)));
+  if (company && company !== "—") details.push(escapeHtml(company));
+  if (site && site !== "—") details.push(escapeHtml(site));
+
+  return `
+    <div class="list-row">
+      <div class="list-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="1.8">
+          <rect x="3" y="5" width="18" height="16" rx="2"/>
+          <path d="M16 3v4M8 3v4M3 10h18"/>
+        </svg>
+      </div>
+      <div class="list-main">
+        <div class="list-title">${escapeHtml(date)}</div>
+        <div class="list-sub">${details.join(" · ") || "Attendance record"}</div>
+      </div>
+      <span class="${badgeClass}">${escapeHtml(status)}</span>
+    </div>`;
+}
+
+function renderAttendance(records) {
+  const todayBox = $("#todayAttendance");
+  const historyBox = $("#historyList");
+
+  if (!records.length) {
+    const empty = `
+      <div class="empty">
+        No attendance records are available yet.
+      </div>`;
+    if (todayBox) todayBox.innerHTML = empty;
+    if (historyBox) historyBox.innerHTML = empty;
+    $("#todayCount").textContent = "0";
+    $("#todayHours").textContent = "—";
     return;
   }
 
+  const sorted = [...records].sort((a, b) => {
+    const timeA = new Date(dateFromRecord(a)).getTime() || 0;
+    const timeB = new Date(dateFromRecord(b)).getTime() || 0;
+    return timeB - timeA;
+  });
 
-  const button =
-    $("#loginBtn");
+  const todayKey = new Date().toLocaleDateString();
+  const today = sorted.filter(record => {
+    const date = new Date(dateFromRecord(record));
+    return !Number.isNaN(date.getTime()) &&
+      date.toLocaleDateString() === todayKey;
+  });
 
+  $("#todayCount").textContent = String(today.length);
 
-  button.disabled = true;
+  const latest = sorted[0];
+  const latestIn = firstValue(latest, [
+    "check_in", "checkIn", "check_in_time",
+    "checkInTime", "in_time"
+  ]);
+  $("#todayHours").textContent =
+    latestIn === "—" ? "—" : formatTime(latestIn);
 
-  button.innerHTML =
-    `<span class="login-btn-icon">◌</span>
-     <span>Connecting...</span>`;
-
-
-  try{
-
-    const data = await api(
-      "/api/worker-app/login",
-      {
-        method:"POST",
-
-        body:JSON.stringify({
-          identifier
-        })
-      }
-    );
-
-
-    if(!data.success){
-
-      throw new Error(
-        data.message ||
-        "Login failed."
-      );
-
-    }
-
-
-    workerData =
-      data.worker;
-
-
-    await openWorkerApp();
-
-
-  }catch(error){
-
-    showLoginError(
-      error.message ||
-      "Server connection failed."
-    );
-
-
-  }finally{
-
-    button.disabled = false;
-
-    button.innerHTML =
-      `<span class="login-btn-icon">➜</span>
-       <span>Login to Worker App</span>`;
-
+  if (todayBox) {
+    todayBox.innerHTML = (today.length ? today : sorted.slice(0, 2))
+      .slice(0, 3).map(renderRecord).join("");
   }
-
+  if (historyBox) {
+    historyBox.innerHTML = sorted.slice(0, 50).map(renderRecord).join("");
+  }
 }
 
-  /* =========================
-     CHECK CURRENT SESSION
-     ========================= */
+function renderWorker(payload) {
+  workerData = workerObject(payload);
 
-  async function checkSession(){
+  const name = firstValue(workerData, [
+    "name", "worker_name", "workerName", "full_name", "fullName"
+  ], "Worker");
+  const code = firstValue(workerData, [
+    "code", "worker_code", "workerCode",
+    "employee_code", "employeeCode", "id"
+  ]);
+  const company = firstValue(workerData, [
+    "company_name", "companyName", "company", "assigned_company"
+  ], "Not assigned");
+  const site = firstValue(workerData, [
+    "site_name", "siteName", "site", "location"
+  ], "Not assigned");
+  const trade = firstValue(workerData, [
+    "designation", "trade", "job_title", "jobTitle", "position"
+  ]);
+  const status = firstValue(workerData, [
+    "status", "worker_status", "workerStatus"
+  ], "Active");
+  const mobile = firstValue(workerData, [
+    "mobile", "phone", "phone_number", "phoneNumber"
+  ], "");
 
-    try{
+  $("#welcomeName").textContent = "Hello, " + name.split(" ")[0];
+  $("#workerName").textContent = name;
+  $("#companyName").textContent = company;
+  $("#workerCode").textContent = "ID: " + code;
+  $("#workerStatus").textContent = status;
+  $("#designation").textContent = trade;
+  $("#companyDetail").textContent = company;
+  $("#siteName").textContent = site;
+  $("#workerStatusDetail").textContent = status;
 
-      const data = await api(
-        "/api/worker-app/me"
-      );
+  $("#qrWorkerName").textContent = name;
+  $("#qrWorkerCode").textContent = "Worker ID: " + code;
+  $("#qrAvatar").textContent = initials(name);
 
-      if(data.success && data.worker){
+  $("#profileAvatar").textContent = initials(name);
+  $("#profileName").textContent = name;
+  $("#profileCode").textContent = "Worker ID: " + code;
+  $("#profileCompany").textContent = company;
+  $("#profileDesignation").textContent = trade;
+  $("#profileMobile").value = mobile === "—" ? "" : mobile;
+  $("#profileType").textContent = firstValue(workerData, [
+    "type", "worker_type", "workerType"
+  ]);
+  $("#profileVendor").textContent = firstValue(workerData, [
+    "vendor", "supplier", "supplier_name", "supplierName"
+  ]);
+  $("#profileJoining").textContent = formatDate(firstValue(workerData, [
+    "joining_date", "joiningDate", "date_of_joining"
+  ]));
+}
 
-        workerData = data.worker;
+function showApp() {
+  $("#loginScreen").classList.add("hidden");
+  $("#appScreen").classList.remove("hidden");
+  navigateTo("homePage");
+}
 
-        await openWorkerApp();
+function showLogin() {
+  $("#appScreen").classList.add("hidden");
+  $("#loginScreen").classList.remove("hidden");
+  $("#identifier").value = "";
+}
 
-      }
+function navigateTo(pageId) {
+  const valid = ["homePage", "qrPage", "historyPage", "profilePage"];
+  if (!valid.includes(pageId)) pageId = "homePage";
 
-    }catch(error){
+  $$(".page").forEach(page => {
+    page.classList.toggle("hidden", page.id !== pageId);
+  });
 
-      // Not logged in — keep login screen.
+  $$(".nav-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === pageId);
+  });
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+
+  if (pageId === "qrPage") loadQrCode();
+  if (pageId === "historyPage") loadAttendance();
+}
+
+async function loadDashboard() {
+  try {
+    const data = await api("/api/worker-app/dashboard");
+    const worker = data.worker || data.user ||
+      data.data?.worker || data.data?.user;
+
+    if (worker) renderWorker(worker);
+
+    const records = recordsFrom(data);
+    if (records.length) {
+      attendanceRecords = records;
+      renderAttendance(records);
     }
+  } catch (error) {
+    console.warn("Dashboard load failed:", error.message);
+  }
+}
 
+async function loadAttendance() {
+  const box = $("#historyList");
+  box.innerHTML = '<div class="empty">Loading attendance history…</div>';
+
+  try {
+    const data = await api("/api/worker-app/attendance");
+    attendanceRecords = recordsFrom(data);
+    renderAttendance(attendanceRecords);
+  } catch (error) {
+    box.innerHTML = `<div class="empty">Unable to load attendance history.<br>${escapeHtml(error.message)}</div>`;
+    showToast("Could not refresh attendance.");
+  }
+}
+
+function findQrImageSource(data) {
+  const candidates = [
+    data?.qrCode, data?.qr_code, data?.qrImage, data?.qr_image,
+    data?.image, data?.dataUrl, data?.data_url,
+    data?.data?.qrCode, data?.data?.qr_code,
+    data?.data?.qrImage, data?.data?.qr_image,
+    data?.data?.image, data?.data?.dataUrl
+  ];
+  return candidates.find(value =>
+    typeof value === "string" && value.trim()
+  ) || "";
+}
+
+async function loadQrCode() {
+  const box = document.querySelector("#qrImage");
+  const codeText = document.querySelector("#qrCodeText");
+
+  if (!box) {
+    console.error("QR image container #qrImage was not found.");
+    return;
   }
 
-
-  /* =========================
-     OPEN APP
-     ========================= */
-
-  async function openWorkerApp(){
-
-    $("#loginScreen").classList.add("hidden");
-    $("#appScreen").classList.remove("hidden");
-
-    fillWorkerDetails();
-
-    await Promise.all([
-      loadDashboard(),
-      loadQr(),
-      loadHistory()
-    ]);
-
-  }
-
-
-  /* =========================
-     WORKER DETAILS
-     ========================= */
-
-  function fillWorkerDetails(){
-
-    if(!workerData) return;
-
-
-    $("#welcomeName").textContent =
-      workerData.name || "Worker";
-
-    $("#workerName").textContent =
-      workerData.name || "—";
-
-    $("#workerCode").textContent =
-      workerData.worker_code || "—";
-
-    $("#companyName").textContent =
-      workerData.company_name || "Not Assigned";
-
-    $("#designation").textContent =
-      workerData.designation || "—";
-
-    $("#workerStatus").textContent =
-      workerData.status || "Active";
-
-
-    $("#profileName").textContent =
-      workerData.name || "—";
-
-    $("#profileCode").textContent =
-      workerData.worker_code || "—";
-
-    $("#profileCompany").textContent =
-      workerData.company_name || "Not Assigned";
-
-    $("#profileDesignation").textContent =
-      workerData.designation || "—";
-
-    $("#profileMobile").textContent =
-      workerData.mobile || "—";
-    if($("#mobileUpdate")) $("#mobileUpdate").value = workerData.mobile || "";
-
-    $("#profileType").textContent =
-      workerData.employee_type || "—";
-
-    $("#profileVendor").textContent =
-      workerData.vendor || "—";
-
-    $("#profileJoining").textContent =
-      workerData.joining_date || "—";
-
-  }
-
-
-
-  async function updateMobile(){
-    const input=$("#mobileUpdate");
-    const message=$("#mobileUpdateMessage");
-    const mobile=(input.value||"").trim();
-    message.style.display="none";
-    try{
-      const data=await api("/api/worker-app/profile",{method:"PUT",body:JSON.stringify({mobile})});
-      if(data.success){
-        workerData={...workerData,...data.worker};
-        fillWorkerDetails();
-        message.className="error";
-        message.style.display="block";
-        message.style.background="rgba(0,220,150,.10)";
-        message.style.borderColor="rgba(0,220,150,.22)";
-        message.style.color="#8ff0ce";
-        message.textContent="Mobile number updated successfully.";
-      }
-    }catch(error){
-      message.className="error";
-      message.style.display="block";
-      message.textContent=error.message||"Unable to update mobile number.";
-    }
-  }
-
-  /* =========================
-     DASHBOARD
-     ========================= */
-
-  async function loadDashboard(){
-
-    try{
-
-      const data = await api(
-        "/api/worker-app/dashboard"
-      );
-
-
-      if(data.worker){
-
-        workerData = {
-          ...workerData,
-          ...data.worker
-        };
-
-        fillWorkerDetails();
-
-      }
-
-
-      const sites = data.sites || [];
-
-      if(sites.length > 0){
-
-        $("#siteName").textContent =
-          sites[0].name || "—";
-
-      }else{
-
-        $("#siteName").textContent =
-          "Not Assigned";
-
-      }
-
-
-      renderTodayAttendance(
-        data.todayAttendance || []
-      );
-
-    }catch(error){
-
-      $("#todayAttendance").innerHTML =
-        `<div class="empty">
-          Unable to load today's attendance.
-        </div>`;
-
-    }
-
-  }
-
-
-  function renderTodayAttendance(records){
-
-    const container = $("#todayAttendance");
-
-    $("#todayCount").textContent =
-      `${records.length} Record${records.length === 1 ? "" : "s"}`;
-
-
-    if(!records.length){
-
-      container.innerHTML = `
-        <div class="empty">
-          No attendance record for today.
-        </div>
-      `;
-
-      return;
-    }
-
-
-    container.innerHTML = records.map(record => {
-
-      const open = !record.check_out;
-
-      return `
-        <div class="attendance-item">
-
-          <div class="att-top">
-
-            <div class="att-date">
-              ${escapeHtml(record.attendance_date || "Today")}
-            </div>
-
-            <span class="status ${open ? "status-open" : "status-present"}">
-              ${open ? "OPEN" : "PRESENT"}
-            </span>
-
-          </div>
-
-          <div class="att-details">
-
-            <div class="att-detail">
-              Check-In<br>
-              <b>${escapeHtml(record.check_in || "—")}</b>
-            </div>
-
-            <div class="att-detail">
-              Check-Out<br>
-              <b>${escapeHtml(record.check_out || "Still Open")}</b>
-            </div>
-
-            <div class="att-detail">
-              Company<br>
-              <b>${escapeHtml(record.company_name || "—")}</b>
-            </div>
-
-            <div class="att-detail">
-              Site<br>
-              <b>${escapeHtml(record.site_name || "—")}</b>
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-
-  }
-
-
-  /* =========================
-     QR
-     ========================= */
-
-  async function loadQr(){
-
-    try{
-
-      const data = await api(
-        "/api/worker-app/qrcode"
-      );
-
-
-      if(data.success && data.qr){
-
-        $("#qrImage").src = data.qr;
-
-        $("#qrCodeText").textContent =
-          data.worker?.worker_code ||
-          workerData?.worker_code ||
-          "—";
-
-      }
-
-    }catch(error){
-
-      $("#qrImage").removeAttribute("src");
-
-      $("#qrCodeText").textContent =
-        "QR unavailable";
-
-    }
-
-  }
-
-
-  /* =========================
-     HISTORY
-     ========================= */
-
-  async function loadHistory(){
-
-    try{
-
-      const data = await api(
-        "/api/worker-app/attendance"
-      );
-
-      renderHistory(
-        data.history || []
-      );
-
-    }catch(error){
-
-      $("#historyList").innerHTML =
-        `<div class="empty">
-          Unable to load attendance history.
-        </div>`;
-
-    }
-
-  }
-
-
-  function renderHistory(history){
-
-    const container = $("#historyList");
-
-
-    if(!history.length){
-
-      container.innerHTML = `
-        <div class="empty">
-          No attendance history found.
-        </div>
-      `;
-
-      return;
-    }
-
-
-    container.innerHTML = history.map(record => {
-
-      const open = !record.check_out;
-
-      return `
-        <div class="history-card">
-
-          <div class="history-head">
-
-            <div class="history-date">
-              ${escapeHtml(record.attendance_date || "—")}
-            </div>
-
-            <span class="status ${open ? "status-open" : "status-present"}">
-              ${open ? "OPEN" : "PRESENT"}
-            </span>
-
-          </div>
-
-          <div class="history-company">
-            ${escapeHtml(record.company_name || "Company not assigned")}
-          </div>
-
-          <div class="history-site">
-            ${escapeHtml(
-              record.site_name ||
-              record.site_location ||
-              "Site not assigned"
-            )}
-          </div>
-
-          <div class="history-times">
-
-            <div class="time-box">
-              <div class="time-label">Check-In</div>
-              <div class="time-value">
-                ${escapeHtml(record.check_in || "—")}
-              </div>
-            </div>
-
-            <div class="time-box">
-              <div class="time-label">Check-Out</div>
-              <div class="time-value">
-                ${escapeHtml(record.check_out || "Still Open")}
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-
-  }
-
-
-  /* =========================
-     NAVIGATION
-     ========================= */
-
-  function showPage(pageId, button){
-
-    const pages = [
-      "homePage",
-      "qrPage",
-      "historyPage",
-      "profilePage"
-    ];
-
-
-    pages.forEach(id => {
-
-      const page = document.getElementById(id);
-
-      if(page){
-        page.classList.toggle(
-          "hidden",
-          id !== pageId
-        );
-      }
-
+  box.innerHTML =
+    '<div class="qr-placeholder">Loading QR code...</div>';
+
+  try {
+    const response = await fetch("/api/worker-app/qrcode", {
+      method: "GET",
+      credentials: "include",
+      headers: { "Accept": "application/json" }
     });
 
+    const raw = await response.text();
+    let result;
 
-    document
-      .querySelectorAll(".nav-btn")
-      .forEach(btn => {
-
-        btn.classList.remove("active");
-
-      });
-
-
-    if(button){
-      button.classList.add("active");
+    try {
+      result = JSON.parse(raw);
+    } catch {
+      throw new Error("Server ne valid JSON QR response nahi bheja.");
     }
 
+    if (!response.ok || result.success === false || result.ok === false) {
+      throw new Error(
+        result.message || result.error || `Server error: ${response.status}`
+      );
+    }
+
+    const payload = result.data || result;
+    const imageValue =
+      payload.qrCode ||
+      payload.qr_code ||
+      payload.qrImage ||
+      payload.qr_image ||
+      payload.image ||
+      payload.dataUrl ||
+      payload.data_url ||
+      payload.qr ||
+      "";
+
+    const qrValue =
+      payload.code ||
+      payload.workerCode ||
+      payload.worker_code ||
+      payload.qrText ||
+      payload.qr_text ||
+      "";
+
+    if (codeText) {
+      codeText.textContent = qrValue || "Your worker QR code";
+    }
+
+    if (typeof imageValue === "string" && imageValue.trim()) {
+      let src = imageValue.trim();
+
+      if (/^[A-Za-z0-9+/=\r\n]+$/.test(src) &&
+          !src.startsWith("data:") &&
+          !src.startsWith("http") &&
+          !src.startsWith("/")) {
+        src = "data:image/png;base64," + src;
+      }
+
+      const img = document.createElement("img");
+      img.alt = "Worker QR Code";
+      img.style.display = "block";
+      img.style.width = "100%";
+      img.style.maxWidth = "280px";
+      img.style.height = "auto";
+      img.style.margin = "0 auto";
+      img.style.objectFit = "contain";
+
+      img.onload = () => {
+        box.replaceChildren(img);
+      };
+
+      img.onerror = () => {
+        box.innerHTML =
+          '<div class="qr-placeholder">QR image server se mili, lekin browser use display nahi kar saka.</div>';
+        console.error("QR image failed to load. Image format:", src.slice(0, 80));
+      };
+
+      img.src = src;
+
+      if (img.complete && img.naturalWidth > 0) {
+        box.replaceChildren(img);
+      }
+    } else {
+      box.innerHTML =
+        '<div class="qr-placeholder">Server ne QR image return nahi ki. Backend QR response check karna hoga.</div>';
+      console.error("QR API response:", result);
+    }
+  } catch (error) {
+    box.innerHTML =
+      '<div class="qr-placeholder">QR code load nahi hua. Dobara try karein ya administrator se contact karein.</div>';
+    console.error("QR loading error:", error);
+  }
+}
+
+async function refreshSession() {
+  try {
+    const me = await api("/api/worker-app/me");
+    const worker = workerObject(me);
+
+    if (!worker || (
+      !worker.name && !worker.worker_name &&
+      !worker.code && !worker.worker_code && !worker.id
+    )) {
+      throw new Error("Worker session not found.");
+    }
+
+    renderWorker(worker);
+    showApp();
+    await loadDashboard();
+    await loadAttendance();
+  } catch {
+    showLogin();
+  }
+}
+
+$("#loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  hideLoginError();
+
+  const identifier = $("#identifier").value.trim();
+  if (!identifier) {
+    showLoginError("Please enter your worker code or registered mobile number.");
+    return;
   }
 
+  const button = $("#loginBtn");
+  setBusy(button, true, "Signing in…");
 
-  /* =========================
-     LOGOUT
-     ========================= */
+  try {
+    const data = await api("/api/worker-app/login", {
+      method: "POST",
+      body: JSON.stringify({ identifier })
+    });
 
-  async function logout(){
-
-    try{
-
-      await api(
-        "/api/worker-app/logout",
-        {
-          method:"POST"
-        }
-      );
-
-    }catch(error){
-
-      // Continue local logout even if request fails.
-
+    const worker = workerObject(data);
+    if (worker && Object.keys(worker).length) {
+      renderWorker(worker);
+    } else {
+      const me = await api("/api/worker-app/me");
+      renderWorker(workerObject(me));
     }
 
+    showApp();
+    await loadDashboard();
+    await loadAttendance();
+    showToast("You are signed in.");
+  } catch (error) {
+    showLoginError(error.message || "Unable to sign in. Check your details and try again.");
+  } finally {
+    setBusy(button, false);
+  }
+});
 
-    workerData = null;
+$("#logoutBtn").addEventListener("click", async () => {
+  try {
+    await api("/api/worker-app/logout", { method: "POST" });
+  } catch (error) {
+    console.warn("Logout request returned an error:", error.message);
+  }
 
-    $("#appScreen").classList.add("hidden");
-    $("#loginScreen").classList.remove("hidden");
+  workerData = null;
+  attendanceRecords = [];
+  showLogin();
+  showToast("You have been logged out.");
+});
 
-    $("#identifier").value = "";
-    $("#pin").value = "";
+$$(".nav-btn").forEach(button => {
+  button.addEventListener("click", () => navigateTo(button.dataset.page));
+});
 
-    showPage(
-      "homePage",
-      document.querySelector(".nav-btn")
+$$("[data-goto]").forEach(button => {
+  button.addEventListener("click", () => navigateTo(button.dataset.goto));
+});
+
+$("#refreshQrBtn").addEventListener("click", loadQrCode);
+$("#refreshHistoryBtn").addEventListener("click", loadAttendance);
+
+$("#mobileUpdate").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const mobile = $("#profileMobile").value.trim();
+  const message = $("#mobileUpdateMessage");
+  const button = $("#saveMobileBtn");
+
+  message.className = "hidden";
+  message.textContent = "";
+
+  if (!mobile) {
+    message.textContent = "Please enter your mobile number.";
+    message.className = "error-message";
+    return;
+  }
+
+  setBusy(button, true, "Saving…");
+
+  try {
+    const data = await api("/api/worker-app/profile", {
+      method: "PUT",
+      body: JSON.stringify({ mobile })
+    });
+
+    const updated = workerObject(data);
+    if (updated && Object.keys(updated).length && workerData) {
+      workerData = { ...workerData, ...updated, mobile: updated.mobile || mobile };
+    } else if (workerData) {
+      workerData.mobile = mobile;
+    }
+
+    message.textContent = firstValue(
+      data, ["message"], "Mobile number updated successfully."
     );
-
+    message.className = "success-message";
+    showToast("Mobile number saved.");
+  } catch (error) {
+    message.textContent = error.message || "Could not update mobile number.";
+    message.className = "error-message";
+  } finally {
+    setBusy(button, false);
   }
+});
 
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" &&
+      !$("#appScreen").classList.contains("hidden")) {
+    navigateTo("homePage");
+  }
+});
 
-  /* =========================
-     EVENTS
-     ========================= */
-
-  $("#loginBtn").addEventListener(
-    "click",
-    login
-  );
-
-
-  $("#identifier").addEventListener(
-    "keydown",
-    event => {
-
-      if(event.key === "Enter"){
-        login();
-      }
-
-    }
-  );
-
-
-  $("#identifier").addEventListener(
-    "keydown",
-    event => {
-
-      if(event.key === "Enter"){
-        $("#pin").focus();
-      }
-
-    }
-  );
-
-
-  $("#logoutBtn").addEventListener(
-    "click",
-    logout
-  );
-
-
-  document
-    .querySelectorAll(".nav-btn")
-    .forEach(button => {
-
-      button.addEventListener(
-        "click",
-        () => {
-
-          showPage(
-            button.dataset.page,
-            button
-          );
-
-        }
-      );
-
-    });
-
-
-  /* =========================
-     START
-     ========================= */
-
-  checkSession();
-
+refreshSession();
 </script>
-
 </body>
 </html>

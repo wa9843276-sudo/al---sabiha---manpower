@@ -12,3 +12,7 @@ npm-debug.log*
 Thumbs.db
 
 .git/
+# upgrade artifacts
+test-screenshots/
+android/keystore.properties
+*.jks

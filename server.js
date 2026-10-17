@@ -8,6 +8,11 @@ const XLSX = require("xlsx");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const SEC = require("./lib/security");
+const { migrate } = require("./lib/migrate");
+const SH = require("./lib/shared");
+const v2api = require("./lib/v2");
+const importExport = require("./lib/importexport");
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -120,6 +125,21 @@ if (workerCols.includes("worker_pin")) {
 
 
 /* =========================================================
+   UPGRADE MIGRATION (additive, idempotent, backs up first)
+   ========================================================= */
+
+try {
+  const mig = migrate(db, path.join(DATA_DIR, "attendance.db"));
+  if (mig.migrated) {
+    console.log("Database upgraded to schema v1." +
+      (mig.backup ? " Backup: " + mig.backup : ""));
+  }
+} catch (e) {
+  console.error("DATABASE MIGRATION FAILED - server not started:", e.message);
+  process.exit(1);
+}
+
+/* =========================================================
    DEFAULT ADMIN
    ========================================================= */
 
@@ -143,6 +163,16 @@ if (
 }
 
 
+{
+  const adm = db.prepare("SELECT password_hash FROM users WHERE username='admin'").get();
+  if (adm && bcrypt.compareSync("admin123", adm.password_hash)) {
+    console.warn(
+      "WARNING: the 'admin' account still uses the default password. " +
+      "Change it in Settings immediately."
+    );
+  }
+}
+
 /* =========================================================
    EXPRESS
    ========================================================= */
@@ -151,26 +181,44 @@ app.use(express.json({ limit: "5mb" }));
 app.use(express.urlencoded({ extended: true }));
 
 app.set("trust proxy", 1);
+app.disable("x-powered-by");
+
+app.use(SEC.securityHeaders);
+app.use(SEC.originCheck);
+
+if (!process.env.SESSION_SECRET) {
+  console.warn(
+    "WARNING: SESSION_SECRET is not set. Using a random secret; " +
+    "set SESSION_SECRET in production so sessions are stable."
+  );
+}
 
 app.use(
   session({
+    store: new SEC.SqliteStore(db),
     secret:
       process.env.SESSION_SECRET ||
       crypto.randomBytes(32).toString("hex"),
-
     resave: false,
-
     saveUninitialized: false,
-
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure:
-        process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production",
       maxAge: 12 * 60 * 60 * 1000
     }
   })
 );
+
+/* Brute-force protection (per IP + identifier). */
+const loginLimiter = SEC.rateLimiter({
+  max: 10,
+  windowMs: 15 * 60 * 1000,
+  key: req =>
+    req.ip + "|" +
+    String(req.body?.username || req.body?.identifier || "").toLowerCase()
+});
+const pinLimiter = SEC.rateLimiter({ max: 20, windowMs: 15 * 60 * 1000 });
 
 
 /* =========================================================
@@ -333,6 +381,7 @@ setInterval(() => {
 
 app.post(
   "/api/auth/login",
+  loginLimiter,
   (req, res) => {
 
     const u =
@@ -589,11 +638,9 @@ app.get(
       total_companies,
       total_sites,
       present_today: present,
-      absent_today:
-        Math.max(
-          0,
-          total_workers - present
-        ),
+      absent_today: null,
+      absent_note:
+        "Unavailable: no expected-attendance roster exists, so absence cannot be derived reliably.",
       checked_in: open,
       todays_attendance: rows,
       company_summary,
@@ -1085,6 +1132,20 @@ app.delete(
 
       }
 
+
+      if (
+        String(req.body?.confirm_code || "").trim().toUpperCase() !==
+        String(worker.worker_code).toUpperCase()
+      ) {
+        return res.status(400).json({
+          error:
+            "Permanent delete requires confirm_code equal to the worker code."
+        });
+      }
+
+      SH.audit(db, req, "worker.test_delete", "worker", workerId, {
+        code: worker.worker_code
+      });
 
       /*
        * IMPORTANT:
@@ -2246,10 +2307,25 @@ app.post(
 
       }
 
+      /* Company recorded on the attendance row (historical snapshot):
+         explicit choice, otherwise the worker's CURRENT assignment. */
+      const workerRow = db
+        .prepare("SELECT company_id FROM workers WHERE id=?")
+        .get(workerId);
+
       const companyId =
         req.body.company_id
           ? Number(req.body.company_id)
-          : null;
+          : (workerRow?.company_id || null);
+
+      if (
+        companyId &&
+        !db.prepare("SELECT id FROM companies WHERE id=?").get(companyId)
+      ) {
+        return res.status(400).json({
+          error: "Selected company does not exist."
+        });
+      }
 
       const siteId =
         Number(req.body.site_id);
@@ -2281,13 +2357,38 @@ app.post(
 
       }
 
-      const checkIn =
-        clean(req.body.check_in)
-          || now();
+      const normDT = v => {
+        const t = clean(v);
+        if (!t) return null;
+        if (!SH.DATETIME_RE.test(t)) return undefined;
+        const x = t.replace("T", " ");
+        return x.length === 16 ? x + ":00" : x;
+      };
 
-      const checkOut =
-        clean(req.body.check_out)
-          || null;
+      const checkIn = normDT(req.body.check_in) || (
+        clean(req.body.check_in) ? undefined : now()
+      );
+      const checkOut = normDT(req.body.check_out);
+
+      if (checkIn === undefined || checkOut === undefined) {
+        return res.status(400).json({
+          error: "Invalid date/time. Use YYYY-MM-DD HH:MM."
+        });
+      }
+
+      if (checkOut && checkOut < checkIn) {
+        return res.status(400).json({
+          error: "Check-out cannot be earlier than check-in."
+        });
+      }
+
+      const attDate = clean(req.body.attendance_date) || checkIn.slice(0, 10);
+
+      if (!SH.DATE_RE.test(attDate)) {
+        return res.status(400).json({
+          error: "Invalid attendance date."
+        });
+      }
 
 
       /* PREVENT DUPLICATE OPEN ATTENDANCE */
@@ -2370,9 +2471,7 @@ app.post(
 
           siteId,
 
-          clean(
-            req.body.attendance_date
-          ) || today(),
+          attDate,
 
           checkIn,
 
@@ -2871,6 +2970,17 @@ app.get("/api/health", (req, res) => {
 
 
 /* =========================================================
+   UPGRADE API (/api/v2/*) - additive, legacy routes unchanged
+   ========================================================= */
+
+{
+  const v2 = v2api.mount({
+    app, db, login, admin, today, autoCheckoutExpired
+  });
+  importExport.mount({ app, db, login, admin, v2 });
+}
+
+/* =========================================================
    STATIC FILES
    ========================================================= */
 
@@ -2885,30 +2995,32 @@ app.use(
    Mobile: QR Scan / Worker Code / Check-In / Check-Out / Add Worker
    ========================================================= */
 
-const mobileAuth = (req, res, next) => {
-  const configuredPin = process.env.MOBILE_APP_PIN;
+const mobileAuth = (req, res, next) =>
+  pinLimiter(req, res, () => {
+    const configuredPin = process.env.MOBILE_APP_PIN;
 
-  if (!configuredPin) {
-    return res.status(503).json({
-      success: false,
-      message: "Mobile App PIN is not configured."
-    });
-  }
+    if (!configuredPin) {
+      return res.status(503).json({
+        success: false,
+        message: "Mobile App PIN is not configured."
+      });
+    }
 
-  const mobilePin =
-    req.headers["x-mobile-pin"] ||
-    req.body?.mobile_pin ||
-    req.query?.mobile_pin;
+    /* Header or JSON body only. The query string is NOT accepted
+       because URLs end up in logs and browser history. */
+    const mobilePin =
+      req.headers["x-mobile-pin"] ||
+      req.body?.mobile_pin;
 
-  if (String(mobilePin || "") !== String(configuredPin)) {
-    return res.status(401).json({
-      success: false,
-      message: "Invalid Mobile App PIN."
-    });
-  }
+    if (!SEC.safeEqual(mobilePin || "", configuredPin)) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Mobile App PIN."
+      });
+    }
 
-  next();
-};
+    next();
+  });
 
 // =========================================================
 // WORKER APP AUTHENTICATION
@@ -2932,7 +3044,7 @@ const workerAuth = (req, res, next) => {
 // NAME / WORKER CODE ONLY — NO PIN / PASSWORD
 // =========================================================
 
-app.post("/api/worker-app/login", (req, res) => {
+app.post("/api/worker-app/login", loginLimiter, (req, res) => {
   try {
 
     const identifier = clean(req.body.identifier);
@@ -3086,8 +3198,6 @@ app.post("/api/worker-app/login", (req, res) => {
         designation:
           worker.designation,
 
-        salary:
-          worker.salary,
 
         status:
           worker.status,
@@ -3181,7 +3291,6 @@ app.get("/api/worker-app/me", workerAuth, (req, res) => {
         w.vendor,
         w.mobile,
         w.designation,
-        w.salary,
         w.status,
         w.joining_date,
         w.company_id,

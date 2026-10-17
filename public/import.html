@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Import & Export | AL SABIHA</title>
+<link rel="icon" href="/Logo.svg"></head><body>
+<script src="/app.js"></script>
+<script>
+shell("import", "Import & Export", `
+<ol class="steps" id="steps"><li class="on">Upload</li><li>Preview &amp; validate</li><li>Confirm</li><li>Summary</li></ol>
+<section class="panel" id="up"><h2>Import workers from Excel</h2>
+  <p style="color:var(--muted);margin-top:0">Accepted: .xlsx or .csv, up to 10 MB and 5,000 rows. Nothing is saved until you confirm.</p>
+  <div class="actions"><a class="btn ghost" href="/api/v2/import/template.xlsx">Download Excel template</a>
+  <input id="file" type="file" accept=".xlsx,.csv" style="max-width:340px" aria-label="Choose workbook"><button class="btn gold" id="go">Upload &amp; preview</button></div>
+  <div id="upMsg" role="alert"></div></section>
+<section id="pv" hidden></section>
+<section class="panel" id="done" hidden></section>
+<section class="panel"><h2>Exports</h2><p style="color:var(--muted);margin-top:0">Exports follow the filters on each screen.</p>
+  <div class="actions"><a class="btn ghost" href="/api/v2/export/workers.xlsx">All workers</a><a class="btn ghost" href="/workers.html">Filtered workers…</a>
+  <a class="btn ghost" href="/api/v2/export/company-workforce.xlsx">Company-wise workforce</a><a class="btn ghost" href="/reports.html">Attendance records…</a><a class="btn ghost" href="/monthly-report.html">Monthly report…</a></div></section>
+<section class="panel"><h2>Import history</h2><div id="hist"><div class="loading">Loading…</div></div></section>
+`);
+loadMe();
+let token = null;
+const step = n => $$("#steps li").forEach((li, i) => li.className = i < n ? "done" : i === n ? "on" : "");
+async function history() {
+  try {
+    const h = (await api("/api/v2/import/history")).items;
+    $("#hist").innerHTML = h.length ? `<div class="table-wrap"><table><thead><tr><th>When (UAE)</th><th>User</th><th>File</th><th>Mode</th><th class="num">Rows</th><th class="num">Created</th><th class="num">Updated</th><th class="num">Skipped</th><th class="num">Invalid</th><th>Outcome</th><th>Errors</th></tr></thead><tbody>` +
+      h.map(r => `<tr><td>${esc(r.at)}</td><td>${esc(r.username || "")}</td><td>${esc(r.filename || "")}</td><td>${r.mode === "add_and_update" ? "Add + update" : "Add only"}</td><td class="num">${r.total_rows}</td><td class="num">${r.created}</td><td class="num">${r.updated}</td><td class="num">${r.skipped}</td><td class="num">${r.invalid}</td>
+      <td><span class="badge ${r.outcome === "completed" ? "ok" : r.outcome.startsWith("failed") ? "bad" : "warn"}">${esc(r.outcome.replace(/_/g, " "))}</span></td>
+      <td>${r.has_errors ? `<a href="/api/v2/import/history/${r.id}/errors.xlsx">Download</a>` : "—"}</td></tr>`).join("") + `</tbody></table></div>` : `<div class="empty"><b>No imports yet</b>Uploaded files will be listed here.</div>`;
+  } catch (e) { $("#hist").innerHTML = `<div class="message error">${esc(e.message)}</div>`; }
+}
+$("#go").onclick = async () => {
+  const f = $("#file").files[0], m = $("#upMsg"); m.innerHTML = "";
+  if (!f) return m.innerHTML = `<div class="message error">Choose a file first.</div>`;
+  if (f.size > 10 * 1024 * 1024) return m.innerHTML = `<div class="message error">File is larger than 10 MB.</div>`;
+  $("#go").disabled = true; m.innerHTML = `<div class="loading">Validating…</div>`;
+  try {
+    const r = await fetch("/api/v2/import/preview", { method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/octet-stream", "X-Filename": encodeURIComponent(f.name) }, body: f });
+    if (r.status === 401) return (location.href = "/login.html");
+    const d = await r.json(); if (!r.ok) throw new Error(d.error || "Upload failed");
+    m.innerHTML = ""; token = d.token; showPreview(d);
+  } catch (e) { m.innerHTML = `<div class="message error">${esc(e.message)}</div>`; }
+  finally { $("#go").disabled = false; }
+};
+function showPreview(d) {
+  step(1); const c = d.counts;
+  const k = (l, v, cls = "") => `<div class="kpi ${cls}"><small>${l}</small><b>${v}</b></div>`;
+  $("#pv").hidden = false;
+  $("#pv").innerHTML = `<div class="kpis">${k("Rows in file", d.total_rows)}${k("Valid rows", d.valid_rows, "cyan")}${k("New workers", c.new, "accent")}${k("Possible updates", c.update)}${k("Unchanged (existing)", c.unchanged)}${k("Existing IDs", c.existing_ids)}${k("Duplicate IDs in file", c.duplicate_in_file)}${k("Missing required", c.missing_required)}${k("Invalid values", c.invalid_values)}${k("Unresolved companies", c.unresolved_company)}</div>
+  <section class="panel"><h2>Matching &amp; update rules</h2><ul style="margin:0;padding-left:20px">${d.rules.map(r => `<li>${esc(r)}</li>`).join("")}</ul></section>
+  <section class="panel"><h2>Preview (first ${d.sample.length} valid rows)</h2>${d.sample.length ? `<div class="table-wrap"><table><thead><tr><th>Row</th><th>Employee ID</th><th>Name</th><th>Action</th><th>Changes</th></tr></thead><tbody>${d.sample.map(s => `<tr><td>${s.row}</td><td>${esc(s.employee_id)}</td><td>${esc(s.name)}</td><td><span class="badge ${s.action === "new" ? "ok" : s.action === "update" ? "warn" : ""}">${esc(s.action)}</span></td><td>${s.changes.map(x => `${esc(x.field)}: ${esc(x.from || "∅")} → <b>${esc(x.to)}</b>`).join("<br>") || "—"}</td></tr>`).join("")}</tbody></table></div>` : '<div class="empty">No valid rows.</div>'}</section>
+  ${d.errors_total ? `<section class="panel"><h2>Problems found (${d.errors_total})</h2><div class="table-wrap"><table><thead><tr><th>Row</th><th>Employee ID</th><th>Field</th><th>Problem</th></tr></thead><tbody>${d.errors.map(e => `<tr><td>${e.row}</td><td>${esc(e.employee_id || "")}</td><td>${esc(e.field || "")}</td><td>${esc(e.problem)}</td></tr>`).join("")}</tbody></table></div><div class="actions" style="margin-top:12px"><a class="btn ghost" href="/api/v2/import/preview/${token}/errors.xlsx">Download full error report</a></div></section>` : ""}
+  <section class="panel"><h2>Confirm import</h2><div class="checks" role="radiogroup" aria-label="Import mode">
+    <label><input type="radio" name="mode" value="add_only" checked> Add new workers only (existing IDs are skipped)</label>
+    <label><input type="radio" name="mode" value="add_and_update"> Add new and update existing (only non-empty differing cells)</label></div>
+    <div class="actions" style="margin-top:14px"><button class="btn gold" id="commit" ${d.valid_rows ? "" : "disabled"}>Import ${d.valid_rows} valid row(s)</button><button class="btn ghost" id="cancel">Cancel</button></div><div id="cm"></div></section>`;
+  $("#cancel").onclick = () => { $("#pv").hidden = true; token = null; step(0); };
+  $("#commit").onclick = async () => {
+    const mode = $("input[name=mode]:checked").value;
+    if (!(await confirmDialog(mode === "add_and_update" ? "Existing workers will be updated with the non-empty values from your file. Continue?" : "New workers will be added. Existing workers are left untouched. Continue?", { title: "Import workers", ok: "Import" }))) return;
+    $("#commit").disabled = true; step(2);
+    try {
+      const r = await api("/api/v2/import/commit", { method: "POST", body: { token, mode } });
+      $("#pv").hidden = true; step(4); token = null;
+      $("#done").hidden = false;
+      $("#done").innerHTML = `<h2>Import ${r.outcome === "completed" ? "completed" : "completed with issues"}</h2><div class="kpis"><div class="kpi accent"><small>Created</small><b>${r.created}</b></div><div class="kpi"><small>Updated</small><b>${r.updated}</b></div><div class="kpi"><small>Skipped</small><b>${r.skipped}</b></div><div class="kpi"><small>Invalid rows</small><b>${r.invalid}</b></div></div>
+        <div class="actions"><a class="btn ghost" href="${esc(r.error_report_url)}">Download error report</a><a class="btn gold" href="/workers.html">Open Worker Database</a><a class="btn ghost" href="/import.html">Import another file</a></div>`;
+      history();
+    } catch (e) { $("#cm").innerHTML = `<div class="message error">${esc(e.message)}</div>`; $("#commit").disabled = false; step(1); }
+  };
+}
+history();
+</script></body></html>
